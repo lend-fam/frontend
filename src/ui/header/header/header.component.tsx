@@ -15,10 +15,10 @@ export const Header: FC = () => {
 				</div>
 				<NavigationPanel />
 			</div>
-            <div className={css.controls}>
-                <SocialNetwork />
-                <SignIn />
-            </div>
+			<div className={css.controls}>
+				<SocialNetwork />
+				<SignIn />
+			</div>
 		</div>
 	);
 };
