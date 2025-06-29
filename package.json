@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prettier": "prettier --list-different './src/**/*.{ts,tsx}'",
-    "prettier:fix": "prettier --write './src/**/*.{ts,tsx}'"
+    "prettier": "prettier --check './**/*.{ts,tsx}'",
+    "prettier:fix": "prettier --write './**/*.{ts,tsx}'"
   },
   "repository": {
     "type": "git",
