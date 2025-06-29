@@ -6,10 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint .",
     "preview": "vite preview",
-    "eslint": "eslint",
-    "eslint:fix": "eslint --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix",
     "prettier": "prettier --check './**/*.{js,mjs,cjs,ts,tsx}'",
     "prettier:fix": "prettier --write './**/*.{js,mjs,cjs,ts,tsx}'"
   },
