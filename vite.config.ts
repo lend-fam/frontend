@@ -4,5 +4,5 @@ import { patchCssModules } from 'vite-css-modules';
 
 // https://vite.dev/config/
 export default defineConfig({
-	plugins: [react(), patchCssModules()],
+	plugins: [react(), patchCssModules({ generateSourceTypes: true })],
 });

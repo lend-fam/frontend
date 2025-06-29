@@ -14,7 +14,7 @@
     font-size: 20px;
     margin-right: 32px;
 
-    &_active {
-        
+    _active {
+        color: #5877FE;
     }
 }
