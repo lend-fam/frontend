@@ -23,11 +23,11 @@ const Network = memo<NetworkProps>((props) => {
 	const { icon, path } = props;
 
 	return (
-        <li className={css.network}>
-            <a href={path}>
-                <img src={icon} />
-            </a>
-        </li>
+		<li className={css.network}>
+			<a href={path}>
+				<img src={icon} />
+			</a>
+		</li>
 	);
 });
 
