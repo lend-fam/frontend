@@ -19,6 +19,11 @@ csstype@^3.0.2:
   resolved "https://registry.npmjs.org/csstype/-/csstype-3.1.3.tgz#d80ff294d114fb0e6ac500fbf85b60137d7eff81"
   integrity sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==
 
+prettier@^3.6.2:
+  version "3.6.2"
+  resolved "https://registry.npmjs.org/prettier/-/prettier-3.6.2.tgz#ccda02a1003ebbb2bfda6f83a074978f608b9393"
+  integrity sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==
+
 react-dom@^19.1.0:
   version "19.1.0"
   resolved "https://registry.npmjs.org/react-dom/-/react-dom-19.1.0.tgz#133558deca37fa1d682708df8904b25186793623"
