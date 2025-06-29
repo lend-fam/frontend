@@ -1,4 +1,5 @@
 import { memo, type FC } from 'react';
+import cn from 'classnames';
 import { Link } from '../../../ui-kit/components/link/link.component';
 
 import css from './navigation-panel.module.css';
@@ -24,8 +25,10 @@ interface NavigationLinkProps {
 const NavigationLink = memo<NavigationLinkProps>((props) => {
 	const { label, path } = props;
 
+	const className = cn(css.link, css.link);
+
 	return (
-		<li className={css.link}>
+		<li className={className}>
 			<Link href={path}>{label}</Link>
 		</li>
 	);
