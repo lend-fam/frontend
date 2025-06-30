@@ -1,5 +1,9 @@
 @import './reset.css';
 
+html * {
+    font-family: 'Inter';
+}
+
 .container {
     display: flex;
     flex-direction: column;
