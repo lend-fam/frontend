@@ -9,7 +9,7 @@ export const NavigationPanel: FC = () => {
 		<nav className={css.container}>
 			<ul className={css.list}>
 				<NavigationLink label={'Markets'} path={'/'} />
-				<NavigationLink label={'Dashboard'} path={'/'} />
+				<NavigationLink label={'Dashboard'} path={'/'} isActive={true} />
 				<NavigationLink label={'Collections'} path={'/'} />
 				<NavigationLink label={'Profile'} path={'/'} />
 			</ul>
@@ -20,12 +20,13 @@ export const NavigationPanel: FC = () => {
 interface NavigationLinkProps {
 	label: string;
 	path: string;
+    isActive?: boolean;
 }
 
 const NavigationLink = memo<NavigationLinkProps>((props) => {
-	const { label, path } = props;
+	const { label, path, isActive } = props;
 
-	const className = cn(css.link, css.link);
+	const className = cn(css.link, {[css.link_active]: isActive});
 
 	return (
 		<li className={className}>
