@@ -4,6 +4,8 @@
 }
 
 .metric {
+    width: 108px;
+    
     &:not(&:last-child) {
         margin-right: 24px;
     }
@@ -11,6 +13,7 @@
 
 .label {
     font-size: 16px;
+    margin-bottom: 10px;
     color: #CAD5FF;
 }
 

@@ -7,7 +7,7 @@ export const MarketsMetrics: FC = () => {
 		<ul className={css.container}>
 			<MarketsMetric label={'Net APY'} value={'4.15'} dimension="percent" />
 			<MarketsMetric label={'Health Factor'} value={'1.90'} />
-			<MarketsMetric label={'Net APY'} value={'7.5'} dimension="percent" />
+			<MarketsMetric label={'Borrow Usage'} value={'7.5'} dimension="percent" />
 		</ul>
 	);
 };
