@@ -2,23 +2,23 @@ import { memo, type FC } from 'react';
 
 import css from './dashboard-metrics.module.css';
 
-export const MarketsMetrics: FC = () => {
+export const DashboardMetrics: FC = () => {
 	return (
 		<ul className={css.container}>
-			<MarketsMetric label={'Net APY'} value={'4.15'} dimension="percent" />
-			<MarketsMetric label={'Health Factor'} value={'1.90'} />
-			<MarketsMetric label={'Borrow Usage'} value={'7.5'} dimension="percent" />
+			<DashboardMetric label={'Net APY'} value={'4.15'} dimension="percent" />
+			<DashboardMetric label={'Health Factor'} value={'1.90'} />
+			<DashboardMetric label={'Borrow Usage'} value={'7.5'} dimension="percent" />
 		</ul>
 	);
 };
 
-interface MarketsMetricProps {
+interface DashboardMetricProps {
 	label: string;
 	value: string;
 	dimension?: 'percent';
 }
 
-const MarketsMetric = memo<MarketsMetricProps>((props) => {
+const DashboardMetric = memo<DashboardMetricProps>((props) => {
 	const { label, value, dimension } = props;
 
 	return (
@@ -32,4 +32,4 @@ const MarketsMetric = memo<MarketsMetricProps>((props) => {
 	);
 });
 
-MarketsMetric.displayName = 'MarketsMetric';
+DashboardMetric.displayName = 'DashboardMetric';
