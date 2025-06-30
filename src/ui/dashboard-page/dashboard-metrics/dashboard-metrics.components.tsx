@@ -1,6 +1,6 @@
 import { memo, type FC } from 'react';
 
-import css from './markets-metrics.module.css';
+import css from './dashboard-metrics.module.css';
 
 export const MarketsMetrics: FC = () => {
 	return (

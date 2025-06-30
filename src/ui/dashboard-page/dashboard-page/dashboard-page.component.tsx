@@ -1,10 +1,10 @@
 import type { FC } from 'react';
-import { MarketsMetrics } from '../markets-metrics/markets-metrics.components';
+import { MarketsMetrics } from '../dashboard-metrics/dashboard-metrics.components';
 import { Layout } from '../../layout/layout.component';
 
-import css from './markets.module.css';
+import css from './dashboard-page.module.css';
 
-export const Markets: FC = () => {
+export const DashboardPage: FC = () => {
 	return (
 		<div className={css.container}>
 			<Layout>
