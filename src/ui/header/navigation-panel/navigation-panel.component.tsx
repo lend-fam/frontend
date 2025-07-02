@@ -20,13 +20,13 @@ export const NavigationPanel: FC = () => {
 interface NavigationLinkProps {
 	label: string;
 	path: string;
-    isActive?: boolean;
+	isActive?: boolean;
 }
 
 const NavigationLink = memo<NavigationLinkProps>((props) => {
 	const { label, path, isActive } = props;
 
-	const className = cn(css.link, {[css.link_active]: isActive});
+	const className = cn(css.link, { [css.link_active]: isActive });
 
 	return (
 		<li className={className}>
