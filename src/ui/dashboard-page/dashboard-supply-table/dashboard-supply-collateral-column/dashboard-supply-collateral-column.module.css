@@ -1,0 +1,20 @@
+.controls {
+    display: flex;
+}
+
+.withdraw_button {
+    color: #FFFFFF;
+    font-weight: 700;
+    background: #5877FE;
+    height: 26px;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.supply_button {
+    color: #18171E;
+    font-weight: 700;
+    height: 26px;
+    border-radius: 4px;
+    border: 2px solid #18171E;
+}

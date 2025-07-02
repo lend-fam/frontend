@@ -1,0 +1,16 @@
+.container {
+    background: #FFFFFF;
+    width: 50%;
+    border-radius: 16px;
+    border: 2px solid #18171E;
+    padding: 25px 0;
+}
+
+.label {
+    font-family: "Montserrat";
+    color: #18171E;
+    font-size: 24px;
+    font-weight: 900;
+    margin-bottom: 47px;
+    margin-left: 42px;
+}
