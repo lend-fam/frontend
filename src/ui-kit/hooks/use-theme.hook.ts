@@ -5,7 +5,7 @@ export const useTheme = <T extends Record<string, string>>(cssTheme: T, propsThe
 	useMemo(() => {
 		if (propsTheme) {
 			return Object.keys(propsTheme).reduce(
-				(acc, item) => ({ ...acc, [item]: cn(cssTheme[item], item) }),
+				(acc, item) => ({ ...acc, [item]: cn(cssTheme[item], propsTheme[item]) }),
 				cssTheme,
 			);
 		}
