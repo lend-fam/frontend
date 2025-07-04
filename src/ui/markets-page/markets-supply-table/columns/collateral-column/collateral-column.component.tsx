@@ -1,9 +1,9 @@
 import { memo } from 'react';
-import { TableColumn } from '../../../../ui-kit/components/table/table-column.component';
-import { Button } from '../../../../ui-kit/components/button/button.component';
-import type { TableColumnRendererProps } from '../../../../ui-kit/components/table/table.component';
+import { TableColumn } from '../../../../../ui-kit/components/table/table-column.component';
+import { Button } from '../../../../../ui-kit/components/button/button.component';
+import type { TableColumnRendererProps } from '../../../../../ui-kit/components/table/table.component';
 
-import css from './dashboard-supply-collateral-column.module.css';
+import css from './collateral-column.module.css';
 
 export const CollateralColumn = memo<TableColumnRendererProps>((props) => {
 	const { align, className } = props;

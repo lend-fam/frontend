@@ -1,26 +1,26 @@
 import { type FC } from 'react';
 import { Table, type TableColumnProps, type TableData } from '../../../ui-kit/components/table/table.component';
-import { AssetsColumn } from './dashboard-supply-assets-column/dashboard-supply-assets-column.component';
-import { CollateralColumn } from './dashboard-supply-collateral-column/dashboard-supply-collateral-column.component';
+import { AssetsColumn } from './columns/assets-column/assets-column.component';
+import { CollateralColumn } from './columns/collateral-column/collateral-column.component';
 
-import css from './dashboard-supply-table.module.css';
+import css from './markets-supply-table.module.css';
 
-type DashboardSupplyTableData = {
+type MarketsSupplyTableData = {
 	assets: string;
 	apy: string;
 	wallet: string;
 };
 
-type DashboardSupplyTableColumn = 'assets' | 'apy' | 'wallet' | 'collateral';
+type MarketsSupplyTableColumn = 'assets' | 'apy' | 'wallet' | 'collateral';
 
-const dashboardSupplyTableColumns: TableColumnProps<DashboardSupplyTableData, DashboardSupplyTableColumn>[] = [
+const marketsSupplyTableColumns: TableColumnProps<MarketsSupplyTableData, MarketsSupplyTableColumn>[] = [
 	{ key: 'assets', label: 'Asset', cellRenderer: AssetsColumn },
 	{ key: 'apy', label: 'APY', align: 'right' },
 	{ key: 'wallet', label: 'Wallet', align: 'right' },
 	{ key: 'collateral', label: 'Collateral', align: 'center', cellRenderer: CollateralColumn },
 ];
 
-const dashboardSupplyTableData: TableData<DashboardSupplyTableData>[] = [
+const dashboardSupplyTableData: TableData<MarketsSupplyTableData>[] = [
 	{
 		assets: 'ApeCoin',
 		apy: '3.41%',
@@ -38,13 +38,13 @@ const dashboardSupplyTableData: TableData<DashboardSupplyTableData>[] = [
 	},
 ];
 
-export const DashboardSupplyTable: FC = () => {
+export const MarketsSupplyTable: FC = () => {
 	return (
 		<div className={css.container}>
 			<p className={css.label}>Supply Markets</p>
 
-			<Table<DashboardSupplyTableColumn, DashboardSupplyTableData>
-				columns={dashboardSupplyTableColumns}
+			<Table<MarketsSupplyTableColumn, MarketsSupplyTableData>
+				columns={marketsSupplyTableColumns}
 				data={dashboardSupplyTableData}
 			/>
 		</div>
