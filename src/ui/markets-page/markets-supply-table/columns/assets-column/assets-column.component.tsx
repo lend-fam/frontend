@@ -1,8 +1,8 @@
 import { memo } from 'react';
-import { TableColumn } from '../../../../ui-kit/components/table/table-column.component';
-import type { TableColumnRendererProps } from '../../../../ui-kit/components/table/table.component';
+import { TableColumn } from '../../../../../ui-kit/components/table/table-column.component';
+import type { TableColumnRendererProps } from '../../../../../ui-kit/components/table/table.component';
 
-import coinIcon from '../../../../assets/svg/coin.svg';
+import coinIcon from '../../../../../assets/svg/coin.svg';
 
 export const AssetsColumn = memo<TableColumnRendererProps>((props) => {
 	const { align, className } = props;
