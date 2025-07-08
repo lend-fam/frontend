@@ -4,6 +4,7 @@ import { AssetsColumn } from './columns/assets-column/assets-column.component';
 import { CollateralColumn } from './columns/collateral-column/collateral-column.component';
 
 import css from './markets-supply-table.module.css';
+import tableCss from './theme/table.module.css';
 
 type MarketsSupplyTableData = {
 	assets: string;
@@ -14,13 +15,21 @@ type MarketsSupplyTableData = {
 type MarketsSupplyTableColumn = 'assets' | 'apy' | 'wallet' | 'collateral';
 
 const marketsSupplyTableColumns: TableColumnProps<MarketsSupplyTableData, MarketsSupplyTableColumn>[] = [
-	{ key: 'assets', label: 'Asset', cellRenderer: AssetsColumn },
+	{ key: 'assets', label: 'Asset', width: '196px', cellRenderer: AssetsColumn },
 	{ key: 'apy', label: 'APY', align: 'right' },
 	{ key: 'wallet', label: 'Wallet', align: 'right' },
-	{ key: 'collateral', label: 'Collateral', align: 'center', cellRenderer: CollateralColumn },
+	{ key: 'collateral', label: 'Collateral', width: '184px', align: 'center', cellRenderer: CollateralColumn },
 ];
 
-const dashboardSupplyTableData: TableData<MarketsSupplyTableData>[] = [
+const yourMarketsSupplyTableData: TableData<MarketsSupplyTableData>[] = [
+	{
+		assets: 'ApeCoin',
+		apy: '3.41%',
+		wallet: '0 APE',
+	},
+];
+
+const marketsSupplyTableData: TableData<MarketsSupplyTableData>[] = [
 	{
 		assets: 'ApeCoin',
 		apy: '3.41%',
@@ -37,6 +46,9 @@ const dashboardSupplyTableData: TableData<MarketsSupplyTableData>[] = [
 		wallet: '0 APE',
 	},
 ];
+
+const COLUMN_HEIGHT = '64px';
+const COLUMN_WIDTH = '120px';
 
 export const MarketsSupplyTable: FC = () => {
 	return (
@@ -44,8 +56,21 @@ export const MarketsSupplyTable: FC = () => {
 			<p className={css.label}>Supply Markets</p>
 
 			<Table<MarketsSupplyTableColumn, MarketsSupplyTableData>
+				data={yourMarketsSupplyTableData}
 				columns={marketsSupplyTableColumns}
-				data={dashboardSupplyTableData}
+				columnHeight={COLUMN_HEIGHT}
+				columnWidth={COLUMN_WIDTH}
+				theme={tableCss}
+			/>
+
+			<div className={css.delimiter} />
+
+			<Table<MarketsSupplyTableColumn, MarketsSupplyTableData>
+				data={marketsSupplyTableData}
+				columns={marketsSupplyTableColumns}
+				columnHeight={COLUMN_HEIGHT}
+				columnWidth={COLUMN_WIDTH}
+				theme={tableCss}
 			/>
 		</div>
 	);
