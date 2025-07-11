@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 import { Table, type TableColumnProps, type TableData } from '../../../ui-kit/components/table/table.component';
-import { AssetsColumn } from './columns/assets-column/assets-column.component';
-import { CollateralColumn } from './columns/collateral-column/collateral-column.component';
+import { AssetsColumn } from '../../../ui-kit/components/table/columns/assets-column/assets-column.component';
+import { CollateralColumn } from '../../../ui-kit/components/table/columns/collateral-column/collateral-column.component';
 
 import css from './markets-supply-table.module.css';
 import tableCss from './theme/table.module.css';
