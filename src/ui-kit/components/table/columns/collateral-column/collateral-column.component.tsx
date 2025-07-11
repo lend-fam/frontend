@@ -1,7 +1,7 @@
 import { memo } from 'react';
-import { TableColumn } from '../../../../../ui-kit/components/table/table-column.component';
-import { Button } from '../../../../../ui-kit/components/button/button.component';
-import type { TableColumnRendererProps } from '../../../../../ui-kit/components/table/table.component';
+import { TableColumn } from '../../table-column.component';
+import { Button } from '../../../button/button.component';
+import type { TableColumnRendererProps } from '../../table.component';
 
 import css from './collateral-column.module.css';
 

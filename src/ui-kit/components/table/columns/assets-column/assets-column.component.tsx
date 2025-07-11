@@ -1,6 +1,6 @@
 import { memo } from 'react';
-import { TableColumn } from '../../../../../ui-kit/components/table/table-column.component';
-import type { TableColumnRendererProps } from '../../../../../ui-kit/components/table/table.component';
+import { TableColumn } from '../../table-column.component';
+import type { TableColumnRendererProps } from '../../table.component';
 
 import css from './assets-column.module.css';
 
