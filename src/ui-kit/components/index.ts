@@ -9,7 +9,7 @@ export { Link } from './link/link.component';
 export { Modal } from './modal/modal.component';
 
 // Table components
-export { Table, type TableColumn, type TableData } from './table/table.component';
+export { Table, type TableColumn, type TableData, type TableColumnProps } from './table/table.component';
 export { TableColumn, type TableAlign } from './table/table-column.component';
 
 // Action button components
