@@ -1,0 +1,195 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+.section {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.sectionHeader {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.label {
+	font-size: 16px;
+	font-weight: 500;
+	color: #d1d5db;
+}
+
+.info {
+	color: #9ca3af;
+}
+
+.sectionTitle {
+	font-size: 18px;
+	font-weight: 500;
+	color: white;
+	margin: 0;
+}
+
+.inputContainer {
+	background: #374151;
+	border: 1px solid #4b5563;
+	border-radius: 12px;
+	padding: 16px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	transition: border-color 0.2s;
+}
+
+.inputContainer:focus-within {
+	border-color: #3b82f6;
+}
+
+.amountInput {
+	background: none;
+	border: none;
+	color: white;
+	font-size: 24px;
+	font-weight: 500;
+	outline: none;
+	flex: 1;
+	min-width: 0;
+}
+
+.amountInput::placeholder {
+	color: #6b7280;
+}
+
+.tokenInfo {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-shrink: 0;
+}
+
+.tokenIcon {
+	width: 32px;
+	height: 32px;
+	border-radius: 50%;
+	background: #1f2937;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid #374151;
+}
+
+.tokenSymbol {
+	font-size: 12px;
+	font-weight: 600;
+	color: white;
+}
+
+.tokenName {
+	font-size: 16px;
+	font-weight: 500;
+	color: white;
+}
+
+.balanceInfo {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.usdValue {
+	color: #9ca3af;
+	font-size: 14px;
+}
+
+.walletBalance {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	color: #9ca3af;
+	font-size: 14px;
+}
+
+.maxButton {
+	background: none;
+	border: 1px solid #4b5563;
+	color: #3b82f6;
+	padding: 4px 8px;
+	border-radius: 6px;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.maxButton:hover {
+	background: #1e40af;
+	color: white;
+	border-color: #1e40af;
+}
+
+.overviewContainer {
+	background: #374151;
+	border-radius: 12px;
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.overviewRow {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.overviewLabel {
+	color: #d1d5db;
+	font-size: 14px;
+}
+
+.overviewValue {
+	color: white;
+	font-size: 14px;
+	font-weight: 500;
+}
+
+.gasSection {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	justify-content: center;
+}
+
+.gasIcon {
+	color: #9ca3af;
+}
+
+.gasText {
+	color: #9ca3af;
+	font-size: 14px;
+}
+
+.submitButton {
+	background: #ef4444;
+	color: white;
+	border: none;
+	border-radius: 12px;
+	padding: 16px;
+	font-size: 16px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.submitButton:hover:not(:disabled) {
+	background: #dc2626;
+}
+
+.submitButton:disabled {
+	background: #374151;
+	color: #6b7280;
+	cursor: not-allowed;
+}
