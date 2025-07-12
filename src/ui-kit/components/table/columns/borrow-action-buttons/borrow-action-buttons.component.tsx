@@ -97,7 +97,6 @@ export const BorrowActionButtons: FC<BorrowActionButtonsProps> = ({
 				isOpen={isRepayModalOpen}
 				onClose={() => setIsRepayModalOpen(false)}
 				marketAddress={marketAddress}
-				tokenSymbol={tokenSymbol}
 				borrowAPY={borrowAPY}
 			/>
 		</>

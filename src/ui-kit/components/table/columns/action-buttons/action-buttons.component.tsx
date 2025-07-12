@@ -119,7 +119,6 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
 				isOpen={isSupplyModalOpen}
 				onClose={() => setIsSupplyModalOpen(false)}
 				marketAddress={marketAddress}
-				tokenSymbol={tokenSymbol}
 				supplyAPY={supplyAPY}
 				isCollateralEnabled={isCollateralEnabled}
 			/>

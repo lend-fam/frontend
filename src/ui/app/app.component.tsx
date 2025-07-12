@@ -8,6 +8,7 @@ import { Header } from '../header/header/header.component';
 import { MarketsPage } from '../markets-page/markets-page/markets-page.component';
 import { Footer } from '../footer/footer/footer.component';
 import { wagmiConfig } from '../../config/wagmi.config';
+import { TransactionProvider } from '../../contexts/transaction.context';
 
 import css from './app.module.css';
 import '../../assets/fonts/fonts.css';
@@ -26,12 +27,14 @@ export const App: FC = () => {
 		<WagmiProvider config={wagmiConfig}>
 			<QueryClientProvider client={queryClient}>
 				<RainbowKitProvider>
-					<div className={css.container}>
-						<Header />
-						<MarketsPage />
-						<Footer />
-					</div>
-					<ReactQueryDevtools initialIsOpen={false} />
+					<TransactionProvider>
+						<div className={css.container}>
+							<Header />
+							<MarketsPage />
+							<Footer />
+						</div>
+						<ReactQueryDevtools initialIsOpen={false} />
+					</TransactionProvider>
 				</RainbowKitProvider>
 			</QueryClientProvider>
 		</WagmiProvider>
