@@ -55,23 +55,27 @@ export const MarketsSupplyTable: FC = () => {
 		<div className={css.container}>
 			<p className={css.label}>Supply Markets</p>
 
-			<Table<MarketsSupplyTableColumn, MarketsSupplyTableData>
-				data={yourMarketsSupplyTableData}
-				columns={marketsSupplyTableColumns}
-				columnHeight={COLUMN_HEIGHT}
-				columnWidth={COLUMN_WIDTH}
-				theme={tableCss}
-			/>
+			{yourMarketsSupplyTableData.length > 0 && (
+				<Table<MarketsSupplyTableColumn, MarketsSupplyTableData>
+					data={yourMarketsSupplyTableData}
+					columns={marketsSupplyTableColumns}
+					columnHeight={COLUMN_HEIGHT}
+					columnWidth={COLUMN_WIDTH}
+					theme={tableCss}
+				/>
+			)}
 
 			<div className={css.delimiter} />
 
-			<Table<MarketsSupplyTableColumn, MarketsSupplyTableData>
-				data={marketsSupplyTableData}
-				columns={marketsSupplyTableColumns}
-				columnHeight={COLUMN_HEIGHT}
-				columnWidth={COLUMN_WIDTH}
-				theme={tableCss}
-			/>
+			{marketsSupplyTableData.length > 0 && (
+				<Table<MarketsSupplyTableColumn, MarketsSupplyTableData>
+					data={marketsSupplyTableData}
+					columns={marketsSupplyTableColumns}
+					columnHeight={COLUMN_HEIGHT}
+					columnWidth={COLUMN_WIDTH}
+					theme={tableCss}
+				/>
+			)}
 		</div>
 	);
 };
