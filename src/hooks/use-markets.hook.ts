@@ -399,6 +399,55 @@ export function useMarketsExchangeRates() {
 }
 
 /**
+ * Hook to fetch collateral factors for all markets
+ */
+export function useMarketsCollateralFactors() {
+	const chainId = useChainId();
+	const { data: marketAddresses, isLoading: marketsLoading } = useAllMarkets();
+
+	const collateralFactorContracts =
+		marketAddresses?.map((address: Address) => ({
+			address: getComptrollerAddress(chainId),
+			abi: COMPTROLLER_ABI,
+			functionName: 'markets',
+			args: [address],
+		})) || [];
+
+	const { data: contractResults, isLoading: dataLoading } = useReadContracts({
+		contracts: collateralFactorContracts,
+		query: {
+			enabled: !!marketAddresses && marketAddresses.length > 0,
+			staleTime: 60000, // Cache for 1 minute - collateral factors don't change often
+			refetchInterval: 60000,
+		},
+	});
+
+	const processedData = useMemo(() => {
+		if (!marketAddresses || !contractResults) return {};
+
+		const collateralFactorData: Record<Address, number> = {};
+
+		marketAddresses.forEach((address: Address, index: number) => {
+			const marketResult = contractResults[index];
+			if (marketResult?.result) {
+				// Market result is a tuple [isListed, collateralFactorMantissa, isComped]
+				const [, collateralFactorMantissa] = marketResult.result as [boolean, bigint, boolean];
+				// Convert from mantissa (18 decimals) to percentage (0-1)
+				const collateralFactor = Number(collateralFactorMantissa) / 1e18;
+				collateralFactorData[address] = collateralFactor;
+			}
+		});
+
+		return collateralFactorData;
+	}, [marketAddresses, contractResults]);
+
+	return {
+		data: processedData,
+		isLoading: marketsLoading || dataLoading,
+	};
+}
+
+/**
  * Combined hook to get all markets with their data
  */
 export function useMarketsWithData() {

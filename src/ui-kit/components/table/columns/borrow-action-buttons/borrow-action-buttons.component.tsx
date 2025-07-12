@@ -50,6 +50,8 @@ export const BorrowActionButtons: FC<BorrowActionButtonsProps> = ({
 		}
 	};
 
+	const isBorrowDisabled = availableLiquidity === 0n;
+
 	return (
 		<>
 			<div className={css.container}>
@@ -58,13 +60,21 @@ export const BorrowActionButtons: FC<BorrowActionButtonsProps> = ({
 						<button type="button" className={css.repayButton} onClick={handleRepay}>
 							Repay
 						</button>
-						<button type="button" className={css.borrowButton} onClick={handleBorrow}>
+						<button
+							type="button"
+							className={css.borrowButton}
+							onClick={handleBorrow}
+							disabled={isBorrowDisabled}>
 							Borrow
 						</button>
 					</>
 				) : (
 					<>
-						<button type="button" className={css.borrowButton} onClick={handleBorrow}>
+						<button
+							type="button"
+							className={css.borrowButton}
+							onClick={handleBorrow}
+							disabled={isBorrowDisabled}>
 							Borrow
 						</button>
 						<button type="button" className={css.detailsButton} onClick={handleDetails}>

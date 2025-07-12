@@ -6,6 +6,7 @@ import { parseUnits, formatUnits } from 'viem';
 import { Modal } from '../modal/modal.component';
 import { CTOKEN_ABI, ERC20_ABI } from '../../../contracts';
 import { TokenService } from '../../../services/token.service';
+import { MarketService } from '../../../services/market.service';
 
 import css from './withdraw-modal.module.css';
 
@@ -85,7 +86,10 @@ export const WithdrawModal: FC<WithdrawModalProps> = ({
 
 	const handleMaxClick = () => {
 		if (maxWithdrawable > 0n && tokenDecimals) {
-			setAmount(formatUnits(maxWithdrawable, tokenDecimals));
+			// Use a precise amount for input, but limit decimal places to avoid scientific notation
+			const formatted = formatUnits(maxWithdrawable, tokenDecimals);
+			const number = parseFloat(formatted);
+			setAmount(number.toFixed(Math.min(8, tokenDecimals)));
 		}
 	};
 
@@ -145,7 +149,10 @@ export const WithdrawModal: FC<WithdrawModalProps> = ({
 					<div className={css.balanceInfo}>
 						<span className={css.usdValue}>$ 0</span>
 						<div className={css.walletBalance}>
-							<span>Supplied {tokenDecimals ? formatUnits(maxWithdrawable, tokenDecimals) : '0'}</span>
+							<span>
+								Supplied{' '}
+								{tokenDecimals ? MarketService.formatTokenBalance(maxWithdrawable, tokenDecimals) : '0'}
+							</span>
 							<button type="button" onClick={handleMaxClick} className={css.maxButton}>
 								MAX
 							</button>
@@ -165,9 +172,9 @@ export const WithdrawModal: FC<WithdrawModalProps> = ({
 							<span className={css.overviewLabel}>Remaining supplied</span>
 							<span className={css.overviewValue}>
 								{amount && tokenDecimals
-									? formatUnits(maxWithdrawable - amountInWei, tokenDecimals)
+									? MarketService.formatTokenBalance(maxWithdrawable - amountInWei, tokenDecimals)
 									: tokenDecimals
-										? formatUnits(maxWithdrawable, tokenDecimals)
+										? MarketService.formatTokenBalance(maxWithdrawable, tokenDecimals)
 										: '0'}{' '}
 								{cleanSymbol}
 							</span>

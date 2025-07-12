@@ -6,7 +6,7 @@ import { parseUnits, formatUnits } from 'viem';
 import { Modal } from '../modal/modal.component';
 import { CTOKEN_ABI, ERC20_ABI } from '../../../contracts';
 import { TokenService } from '../../../services/token.service';
-// import { MarketService } from '../../../services/market.service';
+import { MarketService } from '../../../services/market.service';
 
 import css from './supply-modal.module.css';
 
@@ -73,7 +73,10 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 
 	const handleMaxClick = () => {
 		if (balance && tokenDecimals) {
-			setAmount(formatUnits(balance.value, tokenDecimals));
+			// Use a precise amount for input, but limit decimal places to avoid scientific notation
+			const formatted = formatUnits(balance.value, tokenDecimals);
+			const number = parseFloat(formatted);
+			setAmount(number.toFixed(Math.min(8, tokenDecimals)));
 		}
 	};
 
@@ -132,7 +135,9 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 						<div className={css.walletBalance}>
 							<span>
 								Wallet balance{' '}
-								{balance && tokenDecimals ? formatUnits(balance.value, tokenDecimals) : '0'}
+								{balance && tokenDecimals
+									? MarketService.formatTokenBalance(balance.value, tokenDecimals)
+									: '0'}
 							</span>
 							<button type="button" onClick={handleMaxClick} className={css.maxButton}>
 								MAX

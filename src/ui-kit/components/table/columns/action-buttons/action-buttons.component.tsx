@@ -1,4 +1,5 @@
 import { type FC, useState } from 'react';
+import { useAccount, useChainId } from 'wagmi';
 import type { Address } from 'viem';
 
 import { SupplyModal } from '../../../supply-modal/supply-modal.component';
@@ -12,6 +13,7 @@ interface ActionButtonsProps {
 	tokenSymbol: string;
 	supplyAPY: string;
 	isCollateralEnabled?: boolean;
+	walletBalance?: bigint;
 	onSupply?: (marketAddress: Address) => void;
 	onWithdraw?: (marketAddress: Address) => void;
 	showMoreMenu?: boolean;
@@ -24,6 +26,7 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
 	tokenSymbol,
 	supplyAPY,
 	isCollateralEnabled = false,
+	walletBalance = 0n,
 	onSupply,
 	onWithdraw,
 	showMoreMenu = false,
@@ -31,6 +34,8 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
 }) => {
 	const [isSupplyModalOpen, setIsSupplyModalOpen] = useState(false);
 	const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+	const { address: userAddress, isConnected } = useAccount();
+	const chainId = useChainId();
 
 	const handleSupply = () => {
 		setIsSupplyModalOpen(true);
@@ -52,6 +57,26 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
 		}
 	};
 
+	// ApeChain network IDs
+	const APECHAIN_MAINNET = 33139;
+	const APECHAIN_TESTNET = 33111;
+	const isValidNetwork = chainId === APECHAIN_MAINNET || chainId === APECHAIN_TESTNET;
+	
+	const getSupplyButtonState = () => {
+		if (!isConnected) {
+			return { disabled: true, text: 'Connect Wallet' };
+		}
+		if (!isValidNetwork) {
+			return { disabled: true, text: 'Wrong Network' };
+		}
+		if (walletBalance === 0n) {
+			return { disabled: true, text: 'No Balance' };
+		}
+		return { disabled: false, text: 'Supply' };
+	};
+	
+	const supplyButtonState = getSupplyButtonState();
+
 	return (
 		<>
 			<div className={css.container}>
@@ -60,14 +85,22 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
 						<button type="button" className={css.withdrawButton} onClick={handleWithdraw}>
 							Withdraw
 						</button>
-						<button type="button" className={css.supplyButton} onClick={handleSupply}>
-							Supply
+						<button
+							type="button"
+							className={css.supplyButton}
+							onClick={handleSupply}
+							disabled={supplyButtonState.disabled}>
+							{supplyButtonState.text}
 						</button>
 					</>
 				) : (
 					<>
-						<button type="button" className={css.supplyButton} onClick={handleSupply}>
-							Supply
+						<button
+							type="button"
+							className={css.supplyButton}
+							onClick={handleSupply}
+							disabled={supplyButtonState.disabled}>
+							{supplyButtonState.text}
 						</button>
 						{showMoreMenu && (
 							<button

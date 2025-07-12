@@ -201,9 +201,17 @@ export const MarketsBorrowTable: FC = () => {
 
 			// Get real available liquidity from contract
 			const availableCash = availableLiquidity?.[marketAddress] || 0n;
-			const availableAmount = hasBorrowed
-				? MarketService.formatTokenBalance(userPosition?.balance || 0n, 18)
-				: MarketService.formatTokenBalance(availableCash, 18);
+
+			// For borrowed assets, show borrowed amount; for available assets, show user's available borrowing amount
+			let availableAmount: string;
+			if (hasBorrowed) {
+				// Show current borrowed amount
+				availableAmount = MarketService.formatTokenBalance(userPosition?.balance || 0n, 18);
+			} else {
+				// For available markets, show total market liquidity available for borrowing
+				// (User's actual borrowing capacity would need proper collateral calculation)
+				availableAmount = MarketService.formatTokenBalance(availableCash, 18);
+			}
 			const usdValue = usdBalances?.[marketAddress] || '0';
 
 			// Get symbol from display name

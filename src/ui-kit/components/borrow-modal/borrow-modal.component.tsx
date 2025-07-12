@@ -1,11 +1,13 @@
 import { type FC, useState, useMemo } from 'react';
 import type { Address } from 'viem';
-import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseUnits, formatUnits } from 'viem';
 
 import { Modal } from '../modal/modal.component';
 import { CTOKEN_ABI, ERC20_ABI } from '../../../contracts';
 import { TokenService } from '../../../services/token.service';
+import { MarketService } from '../../../services/market.service';
+import { useAccountLiquidity } from '../../../hooks/use-markets.hook';
 
 import css from './borrow-modal.module.css';
 
@@ -27,7 +29,7 @@ export const BorrowModal: FC<BorrowModalProps> = ({
 	availableLiquidity,
 }) => {
 	const [amount, setAmount] = useState('');
-	// const { address } = useAccount();
+	const { address } = useAccount();
 
 	// Get underlying token address
 	const { data: underlyingTokenAddress } = useReadContract({
@@ -44,10 +46,31 @@ export const BorrowModal: FC<BorrowModalProps> = ({
 		query: { enabled: !!underlyingTokenAddress },
 	});
 
+	// Get user's account liquidity (borrowing power)
+	const { data: accountLiquidity } = useAccountLiquidity(address);
+
 	const { writeContract: borrow, data: borrowHash, isPending: isBorrowPending } = useWriteContract();
 	const { isLoading: isBorrowConfirming } = useWaitForTransactionReceipt({ hash: borrowHash });
 
 	const isProcessing = isBorrowPending || isBorrowConfirming;
+
+	// Calculate actual available borrowing amount for this user
+	const availableToBorrow = useMemo(() => {
+		if (!accountLiquidity || !tokenDecimals) return 0n;
+
+		// accountLiquidity returns [error, liquidity, shortfall]
+		const [, liquidity] = accountLiquidity as [bigint, bigint, bigint];
+
+		if (!liquidity || liquidity <= 0n) return 0n;
+
+		// Convert user's liquidity (in USD scaled by 1e18) to token amount
+		// This is a simplified calculation - in reality you'd need price oracle data
+		// For now, assume 1:1 USD ratio as approximation
+		const userBorrowingPower = liquidity;
+
+		// Take minimum of user's borrowing power and market's available cash
+		return userBorrowingPower < availableLiquidity ? userBorrowingPower : availableLiquidity;
+	}, [accountLiquidity, availableLiquidity, tokenDecimals]);
 
 	const amountInWei = useMemo(() => {
 		if (!amount || isNaN(Number(amount)) || !tokenDecimals) return 0n;
@@ -60,12 +83,15 @@ export const BorrowModal: FC<BorrowModalProps> = ({
 
 	const isValidAmount = useMemo(() => {
 		if (!amount) return false;
-		return amountInWei > 0n && amountInWei <= availableLiquidity;
-	}, [amount, amountInWei, availableLiquidity]);
+		return amountInWei > 0n && amountInWei <= availableToBorrow;
+	}, [amount, amountInWei, availableToBorrow]);
 
 	const handleMaxClick = () => {
-		if (availableLiquidity > 0n && tokenDecimals) {
-			setAmount(formatUnits(availableLiquidity, tokenDecimals));
+		if (availableToBorrow > 0n && tokenDecimals) {
+			// Use a precise amount for input, but limit decimal places to avoid scientific notation
+			const formatted = formatUnits(availableToBorrow, tokenDecimals);
+			const number = parseFloat(formatted);
+			setAmount(number.toFixed(Math.min(8, tokenDecimals)));
 		}
 	};
 
@@ -123,7 +149,10 @@ export const BorrowModal: FC<BorrowModalProps> = ({
 						<span className={css.usdValue}>$ 0</span>
 						<div className={css.walletBalance}>
 							<span>
-								Available {tokenDecimals ? formatUnits(availableLiquidity, tokenDecimals) : '0'}
+								Available{' '}
+								{tokenDecimals
+									? MarketService.formatTokenBalance(availableToBorrow, tokenDecimals)
+									: '0'}
 							</span>
 							<button type="button" onClick={handleMaxClick} className={css.maxButton}>
 								MAX

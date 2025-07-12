@@ -6,6 +6,7 @@ import { parseUnits, formatUnits } from 'viem';
 import { Modal } from '../modal/modal.component';
 import { CTOKEN_ABI, ERC20_ABI } from '../../../contracts';
 import { TokenService } from '../../../services/token.service';
+import { MarketService } from '../../../services/market.service';
 
 import css from './repay-modal.module.css';
 
@@ -85,7 +86,10 @@ export const RepayModal: FC<RepayModalProps> = ({
 
 	const handleMaxClick = () => {
 		if (maxRepayable > 0n && tokenDecimals) {
-			setAmount(formatUnits(maxRepayable, tokenDecimals));
+			// Use a precise amount for input, but limit decimal places to avoid scientific notation
+			const formatted = formatUnits(maxRepayable, tokenDecimals);
+			const number = parseFloat(formatted);
+			setAmount(number.toFixed(Math.min(8, tokenDecimals)));
 		}
 	};
 
@@ -144,7 +148,9 @@ export const RepayModal: FC<RepayModalProps> = ({
 						<div className={css.walletBalance}>
 							<span>
 								Wallet balance{' '}
-								{balance && tokenDecimals ? formatUnits(balance.value, tokenDecimals) : '0'}
+								{balance && tokenDecimals
+									? MarketService.formatTokenBalance(balance.value, tokenDecimals)
+									: '0'}
 							</span>
 							<button type="button" onClick={handleMaxClick} className={css.maxButton}>
 								MAX
@@ -164,7 +170,9 @@ export const RepayModal: FC<RepayModalProps> = ({
 						<div className={css.overviewRow}>
 							<span className={css.overviewLabel}>Borrowed amount</span>
 							<span className={css.overviewValue}>
-								{borrowBalance && tokenDecimals ? formatUnits(borrowBalance, tokenDecimals) : '0'}{' '}
+								{borrowBalance && tokenDecimals
+									? MarketService.formatTokenBalance(borrowBalance, tokenDecimals)
+									: '0'}{' '}
 								{cleanSymbol}
 							</span>
 						</div>
@@ -172,9 +180,9 @@ export const RepayModal: FC<RepayModalProps> = ({
 							<span className={css.overviewLabel}>Remaining debt</span>
 							<span className={css.overviewValue}>
 								{amount && borrowBalance && tokenDecimals
-									? formatUnits(borrowBalance - amountInWei, tokenDecimals)
+									? MarketService.formatTokenBalance(borrowBalance - amountInWei, tokenDecimals)
 									: borrowBalance && tokenDecimals
-										? formatUnits(borrowBalance, tokenDecimals)
+										? MarketService.formatTokenBalance(borrowBalance, tokenDecimals)
 										: '0'}{' '}
 								{cleanSymbol}
 							</span>

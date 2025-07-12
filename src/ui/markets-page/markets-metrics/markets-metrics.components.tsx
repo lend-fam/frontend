@@ -1,13 +1,39 @@
 import { memo, type FC } from 'react';
+import { usePortfolioMetrics } from '../../../hooks/use-portfolio-metrics.hook';
 
 import css from './markets-metrics.module.css';
 
 export const MarketsMetrics: FC = () => {
+	const { data: metrics, isLoading } = usePortfolioMetrics();
+
+	if (isLoading) {
+		return (
+			<ul className={css.container}>
+				<MarketsMetric label={'Net APY'} value={'--'} dimension="percent" />
+				<MarketsMetric label={'Health Factor'} value={'--'} />
+				<MarketsMetric label={'Borrow Usage'} value={'--'} dimension="percent" />
+				<MarketsMetric label={'LTV'} value={'--'} dimension="percent" />
+			</ul>
+		);
+	}
+
+	if (!metrics) {
+		return (
+			<ul className={css.container}>
+				<MarketsMetric label={'Net APY'} value={'0.00'} dimension="percent" />
+				<MarketsMetric label={'Health Factor'} value={'--'} />
+				<MarketsMetric label={'Borrow Usage'} value={'0.0'} dimension="percent" />
+				<MarketsMetric label={'LTV'} value={'0.0'} dimension="percent" />
+			</ul>
+		);
+	}
+
 	return (
 		<ul className={css.container}>
-			<MarketsMetric label={'Net APY'} value={'4.15'} dimension="percent" />
-			<MarketsMetric label={'Health Factor'} value={'1.90'} />
-			<MarketsMetric label={'Borrow Usage'} value={'7.5'} dimension="percent" />
+			<MarketsMetric label={'Net APY'} value={metrics.netAPY} dimension="percent" />
+			<MarketsMetric label={'Health Factor'} value={metrics.healthFactor} />
+			<MarketsMetric label={'Borrow Usage'} value={metrics.borrowUsage} dimension="percent" />
+			<MarketsMetric label={'LTV'} value={metrics.cumulativeLTV} dimension="percent" />
 		</ul>
 	);
 };

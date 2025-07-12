@@ -48,6 +48,19 @@
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
 }
 
+.supplyButton:disabled,
+.withdrawButton:disabled {
+    background-color: #E5E7EB;
+    color: #9CA3AF;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.supplyButton:disabled:hover,
+.withdrawButton:disabled:hover {
+    background-color: #E5E7EB;
+}
+
 .moreButton {
     display: flex;
     align-items: center;
