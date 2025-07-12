@@ -6,10 +6,10 @@ import { BorrowModal } from '../borrow-modal/borrow-modal.component';
 import { RepayModal } from '../repay-modal/repay-modal.component';
 
 import { useActionButtons } from './use-action-buttons.hook';
-import type { 
-	ActionButtonGroupProps, 
-	SupplyActionButtonProps, 
-	BorrowActionButtonProps 
+import type {
+	ActionButtonGroupProps,
+	SupplyActionButtonProps,
+	BorrowActionButtonProps,
 } from './action-button-group.types';
 
 import css from './action-button-group.module.css';
@@ -26,19 +26,17 @@ export const ActionButtonGroup: FC<ActionButtonGroupProps> = (props) => {
 			// Has supplied: Show Withdraw + Supply
 			return (
 				<>
-					<button 
-						type="button" 
+					<button
+						type="button"
 						className={css[config.secondary.className as keyof typeof css]}
-						onClick={config.secondary.handler}
-					>
+						onClick={config.secondary.handler}>
 						{config.secondary.text}
 					</button>
 					<button
 						type="button"
 						className={css[config.primary.className as keyof typeof css]}
 						onClick={config.primary.handler}
-						disabled={config.primary.state?.disabled}
-					>
+						disabled={config.primary.state?.disabled}>
 						{config.primary.state?.text || 'Supply'}
 					</button>
 				</>
@@ -49,19 +47,17 @@ export const ActionButtonGroup: FC<ActionButtonGroupProps> = (props) => {
 			// Has borrowed: Show Repay + Borrow
 			return (
 				<>
-					<button 
-						type="button" 
+					<button
+						type="button"
 						className={css[config.secondary.className as keyof typeof css]}
-						onClick={config.secondary.handler}
-					>
+						onClick={config.secondary.handler}>
 						{config.secondary.text}
 					</button>
 					<button
 						type="button"
 						className={css[config.primary.className as keyof typeof css]}
 						onClick={config.primary.handler}
-						disabled={config.primary.state?.disabled}
-					>
+						disabled={config.primary.state?.disabled}>
 						{config.primary.state?.text || 'Borrow'}
 					</button>
 				</>
@@ -76,8 +72,7 @@ export const ActionButtonGroup: FC<ActionButtonGroupProps> = (props) => {
 						type="button"
 						className={css[config.primary.className as keyof typeof css]}
 						onClick={config.primary.handler}
-						disabled={config.primary.state?.disabled}
-					>
+						disabled={config.primary.state?.disabled}>
 						{config.primary.state?.text || 'Supply'}
 					</button>
 					{config.tertiary && (
@@ -85,8 +80,7 @@ export const ActionButtonGroup: FC<ActionButtonGroupProps> = (props) => {
 							type="button"
 							className={css[config.tertiary.className as keyof typeof css]}
 							onClick={config.tertiary.handler}
-							aria-label={config.tertiary.ariaLabel}
-						>
+							aria-label={config.tertiary.ariaLabel}>
 							<span className={css.dots}>{config.tertiary.text}</span>
 						</button>
 					)}
@@ -101,15 +95,13 @@ export const ActionButtonGroup: FC<ActionButtonGroupProps> = (props) => {
 					type="button"
 					className={css[config.primary.className as keyof typeof css]}
 					onClick={config.primary.handler}
-					disabled={config.primary.state?.disabled}
-				>
+					disabled={config.primary.state?.disabled}>
 					{config.primary.state?.text || 'Borrow'}
 				</button>
-				<button 
-					type="button" 
+				<button
+					type="button"
 					className={css[config.secondary.className as keyof typeof css]}
-					onClick={config.secondary.handler}
-				>
+					onClick={config.secondary.handler}>
 					{config.secondary.text}
 				</button>
 			</>
@@ -162,9 +154,7 @@ export const ActionButtonGroup: FC<ActionButtonGroupProps> = (props) => {
 
 	return (
 		<>
-			<div className={css.container}>
-				{renderButtons()}
-			</div>
+			<div className={css.container}>{renderButtons()}</div>
 			{renderModals()}
 		</>
 	);

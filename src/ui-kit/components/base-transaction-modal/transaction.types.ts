@@ -13,14 +13,14 @@ export interface TransactionState {
 	// Transaction progress
 	isProcessing: boolean;
 	hasAutoProceeded: boolean;
-	
+
 	// Approval flow
 	needsApproval: boolean;
 	isApprovePending: boolean;
 	isApproveConfirming: boolean;
 	isApproveSuccess: boolean;
 	isApproveError: boolean;
-	
+
 	// Main transaction
 	isTransactionPending: boolean;
 	isTransactionConfirming: boolean;
@@ -37,20 +37,20 @@ export interface TokenData {
 export interface BalanceData {
 	// Common balance data
 	walletBalance?: bigint;
-	
+
 	// Supply/Repay specific
 	balance?: { value: bigint };
-	
+
 	// Borrow specific
 	availableToBorrow?: bigint;
 	accountLiquidity?: [bigint, bigint, bigint];
 	availableLiquidity?: bigint;
-	
+
 	// Withdraw specific
 	cTokenBalance?: bigint;
 	exchangeRate?: bigint;
 	maxWithdrawable?: bigint;
-	
+
 	// Repay specific
 	borrowBalance?: bigint;
 	maxRepayable?: bigint;
@@ -72,14 +72,14 @@ export interface BaseTransactionModalProps {
 	onClose: () => void;
 	marketAddress: Address;
 	config: TransactionConfig;
-	
+
 	// Type-specific props
 	supplyAPY?: string;
 	borrowAPY?: string;
 	isCollateralEnabled?: boolean;
 	tokenSymbol?: string;
 	availableLiquidity?: bigint;
-	
+
 	// Theme override
 	theme?: Partial<Record<string, string>>;
 }

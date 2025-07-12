@@ -51,30 +51,34 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 			case 'supply':
 				return {
 					label: 'Wallet balance',
-					value: balanceData.balance && tokenData.tokenDecimals
-						? MarketService.formatTokenBalance(balanceData.balance.value, tokenData.tokenDecimals)
-						: '0',
+					value:
+						balanceData.balance && tokenData.tokenDecimals
+							? MarketService.formatTokenBalance(balanceData.balance.value, tokenData.tokenDecimals)
+							: '0',
 				};
 			case 'borrow':
 				return {
 					label: 'Available',
-					value: balanceData.availableToBorrow && tokenData.tokenDecimals
-						? MarketService.formatTokenBalance(balanceData.availableToBorrow, tokenData.tokenDecimals)
-						: '0',
+					value:
+						balanceData.availableToBorrow && tokenData.tokenDecimals
+							? MarketService.formatTokenBalance(balanceData.availableToBorrow, tokenData.tokenDecimals)
+							: '0',
 				};
 			case 'withdraw':
 				return {
 					label: 'Supplied',
-					value: balanceData.maxWithdrawable && tokenData.tokenDecimals
-						? MarketService.formatTokenBalance(balanceData.maxWithdrawable, tokenData.tokenDecimals)
-						: '0',
+					value:
+						balanceData.maxWithdrawable && tokenData.tokenDecimals
+							? MarketService.formatTokenBalance(balanceData.maxWithdrawable, tokenData.tokenDecimals)
+							: '0',
 				};
 			case 'repay':
 				return {
 					label: 'Wallet balance',
-					value: balanceData.balance && tokenData.tokenDecimals
-						? MarketService.formatTokenBalance(balanceData.balance.value, tokenData.tokenDecimals)
-						: '0',
+					value:
+						balanceData.balance && tokenData.tokenDecimals
+							? MarketService.formatTokenBalance(balanceData.balance.value, tokenData.tokenDecimals)
+							: '0',
 				};
 			default:
 				return { label: 'Balance', value: '0' };
@@ -112,9 +116,9 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 					value: `${
 						amount && tokenData.tokenDecimals && balanceData.maxWithdrawable
 							? MarketService.formatTokenBalance(
-								balanceData.maxWithdrawable - parseUnits(amount, tokenData.tokenDecimals), 
-								tokenData.tokenDecimals
-							)
+									balanceData.maxWithdrawable - parseUnits(amount, tokenData.tokenDecimals),
+									tokenData.tokenDecimals,
+								)
 							: balanceData.maxWithdrawable && tokenData.tokenDecimals
 								? MarketService.formatTokenBalance(balanceData.maxWithdrawable, tokenData.tokenDecimals)
 								: '0'
@@ -138,9 +142,9 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 					value: `${
 						amount && balanceData.borrowBalance && tokenData.tokenDecimals
 							? MarketService.formatTokenBalance(
-								balanceData.borrowBalance - parseUnits(amount, tokenData.tokenDecimals), 
-								tokenData.tokenDecimals
-							)
+									balanceData.borrowBalance - parseUnits(amount, tokenData.tokenDecimals),
+									tokenData.tokenDecimals,
+								)
 							: balanceData.borrowBalance && tokenData.tokenDecimals
 								? MarketService.formatTokenBalance(balanceData.borrowBalance, tokenData.tokenDecimals)
 								: '0'
@@ -176,7 +180,10 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 	const overviewRows = getOverviewRows();
 
 	return (
-		<Modal isOpen={isOpen} onClose={onClose} title={`${config.type.charAt(0).toUpperCase() + config.type.slice(1)} ${cleanSymbol}`}>
+		<Modal
+			isOpen={isOpen}
+			onClose={onClose}
+			title={`${config.type.charAt(0).toUpperCase() + config.type.slice(1)} ${cleanSymbol}`}>
 			<div className={styles.container}>
 				{/* Amount Section */}
 				<div className={styles.section}>
@@ -289,8 +296,7 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 					type="button"
 					onClick={handleSubmit}
 					disabled={!isValidAmount || transactionState.isProcessing}
-					className={styles.submitButton}
-				>
+					className={styles.submitButton}>
 					{getSubmitButtonText()}
 				</button>
 			</div>

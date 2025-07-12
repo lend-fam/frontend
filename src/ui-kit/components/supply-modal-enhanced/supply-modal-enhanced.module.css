@@ -160,6 +160,21 @@
   color: white;
 }
 
+.stepIndicator.idle {
+  background: #6b7280;
+  color: white;
+}
+
+.stepIndicator.confirming {
+  background: #f59e0b;
+  color: white;
+}
+
+.stepIndicator.preparing {
+  background: #8b5cf6;
+  color: white;
+}
+
 .stepInfo {
   flex: 1;
 }

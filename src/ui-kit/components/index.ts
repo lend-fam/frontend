@@ -9,16 +9,16 @@ export { Link } from './link/link.component';
 export { Modal } from './modal/modal.component';
 
 // Table components
-export { Table, type TableData, type TableColumnProps } from './table/table.component';
+export { Table, type TableData, type TableColumnProps, type TableColumnRendererProps } from './table/table.component';
 export { TableColumn, type TableAlign } from './table/table-column.component';
 
 // Action button components
 export { ActionButtonGroup } from './action-button-group/action-button-group.component';
-export type { 
-	ActionButtonGroupProps, 
-	SupplyActionButtonProps, 
+export type {
+	ActionButtonGroupProps,
+	SupplyActionButtonProps,
 	BorrowActionButtonProps,
-	ActionButtonVariant 
+	ActionButtonVariant,
 } from './action-button-group/action-button-group.types';
 
 // Table column components

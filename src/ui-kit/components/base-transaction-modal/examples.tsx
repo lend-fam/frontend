@@ -1,6 +1,6 @@
 /**
  * Usage examples for BaseTransactionModal component
- * 
+ *
  * This file demonstrates how to configure the BaseTransactionModal for different transaction types.
  * It shows the transaction configs and props needed for Supply, Borrow, Withdraw, and Repay operations.
  */
@@ -70,12 +70,7 @@ interface WithdrawModalExampleProps {
 	supplyAPY: string;
 }
 
-export const WithdrawModalExample: FC<WithdrawModalExampleProps> = ({
-	isOpen,
-	onClose,
-	marketAddress,
-	supplyAPY,
-}) => (
+export const WithdrawModalExample: FC<WithdrawModalExampleProps> = ({ isOpen, onClose, marketAddress, supplyAPY }) => (
 	<BaseTransactionModal
 		isOpen={isOpen}
 		onClose={onClose}
@@ -93,12 +88,7 @@ interface RepayModalExampleProps {
 	borrowAPY: string;
 }
 
-export const RepayModalExample: FC<RepayModalExampleProps> = ({
-	isOpen,
-	onClose,
-	marketAddress,
-	borrowAPY,
-}) => (
+export const RepayModalExample: FC<RepayModalExampleProps> = ({ isOpen, onClose, marketAddress, borrowAPY }) => (
 	<BaseTransactionModal
 		isOpen={isOpen}
 		onClose={onClose}
