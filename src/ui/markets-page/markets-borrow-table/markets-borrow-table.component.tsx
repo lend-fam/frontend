@@ -1,19 +1,15 @@
 import { type FC, useMemo } from 'react';
 import { useAccount } from 'wagmi';
 import type { Address } from 'viem';
-import { Table, type TableColumnProps, type TableData } from '../../../ui-kit/components/table/table.component';
-import { AssetsColumn } from '../../../ui-kit/components/table/columns/assets-column/assets-column.component';
-import { BalanceColumn } from '../../../ui-kit/components/table/columns/balance-column/balance-column.component';
-import { BorrowActionButtons } from '../../../ui-kit/components/table/columns/borrow-action-buttons/borrow-action-buttons.component';
+import { Table, type TableColumnProps, type TableData, AssetsColumn, BalanceColumn, BorrowActionButtons } from '../../../ui-kit';
 import {
 	useAllMarkets,
 	useMarketsAPY,
 	useUserBorrowPositions,
 	useMarketsAvailableLiquidity,
-} from '../../../hooks/use-markets.hook';
-import { useUSDBalances } from '../../../hooks/use-usd-balances.hook';
-import { TokenService } from '../../../services/token.service';
-import { MarketService } from '../../../services/market.service';
+	useUSDBalances
+} from '../../../hooks';
+import { TokenService, MarketService } from '../../../services';
 
 import css from './markets-borrow-table.module.css';
 import tableCss from './theme/table.module.css';

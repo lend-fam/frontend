@@ -6,7 +6,9 @@ import { AssetsColumn } from '../../../ui-kit/components/table/columns/assets-co
 import { BalanceColumn } from '../../../ui-kit/components/table/columns/balance-column/balance-column.component';
 import { CollateralToggle } from '../../../ui-kit/components/table/columns/collateral-toggle/collateral-toggle.component';
 import { ActionButtons } from '../../../ui-kit/components/table/columns/action-buttons/action-buttons.component';
-import { useAllMarkets, useMarketsAPY, useUserSupplyPositions, useUserMarkets } from '../../../hooks/use-markets.hook';
+import { useAllMarkets, useUserMarkets } from '../../../hooks/use-market-core.hook';
+import { useUserSupplyPositions } from '../../../hooks/use-user-positions.hook';
+import { useMarketsAPY } from '../../../hooks/use-market-data.hook';
 import { useUSDBalances } from '../../../hooks/use-usd-balances.hook';
 import { useMarketWalletBalances } from '../../../hooks/use-market-wallet-balances.hook';
 import { MarketService } from '../../../services/market.service';

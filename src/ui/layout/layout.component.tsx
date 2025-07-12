@@ -1,5 +1,5 @@
 import { memo, type PropsWithChildren } from 'react';
-import { useTheme } from '../../ui-kit/hooks/use-theme.hook';
+import { useTheme } from '../../ui-kit';
 
 import css from './layout.module.css';
 

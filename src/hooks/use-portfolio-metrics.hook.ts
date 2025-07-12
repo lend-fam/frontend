@@ -2,13 +2,9 @@ import { useMemo } from 'react';
 import { useAccount } from 'wagmi';
 import { formatUnits } from 'viem';
 import type { Address } from 'viem';
-import {
-	useAccountLiquidity,
-	useUserSupplyPositions,
-	useUserBorrowPositions,
-	useMarketsAPY,
-	useMarketsCollateralFactors,
-} from './use-markets.hook';
+import { useAccountLiquidity } from './use-account-liquidity.hook';
+import { useUserSupplyPositions, useUserBorrowPositions } from './use-user-positions.hook';
+import { useMarketsAPY, useMarketsCollateralFactors } from './use-market-data.hook';
 
 export interface PortfolioMetrics {
 	netAPY: string;

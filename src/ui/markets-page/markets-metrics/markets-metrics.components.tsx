@@ -1,5 +1,5 @@
 import { memo, type FC } from 'react';
-import { usePortfolioMetrics } from '../../../hooks/use-portfolio-metrics.hook';
+import { usePortfolioMetrics } from '../../../hooks';
 
 import css from './markets-metrics.module.css';
 
