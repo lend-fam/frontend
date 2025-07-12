@@ -53,7 +53,7 @@ const suppliedAssetsColumns: TableColumnProps<MarketsSupplyTableData, MarketsSup
 			</div>
 		),
 	},
-	{ key: 'apy', label: 'APY', align: 'right', width: '15%' },
+	{ key: 'apy', label: 'APY', align: 'right', width: '20%' },
 	{
 		key: 'collateral',
 		label: 'Collateral',
@@ -80,7 +80,7 @@ const suppliedAssetsColumns: TableColumnProps<MarketsSupplyTableData, MarketsSup
 		key: 'actions',
 		label: 'Actions',
 		align: 'right',
-		width: '25%',
+		width: '20%',
 		cellRenderer: ({ data, style }) => (
 			<div
 				style={{
@@ -120,7 +120,7 @@ const availableAssetsColumns: TableColumnProps<MarketsSupplyTableData, MarketsSu
 			</div>
 		),
 	},
-	{ key: 'apy', label: 'APY', align: 'right', width: '15%' },
+	{ key: 'apy', label: 'APY', align: 'right', width: '20%' },
 	{
 		key: 'collateral',
 		label: 'Can be collateral',
@@ -143,9 +143,9 @@ const availableAssetsColumns: TableColumnProps<MarketsSupplyTableData, MarketsSu
 	},
 	{
 		key: 'actions',
-		label: '',
+		label: 'Actions',
 		align: 'right',
-		width: '25%',
+		width: '20%',
 		cellRenderer: ({ data, style }) => (
 			<div
 				style={{
