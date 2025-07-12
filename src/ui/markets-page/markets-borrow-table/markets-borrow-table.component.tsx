@@ -39,7 +39,7 @@ const borrowedAssetsColumns: TableColumnProps<MarketsBorrowTableData, MarketsBor
 		label: 'Borrowed',
 		align: 'right',
 		width: '20%',
-		cellRenderer: ({ data, style }: { data: any; style: any }) => (
+		cellRenderer: ({ data, style }: any) => (
 			<div
 				style={{
 					...style,
@@ -58,7 +58,7 @@ const borrowedAssetsColumns: TableColumnProps<MarketsBorrowTableData, MarketsBor
 		label: 'Actions',
 		align: 'right',
 		width: '30%',
-		cellRenderer: ({ data, style }: { data: any; style: any }) => (
+		cellRenderer: ({ data, style }: any) => (
 			<div
 				style={{
 					...style,
@@ -88,7 +88,7 @@ const availableAssetsColumns: TableColumnProps<MarketsBorrowTableData, MarketsBo
 		label: 'Available',
 		align: 'right',
 		width: '20%',
-		cellRenderer: ({ data, style }: { data: any; style: any }) => (
+		cellRenderer: ({ data, style }: any) => (
 			<div
 				style={{
 					...style,
@@ -107,7 +107,7 @@ const availableAssetsColumns: TableColumnProps<MarketsBorrowTableData, MarketsBo
 		label: 'Actions',
 		align: 'right',
 		width: '30%',
-		cellRenderer: ({ data, style }: { data: any; style: any }) => (
+		cellRenderer: ({ data, style }: any) => (
 			<div
 				style={{
 					...style,
