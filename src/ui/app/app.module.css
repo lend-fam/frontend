@@ -9,4 +9,6 @@ html * {
     flex-direction: column;
     height: 100%;
     width: 100%;
+    background: #5877FE;
+    overflow: auto;
 }

@@ -1,6 +1,7 @@
 import { useMemo, type FC } from 'react';
 import { Header } from '../header/header/header.component';
 import { MarketsPage } from '../markets-page/markets-page/markets-page.component';
+import { Footer } from '../footer/footer/footer.component';
 import { BrowserProviderService } from '../../services/browser-provider.service';
 import { AccountProviderService } from '../../services/account-provider.service';
 
@@ -18,6 +19,7 @@ export const App: FC = () => {
 		<div className={css.container}>
 			<Header />
 			<MarketsPage />
+			<Footer />
 		</div>
 	);
 };

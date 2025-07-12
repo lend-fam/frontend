@@ -1,0 +1,15 @@
+.container {
+    position: absolute;
+    left: 0;
+    top: 51px;
+}
+
+.item {
+    color: #CAD5FF;
+    margin-bottom: 36px;
+}
+
+.link {
+    font-weight: 600;
+    font-size: 20px;
+}

@@ -45,6 +45,11 @@ const marketsSupplyTableData: TableData<MarketsSupplyTableData>[] = [
 		apy: '3.41%',
 		wallet: '0 APE',
 	},
+	{
+		assets: 'ApeCoin',
+		apy: '3.41%',
+		wallet: '0 APE',
+	},
 ];
 
 const COLUMN_HEIGHT = '64px';

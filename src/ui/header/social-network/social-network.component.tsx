@@ -1,5 +1,6 @@
 import { memo, type FC } from 'react';
 import { Link } from '../../../ui-kit/components/link/link.component';
+import { Icon } from '../../../ui-kit/components/icon/icon.component';
 
 import css from './social-network.module.css';
 
@@ -26,7 +27,7 @@ const Network = memo<NetworkProps>((props) => {
 	return (
 		<li className={css.network}>
 			<Link href={path}>
-				<img src={icon} />
+				<Icon src={icon} />
 			</Link>
 		</li>
 	);

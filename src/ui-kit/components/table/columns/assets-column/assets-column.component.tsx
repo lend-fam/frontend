@@ -1,6 +1,7 @@
 import { memo } from 'react';
 import { TableColumn } from '../../table-column.component';
 import type { TableColumnRendererProps } from '../../table.component';
+import { Icon } from '../../../icon/icon.component';
 
 import css from './assets-column.module.css';
 
@@ -11,7 +12,7 @@ export const AssetsColumn = memo<TableColumnRendererProps>((props) => {
 
 	return (
 		<TableColumn align={align} className={className} style={style}>
-			<img src={coinIcon} className={css.icon} />
+			<Icon src={coinIcon} className={css.icon} />
 			<span>ApeCoin</span>
 		</TableColumn>
 	);

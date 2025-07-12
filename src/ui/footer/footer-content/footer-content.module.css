@@ -1,0 +1,38 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 69px;
+    padding-bottom: 51px;
+}
+
+.description {
+    font-family: "Montserrat";
+    font-weight: 800;
+    font-size: 44px;
+    color: #FFFFFF;
+    margin-bottom: 34px;
+}
+
+.text {
+    position: relative;
+    font-family: "Montserrat";
+    font-weight: 800;
+    font-size: 24px;
+    color: #FFFFFF;
+    margin-bottom: 50px;
+
+    &:before {
+        content: url('../../../assets/svg/heart.svg');
+        position: absolute;
+        top: -5px;
+        left: -67px;
+    }
+
+    &:after {
+        content: url('../../../assets/svg/heart.svg');
+        position: absolute;
+        top: -5px;
+        right: -75px;
+    }
+}

@@ -1,7 +1,7 @@
 .container {
-    background: #5877FE;
     flex: 1 1 auto;
     padding-top: 69px;
+    padding-bottom: 64px;
 }
 
 .tables {
