@@ -1,6 +1,8 @@
 import { useReadContract, useReadContracts, useChainId } from 'wagmi';
+import { useMemo } from 'react';
 import type { Address } from 'viem';
 import { COMPTROLLER_ABI, CTOKEN_ABI, getComptrollerAddress } from '../contracts';
+import { MarketService } from '../services/market.service';
 
 /**
  * Hook to fetch all available markets from the Comptroller
@@ -157,6 +159,63 @@ export function useUserMarkets(userAddress?: Address) {
       refetchInterval: 30000,
     },
   });
+}
+
+/**
+ * Hook to fetch APY data for all markets
+ */
+export function useMarketsAPY() {
+  const { data: marketAddresses, isLoading: marketsLoading } = useAllMarkets();
+  
+  const marketDataContracts = marketAddresses?.flatMap((address: Address) => [
+    {
+      address,
+      abi: CTOKEN_ABI,
+      functionName: 'supplyRatePerBlock',
+    },
+    {
+      address,
+      abi: CTOKEN_ABI,
+      functionName: 'borrowRatePerBlock',
+    },
+  ]) || [];
+
+  const { data: contractResults, isLoading: dataLoading } = useReadContracts({
+    contracts: marketDataContracts,
+    query: {
+      enabled: !!marketAddresses && marketAddresses.length > 0,
+      staleTime: 30000,
+      refetchInterval: 30000,
+    },
+  });
+
+  const processedData = useMemo(() => {
+    if (!marketAddresses || !contractResults) return {};
+
+    const apyData: Record<Address, { supplyAPY: string; borrowAPY: string }> = {};
+
+    marketAddresses.forEach((address: Address, index: number) => {
+      const supplyRateResult = contractResults[index * 2];
+      const borrowRateResult = contractResults[index * 2 + 1];
+
+      const supplyAPY = supplyRateResult?.result 
+        ? MarketService.calculateSupplyAPY(supplyRateResult.result as bigint)
+        : '0.00';
+      
+      const borrowAPY = borrowRateResult?.result 
+        ? MarketService.calculateBorrowAPY(borrowRateResult.result as bigint)
+        : '0.00';
+
+      apyData[address] = { supplyAPY, borrowAPY };
+    });
+
+    return apyData;
+  }, [marketAddresses, contractResults]);
+
+  return {
+    data: processedData,
+    isLoading: marketsLoading || dataLoading,
+  };
 }
 
 /**

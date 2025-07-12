@@ -4,7 +4,7 @@ import type { Address } from 'viem';
 import { Table, type TableColumnProps, type TableData } from '../../../ui-kit/components/table/table.component';
 import { AssetsColumn } from '../../../ui-kit/components/table/columns/assets-column/assets-column.component';
 import { CollateralColumn } from '../../../ui-kit/components/table/columns/collateral-column/collateral-column.component';
-import { useAllMarkets, useUserMarkets, useMarket, useMarketData } from '../../../hooks/use-markets.hook';
+import { useAllMarkets, useUserMarkets, useMarketsAPY } from '../../../hooks/use-markets.hook';
 import { MarketService } from '../../../services/market.service';
 import { TokenService } from '../../../services/token.service';
 
@@ -34,13 +34,10 @@ export const MarketsSupplyTable: FC = () => {
 	const { address: userAddress } = useAccount();
 	const { data: allMarkets, isLoading: marketsLoading } = useAllMarkets();
 	const { data: userMarkets } = useUserMarkets(userAddress);
-
-	const firstMarket = allMarkets?.[0];
-	const { data: firstMarketInfo } = useMarket(firstMarket || '0x0');
-	const { data: firstMarketData } = useMarketData(firstMarket || '0x0');
+	const { data: marketsAPY, isLoading: apyLoading } = useMarketsAPY();
 
 	const marketsSupplyTableData: TableData<MarketsSupplyTableData>[] = useMemo(() => {
-		if (!allMarkets || marketsLoading) {
+		if (!allMarkets || marketsLoading || apyLoading) {
 			return [];
 		}
 
@@ -49,29 +46,19 @@ export const MarketsSupplyTable: FC = () => {
 		for (let i = 0; i < allMarkets.length; i++) {
 			const marketAddress = allMarkets[i];
 			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
+			const apyData = marketsAPY?.[marketAddress];
+			const apy = apyData?.supplyAPY || '0.00';
 
-			if (i === 0 && firstMarketInfo && firstMarketData) {
-				const [supplyRate] = firstMarketData;
-				const apy = supplyRate?.result ? MarketService.calculateSupplyAPY(supplyRate.result) : '0.00';
-
-				tableData.push({
-					assets: displayName,
-					apy: `${apy}%`,
-					wallet: '0',
-					collateral: 'enabled',
-				});
-			} else {
-				tableData.push({
-					assets: displayName,
-					apy: '-.--',
-					wallet: '0',
-					collateral: 'enabled',
-				});
-			}
+			tableData.push({
+				assets: displayName,
+				apy: `${apy}%`,
+				wallet: '0',
+				collateral: 'enabled',
+			});
 		}
 
 		return tableData;
-	}, [allMarkets, marketsLoading, firstMarketInfo, firstMarketData]);
+	}, [allMarkets, marketsLoading, apyLoading, marketsAPY]);
 
 	const yourMarketsSupplyTableData: TableData<MarketsSupplyTableData>[] = useMemo(() => {
 		if (!userAddress || !userMarkets) {
@@ -86,7 +73,7 @@ export const MarketsSupplyTable: FC = () => {
 		}));
 	}, [userAddress, userMarkets]);
 
-	if (marketsLoading || !allMarkets) {
+	if (marketsLoading || apyLoading || !allMarkets) {
 		return (
 			<div className={css.container}>
 				<p className={css.label}>Supply Markets</p>
