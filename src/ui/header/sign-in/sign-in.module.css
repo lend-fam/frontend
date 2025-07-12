@@ -1,9 +1,44 @@
 .container {
-    background: #FE8258;
-    color: #fff;
-    font-size: 14px;
-    height: 36px;
+    display: flex;
+    align-items: center;
     margin-left: 5px;
-    padding: 0 23px;
-    border-radius: 4px;
+}
+
+.container button {
+    background: #FE8258 !important;
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+    color: #fff !important;
+    border-radius: 18px !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    box-sizing: border-box !important;
+}
+
+.container button *,
+.container div *,
+.container span * {
+    color: #fff !important;
+}
+
+.container button:last-child img,
+.container button:last-child svg,
+.container button:last-child [role="img"] {
+    display: none !important;
+}
+
+.container button:focus,
+.container button:hover,
+.container button:active {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #FE8258 !important;
+}
+
+.container :global([class*="rk-"]) {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
