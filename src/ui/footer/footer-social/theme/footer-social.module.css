@@ -1,0 +1,26 @@
+.container {
+    margin: 0 20px 44px;
+}
+
+.content {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+}
+
+.text {
+    font-weight: 600;
+    font-size: 16px;
+    color: #FFFFFF;
+    margin-right: 40px;
+}
+
+.social {
+    display: flex;
+    align-items: center;
+}
+
+.social_item {
+    margin: 0 5px;
+    width: 64px;
+}
