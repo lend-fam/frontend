@@ -3,7 +3,7 @@ import { useAccount } from 'wagmi';
 import type { Address } from 'viem';
 import { Table, type TableColumnProps, type TableData } from '../../../ui-kit/components/table/table.component';
 import { AssetsColumn } from '../../../ui-kit/components/table/columns/assets-column/assets-column.component';
-import { useAllMarkets, useUserMarkets, useMarket, useMarketData } from '../../../hooks/use-markets.hook';
+import { useAllMarkets, useUserMarkets, useMarketsAPY } from '../../../hooks/use-markets.hook';
 import { MarketService } from '../../../services/market.service';
 import { TokenService } from '../../../services/token.service';
 
@@ -35,13 +35,10 @@ export const MarketsBorrowTable: FC = () => {
 	const { address: userAddress } = useAccount();
 	const { data: allMarkets, isLoading: marketsLoading } = useAllMarkets();
 	const { data: userMarkets } = useUserMarkets(userAddress);
-
-	const firstMarket = allMarkets?.[0];
-	const { data: firstMarketInfo } = useMarket(firstMarket || '0x0');
-	const { data: firstMarketData } = useMarketData(firstMarket || '0x0');
+	const { data: marketsAPY, isLoading: apyLoading } = useMarketsAPY();
 
 	const marketsBorrowTableData: TableData<MarketsBorrowTableData>[] = useMemo(() => {
-		if (!allMarkets || marketsLoading) {
+		if (!allMarkets || marketsLoading || apyLoading) {
 			return [];
 		}
 
@@ -50,31 +47,20 @@ export const MarketsBorrowTable: FC = () => {
 		for (let i = 0; i < allMarkets.length; i++) {
 			const marketAddress = allMarkets[i];
 			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
+			const apyData = marketsAPY?.[marketAddress];
+			const apy = apyData?.borrowAPY || '0.00';
 			
-			if (i === 0 && firstMarketInfo && firstMarketData) {
-				const [, borrowRate] = firstMarketData;
-				const apy = borrowRate?.result ? MarketService.calculateBorrowAPY(borrowRate.result) : '0.00';
-				
-				tableData.push({
-					assets: displayName,
-					apy: `${apy}%`,
-					xp: '0.23%',
-					borrowed: '0',
-					liquidity: '$21.68M',
-				});
-			} else {
-				tableData.push({
-					assets: displayName,
-					apy: '-.--',
-					xp: '-.--',
-					borrowed: '0',
-					liquidity: '$0',
-				});
-			}
+			tableData.push({
+				assets: displayName,
+				apy: `${apy}%`,
+				xp: '0.23%',
+				borrowed: '0',
+				liquidity: '$21.68M',
+			});
 		}
 		
 		return tableData;
-	}, [allMarkets, marketsLoading, firstMarketInfo, firstMarketData]);
+	}, [allMarkets, marketsLoading, apyLoading, marketsAPY]);
 
 	const yourMarketsBorrowTableData: TableData<MarketsBorrowTableData>[] = useMemo(() => {
 		if (!userAddress || !userMarkets) {
@@ -92,7 +78,7 @@ export const MarketsBorrowTable: FC = () => {
 			}));
 	}, [userAddress, userMarkets]);
 
-	if (marketsLoading || !allMarkets) {
+	if (marketsLoading || apyLoading || !allMarkets) {
 		return (
 			<div className={css.container}>
 				<p className={css.label}>Borrow Markets</p>
