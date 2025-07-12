@@ -34,7 +34,7 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
 }) => {
 	const [isSupplyModalOpen, setIsSupplyModalOpen] = useState(false);
 	const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
-	const { address: userAddress, isConnected } = useAccount();
+	const { isConnected } = useAccount();
 	const chainId = useChainId();
 
 	const handleSupply = () => {
@@ -61,7 +61,7 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
 	const APECHAIN_MAINNET = 33139;
 	const APECHAIN_TESTNET = 33111;
 	const isValidNetwork = chainId === APECHAIN_MAINNET || chainId === APECHAIN_TESTNET;
-	
+
 	const getSupplyButtonState = () => {
 		if (!isConnected) {
 			return { disabled: true, text: 'Connect Wallet' };
@@ -74,7 +74,7 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
 		}
 		return { disabled: false, text: 'Supply' };
 	};
-	
+
 	const supplyButtonState = getSupplyButtonState();
 
 	return (

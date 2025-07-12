@@ -1,5 +1,5 @@
 import { type FC, useMemo, useState } from 'react';
-import { useAccount, useBalance } from 'wagmi';
+import { useAccount } from 'wagmi';
 import type { Address } from 'viem';
 import { Table, type TableColumnProps, type TableData } from '../../../ui-kit/components/table/table.component';
 import { AssetsColumn } from '../../../ui-kit/components/table/columns/assets-column/assets-column.component';
@@ -190,9 +190,11 @@ export const MarketsSupplyTable: FC = () => {
 	const { data: userSupplyPositions, isLoading: positionsLoading } = useUserSupplyPositions(userAddress);
 	const { data: userMarkets } = useUserMarkets(userAddress);
 	const [showZeroBalance, setShowZeroBalance] = useState(true);
-	
+
 	// Fetch wallet balances for all market underlying tokens
-	const { data: walletBalances, isLoading: walletBalancesLoading } = useMarketWalletBalances(allMarkets || []);
+	const { data: walletBalances, isLoading: walletBalancesLoading } = useMarketWalletBalances(
+		(allMarkets as Address[]) || [],
+	);
 
 	// Calculate underlying balances for all markets (reused for both display and USD conversion)
 	const marketBalances = useMemo(() => {
@@ -231,7 +233,6 @@ export const MarketsSupplyTable: FC = () => {
 
 	// Fetch USD values for balances
 	const { data: usdBalances, isLoading: usdLoading } = useUSDBalances(balanceData);
-
 
 	const { suppliedMarketsData, availableMarketsData } = useMemo(() => {
 		if (!allMarkets || marketsLoading || apyLoading) {

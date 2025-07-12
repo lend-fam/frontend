@@ -431,10 +431,13 @@ export function useMarketsCollateralFactors() {
 			const marketResult = contractResults[index];
 			if (marketResult?.result) {
 				// Market result is a tuple [isListed, collateralFactorMantissa, isComped]
-				const [, collateralFactorMantissa] = marketResult.result as [boolean, bigint, boolean];
-				// Convert from mantissa (18 decimals) to percentage (0-1)
-				const collateralFactor = Number(collateralFactorMantissa) / 1e18;
-				collateralFactorData[address] = collateralFactor;
+				const marketData = marketResult.result as unknown;
+				if (Array.isArray(marketData) && marketData.length >= 2) {
+					const [, collateralFactorMantissa] = marketData as [boolean, bigint, boolean];
+					// Convert from mantissa (18 decimals) to percentage (0-1)
+					const collateralFactor = Number(collateralFactorMantissa) / 1e18;
+					collateralFactorData[address] = collateralFactor;
+				}
 			}
 		});
 
