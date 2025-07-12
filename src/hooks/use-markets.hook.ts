@@ -15,8 +15,8 @@ export function useAllMarkets() {
 		abi: COMPTROLLER_ABI,
 		functionName: 'getAllMarkets',
 		query: {
-			staleTime: 60000, // Cache for 1 minute
-			refetchInterval: 60000, // Refetch every minute
+			staleTime: 60000,
+			refetchInterval: 60000,
 		},
 	});
 }
@@ -90,7 +90,7 @@ export function useMarketData(marketAddress: Address) {
 			},
 		],
 		query: {
-			staleTime: 30000, // Cache for 30 seconds (rates change frequently)
+			staleTime: 30000,
 			refetchInterval: 30000,
 		},
 	});
@@ -117,7 +117,7 @@ export function useUserMarketPosition(marketAddress: Address, userAddress?: Addr
 		],
 		query: {
 			enabled: !!userAddress,
-			staleTime: 10000, // Cache for 10 seconds (user data changes frequently)
+			staleTime: 10000,
 			refetchInterval: 10000,
 		},
 	});
@@ -136,8 +136,10 @@ export function useAccountLiquidity(userAddress?: Address) {
 		args: userAddress ? [userAddress] : undefined,
 		query: {
 			enabled: !!userAddress,
-			staleTime: 10000,
-			refetchInterval: 10000,
+			staleTime: 5000,
+			refetchInterval: false,
+			retry: 3,
+			retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 3000),
 		},
 	});
 }
@@ -148,17 +150,24 @@ export function useAccountLiquidity(userAddress?: Address) {
 export function useUserMarkets(userAddress?: Address) {
 	const chainId = useChainId();
 
-	return useReadContract({
+	const result = useReadContract({
 		address: getComptrollerAddress(chainId),
 		abi: COMPTROLLER_ABI,
 		functionName: 'getAssetsIn',
 		args: userAddress ? [userAddress] : undefined,
 		query: {
 			enabled: !!userAddress,
-			staleTime: 30000,
-			refetchInterval: 30000,
+			staleTime: 5000,
+			refetchInterval: false,
+			retry: 3,
+			retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 3000),
 		},
 	});
+
+	return {
+		...result,
+		queryKey: result.queryKey,
+	};
 }
 
 /**
@@ -179,8 +188,8 @@ export function useUserSupplyPositions(userAddress?: Address) {
 		contracts: marketBalanceContracts,
 		query: {
 			enabled: !!userAddress && !!marketAddresses && marketAddresses.length > 0,
-			staleTime: 10000,
-			refetchInterval: 10000,
+			staleTime: 5000,
+			refetchInterval: false,
 		},
 	});
 
@@ -226,8 +235,8 @@ export function useUserBorrowPositions(userAddress?: Address) {
 		contracts: marketBorrowContracts,
 		query: {
 			enabled: !!userAddress && !!marketAddresses && marketAddresses.length > 0,
-			staleTime: 10000,
-			refetchInterval: 10000,
+			staleTime: 5000,
+			refetchInterval: false,
 		},
 	});
 
@@ -417,7 +426,7 @@ export function useMarketsCollateralFactors() {
 		contracts: collateralFactorContracts,
 		query: {
 			enabled: !!marketAddresses && marketAddresses.length > 0,
-			staleTime: 60000, // Cache for 1 minute - collateral factors don't change often
+			staleTime: 60000,
 			refetchInterval: 60000,
 		},
 	});
@@ -430,11 +439,9 @@ export function useMarketsCollateralFactors() {
 		marketAddresses.forEach((address: Address, index: number) => {
 			const marketResult = contractResults[index];
 			if (marketResult?.result) {
-				// Market result is a tuple [isListed, collateralFactorMantissa, isComped]
 				const marketData = marketResult.result as unknown;
 				if (Array.isArray(marketData) && marketData.length >= 2) {
 					const [, collateralFactorMantissa] = marketData as [boolean, bigint, boolean];
-					// Convert from mantissa (18 decimals) to percentage (0-1)
 					const collateralFactor = Number(collateralFactorMantissa) / 1e18;
 					collateralFactorData[address] = collateralFactor;
 				}
@@ -456,8 +463,6 @@ export function useMarketsCollateralFactors() {
 export function useMarketsWithData() {
 	const { data: marketAddresses, isLoading: marketsLoading, error: marketsError } = useAllMarkets();
 
-	// This would be expanded to fetch all market data in parallel
-	// For now, return the basic structure
 	return {
 		data: marketAddresses,
 		isLoading: marketsLoading,

@@ -14,7 +14,6 @@ interface SupplyModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	marketAddress: Address;
-	tokenSymbol: string;
 	supplyAPY: string;
 	isCollateralEnabled: boolean;
 }
@@ -23,7 +22,6 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 	isOpen,
 	onClose,
 	marketAddress,
-	// tokenSymbol,
 	supplyAPY,
 	isCollateralEnabled,
 }) => {
@@ -35,14 +33,12 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 	const [hasAutoProceeded, setHasAutoProceeded] = useState(false);
 	const { address } = useAccount();
 
-	// Get underlying token address
 	const { data: underlyingTokenAddress } = useReadContract({
 		address: marketAddress,
 		abi: CTOKEN_ABI,
 		functionName: 'underlying',
 	});
 
-	// Get token decimals
 	const { data: tokenDecimals } = useReadContract({
 		address: underlyingTokenAddress,
 		abi: ERC20_ABI,
@@ -50,14 +46,12 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 		query: { enabled: !!underlyingTokenAddress },
 	});
 
-	// Get wallet balance of underlying token
 	const { data: balance } = useBalance({
 		address,
 		token: underlyingTokenAddress,
 		query: { enabled: !!underlyingTokenAddress },
 	});
 
-	// Get current allowance using ERC20_ABI
 	const { data: currentAllowance } = useReadContract({
 		address: underlyingTokenAddress,
 		abi: ERC20_ABI,
@@ -92,13 +86,10 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 	}, [amount, tokenDecimals]);
 
 	const needsApproval = useMemo(() => {
-		// Check if we have a valid amount to work with
 		if (!amountInWei || amountInWei === 0n) {
 			console.log('Supply: No approval needed - no amount:', amountInWei);
 			return false;
 		}
-
-		// If allowance is undefined/null, treat as 0 (needs approval)
 		const allowance = currentAllowance ?? 0n;
 		const needs = allowance < amountInWei;
 
@@ -118,9 +109,9 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 		return amountInWei > 0n && amountInWei <= balance.value;
 	}, [amount, balance, amountInWei]);
 
-	// Auto-proceed with supply after approval succeeds
 	useEffect(() => {
 		console.log('Supply: Auto-proceed effect triggered', {
+			isOpen,
 			isApproveSuccess,
 			isSupplyPending,
 			isSupplyConfirming,
@@ -128,7 +119,14 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 			hasAutoProceeded,
 		});
 
-		if (isApproveSuccess && !isSupplyPending && !isSupplyConfirming && isValidAmount && !hasAutoProceeded) {
+		if (
+			isOpen &&
+			isApproveSuccess &&
+			!isSupplyPending &&
+			!isSupplyConfirming &&
+			isValidAmount &&
+			!hasAutoProceeded
+		) {
 			console.log('Supply: Auto-proceeding with supply transaction after approval success');
 			setHasAutoProceeded(true);
 			supply({
@@ -138,25 +136,32 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 				args: [amountInWei],
 			});
 		}
-	}, [isApproveSuccess, isSupplyPending, isSupplyConfirming, isValidAmount, hasAutoProceeded, supply, marketAddress, amountInWei]);
+	}, [
+		isOpen,
+		isApproveSuccess,
+		isSupplyPending,
+		isSupplyConfirming,
+		isValidAmount,
+		hasAutoProceeded,
+		supply,
+		marketAddress,
+		amountInWei,
+	]);
 
-	// Close modal after successful supply transaction
 	useEffect(() => {
 		if (isSupplySuccess) {
 			console.log('Supply: Transaction successful, closing modal');
-			setHasAutoProceeded(false); // Reset for next time
+			setHasAutoProceeded(false);
 			onClose();
 		}
 	}, [isSupplySuccess, onClose]);
 
-	// Reset proceed flag when modal opens
 	useEffect(() => {
 		if (isOpen) {
 			setHasAutoProceeded(false);
 		}
 	}, [isOpen]);
 
-	// Show alert for failed approval transaction
 	useEffect(() => {
 		if (isApproveError) {
 			console.log('Supply: Approval transaction failed');
@@ -164,7 +169,6 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 		}
 	}, [isApproveError]);
 
-	// Show alert for failed supply transaction
 	useEffect(() => {
 		if (isSupplyError) {
 			console.log('Supply: Supply transaction failed');
@@ -174,7 +178,6 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 
 	const handleMaxClick = () => {
 		if (balance && tokenDecimals) {
-			// Use a precise amount for input, but limit decimal places to avoid scientific notation
 			const formatted = formatUnits(balance.value, tokenDecimals);
 			const number = parseFloat(formatted);
 			setAmount(number.toFixed(Math.min(8, tokenDecimals)));
@@ -216,12 +219,10 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 			return;
 		}
 
-		// Check if we need approval
 		if (needsApproval) {
 			console.log('Supply: Triggering approval first');
 			handleApprove();
 		} else {
-			// Proceed with supply if approval is sufficient
 			console.log('Supply: Proceeding with supply transaction');
 			supply({
 				address: marketAddress,
@@ -238,7 +239,6 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 	return (
 		<Modal isOpen={isOpen} onClose={onClose} title={`Supply ${cleanSymbol}`}>
 			<div className={css.container}>
-				{/* Amount Section */}
 				<div className={css.section}>
 					<div className={css.sectionHeader}>
 						<label className={css.label}>Amount</label>
@@ -287,7 +287,6 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 					</div>
 				</div>
 
-				{/* Approval Settings */}
 				<div className={css.section}>
 					<h3 className={css.sectionTitle}>Approval Settings</h3>
 					<div className={css.approvalContainer}>
@@ -316,7 +315,6 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 					</div>
 				</div>
 
-				{/* Transaction Overview */}
 				<div className={css.section}>
 					<h3 className={css.sectionTitle}>Transaction overview</h3>
 					<div className={css.overviewContainer}>
@@ -334,7 +332,6 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 					</div>
 				</div>
 
-				{/* Gas Fee Indicator */}
 				<div className={css.gasSection}>
 					<div className={css.gasIcon}>
 						<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -350,7 +347,6 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 					<span className={css.gasText}>-</span>
 				</div>
 
-				{/* Submit Button */}
 				<button
 					type="button"
 					onClick={handleSupply}

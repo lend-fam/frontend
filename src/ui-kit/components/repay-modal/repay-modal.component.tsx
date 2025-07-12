@@ -14,17 +14,10 @@ interface RepayModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	marketAddress: Address;
-	tokenSymbol: string;
 	borrowAPY: string;
 }
 
-export const RepayModal: FC<RepayModalProps> = ({
-	isOpen,
-	onClose,
-	marketAddress,
-	// tokenSymbol,
-	borrowAPY,
-}) => {
+export const RepayModal: FC<RepayModalProps> = ({ isOpen, onClose, marketAddress, borrowAPY }) => {
 	const [amount, setAmount] = useState('');
 	const [useMaxApproval, setUseMaxApproval] = useState(() => {
 		const saved = localStorage.getItem('useMaxApproval');
@@ -33,14 +26,12 @@ export const RepayModal: FC<RepayModalProps> = ({
 	const [hasAutoProceeded, setHasAutoProceeded] = useState(false);
 	const { address } = useAccount();
 
-	// Get underlying token address
 	const { data: underlyingTokenAddress } = useReadContract({
 		address: marketAddress,
 		abi: CTOKEN_ABI,
 		functionName: 'underlying',
 	});
 
-	// Get token decimals
 	const { data: tokenDecimals } = useReadContract({
 		address: underlyingTokenAddress,
 		abi: ERC20_ABI,
@@ -48,14 +39,12 @@ export const RepayModal: FC<RepayModalProps> = ({
 		query: { enabled: !!underlyingTokenAddress },
 	});
 
-	// Get wallet balance for repayment
 	const { data: balance } = useBalance({
 		address,
 		token: underlyingTokenAddress,
 		query: { enabled: !!underlyingTokenAddress },
 	});
 
-	// Get user's borrow balance
 	const { data: borrowBalance } = useReadContract({
 		address: marketAddress,
 		abi: CTOKEN_ABI,
@@ -64,7 +53,6 @@ export const RepayModal: FC<RepayModalProps> = ({
 		query: { enabled: !!address },
 	});
 
-	// Get current allowance using ERC20_ABI
 	const { data: currentAllowance } = useReadContract({
 		address: underlyingTokenAddress,
 		abi: ERC20_ABI,
@@ -91,7 +79,6 @@ export const RepayModal: FC<RepayModalProps> = ({
 
 	const maxRepayable = useMemo(() => {
 		if (!balance || !borrowBalance) return 0n;
-		// Can only repay up to the smaller of wallet balance or borrowed amount
 		return balance.value < borrowBalance ? balance.value : borrowBalance;
 	}, [balance, borrowBalance]);
 
@@ -105,13 +92,10 @@ export const RepayModal: FC<RepayModalProps> = ({
 	}, [amount, tokenDecimals]);
 
 	const needsApproval = useMemo(() => {
-		// Check if we have a valid amount to work with
 		if (!amountInWei || amountInWei === 0n) {
 			console.log('Repay: No approval needed - no amount:', amountInWei);
 			return false;
 		}
-
-		// If allowance is undefined/null, treat as 0 (needs approval)
 		const allowance = currentAllowance ?? 0n;
 		const needs = allowance < amountInWei;
 
@@ -131,9 +115,9 @@ export const RepayModal: FC<RepayModalProps> = ({
 		return amountInWei > 0n && amountInWei <= maxRepayable;
 	}, [amount, amountInWei, maxRepayable, borrowBalance]);
 
-	// Auto-proceed with repay after approval succeeds
 	useEffect(() => {
 		console.log('Repay: Auto-proceed effect triggered', {
+			isOpen,
 			isApproveSuccess,
 			isRepayPending,
 			isRepayConfirming,
@@ -141,7 +125,7 @@ export const RepayModal: FC<RepayModalProps> = ({
 			hasAutoProceeded,
 		});
 
-		if (isApproveSuccess && !isRepayPending && !isRepayConfirming && isValidAmount && !hasAutoProceeded) {
+		if (isOpen && isApproveSuccess && !isRepayPending && !isRepayConfirming && isValidAmount && !hasAutoProceeded) {
 			console.log('Repay: Auto-proceeding with repay transaction after approval success');
 			setHasAutoProceeded(true);
 			repay({
@@ -151,43 +135,54 @@ export const RepayModal: FC<RepayModalProps> = ({
 				args: [amountInWei],
 			});
 		}
-	}, [isApproveSuccess, isRepayPending, isRepayConfirming, isValidAmount, hasAutoProceeded, repay, marketAddress, amountInWei]);
+	}, [
+		isOpen,
+		isApproveSuccess,
+		isRepayPending,
+		isRepayConfirming,
+		isValidAmount,
+		hasAutoProceeded,
+		repay,
+		marketAddress,
+		amountInWei,
+	]);
 
-	// Close modal after successful repay transaction
 	useEffect(() => {
 		if (isRepaySuccess) {
 			console.log('Repay: Transaction successful, closing modal');
-			setHasAutoProceeded(false); // Reset for next time
+			setHasAutoProceeded(false);
 			onClose();
 		}
 	}, [isRepaySuccess, onClose]);
 
-	// Reset proceed flag when modal opens
 	useEffect(() => {
 		if (isOpen) {
 			setHasAutoProceeded(false);
 		}
 	}, [isOpen]);
 
-	// Show alert for failed approval transaction
+	useEffect(() => {
+		setHasAutoProceeded(false);
+	}, [amount]);
+
 	useEffect(() => {
 		if (isApproveError) {
 			console.log('Repay: Approval transaction failed');
+			setHasAutoProceeded(false);
 			alert('Token approval failed. Please try again.');
 		}
 	}, [isApproveError]);
 
-	// Show alert for failed repay transaction
 	useEffect(() => {
 		if (isRepayError) {
 			console.log('Repay: Repay transaction failed');
+			setHasAutoProceeded(false);
 			alert('Repay transaction failed. Please try again.');
 		}
 	}, [isRepayError]);
 
 	const handleMaxClick = () => {
 		if (maxRepayable > 0n && tokenDecimals) {
-			// Use a precise amount for input, but limit decimal places to avoid scientific notation
 			const formatted = formatUnits(maxRepayable, tokenDecimals);
 			const number = parseFloat(formatted);
 			setAmount(number.toFixed(Math.min(8, tokenDecimals)));
@@ -229,12 +224,10 @@ export const RepayModal: FC<RepayModalProps> = ({
 			return;
 		}
 
-		// Check if we need approval
 		if (needsApproval) {
 			console.log('Repay: Triggering approval first');
 			handleApprove();
 		} else {
-			// Proceed with repay if approval is sufficient
 			console.log('Repay: Proceeding with repay transaction');
 			repay({
 				address: marketAddress,
@@ -251,7 +244,6 @@ export const RepayModal: FC<RepayModalProps> = ({
 	return (
 		<Modal isOpen={isOpen} onClose={onClose} title={`Repay ${cleanSymbol}`}>
 			<div className={css.container}>
-				{/* Amount Section */}
 				<div className={css.section}>
 					<div className={css.sectionHeader}>
 						<label className={css.label}>Amount</label>
@@ -300,7 +292,6 @@ export const RepayModal: FC<RepayModalProps> = ({
 					</div>
 				</div>
 
-				{/* Approval Settings */}
 				<div className={css.section}>
 					<h3 className={css.sectionTitle}>Approval Settings</h3>
 					<div className={css.approvalContainer}>
@@ -329,7 +320,6 @@ export const RepayModal: FC<RepayModalProps> = ({
 					</div>
 				</div>
 
-				{/* Transaction Overview */}
 				<div className={css.section}>
 					<h3 className={css.sectionTitle}>Transaction overview</h3>
 					<div className={css.overviewContainer}>
@@ -360,7 +350,6 @@ export const RepayModal: FC<RepayModalProps> = ({
 					</div>
 				</div>
 
-				{/* Gas Fee Indicator */}
 				<div className={css.gasSection}>
 					<div className={css.gasIcon}>
 						<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -376,7 +365,6 @@ export const RepayModal: FC<RepayModalProps> = ({
 					<span className={css.gasText}>-</span>
 				</div>
 
-				{/* Submit Button */}
 				<button
 					type="button"
 					onClick={handleRepay}
