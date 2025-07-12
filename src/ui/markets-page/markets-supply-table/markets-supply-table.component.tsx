@@ -1,5 +1,5 @@
 import { type FC, useMemo, useState } from 'react';
-import { useAccount } from 'wagmi';
+import { useAccount, useBalance } from 'wagmi';
 import type { Address } from 'viem';
 import { Table, type TableColumnProps, type TableData } from '../../../ui-kit/components/table/table.component';
 import { AssetsColumn } from '../../../ui-kit/components/table/columns/assets-column/assets-column.component';
@@ -8,6 +8,7 @@ import { CollateralToggle } from '../../../ui-kit/components/table/columns/colla
 import { ActionButtons } from '../../../ui-kit/components/table/columns/action-buttons/action-buttons.component';
 import { useAllMarkets, useMarketsAPY, useUserSupplyPositions, useUserMarkets } from '../../../hooks/use-markets.hook';
 import { useUSDBalances } from '../../../hooks/use-usd-balances.hook';
+import { useMarketWalletBalances } from '../../../hooks/use-market-wallet-balances.hook';
 import { MarketService } from '../../../services/market.service';
 import { TokenService } from '../../../services/token.service';
 
@@ -29,6 +30,7 @@ type MarketsSupplyTableData = {
 	isCollateralEligible: boolean;
 	hasSupplied: boolean;
 	supplyAPY: string;
+	walletBalance: bigint;
 };
 
 type MarketsSupplyTableColumn = 'assets' | 'balance' | 'apy' | 'collateral' | 'actions';
@@ -98,6 +100,7 @@ const suppliedAssetsColumns: TableColumnProps<MarketsSupplyTableData, MarketsSup
 					tokenSymbol={data.symbol}
 					supplyAPY={data.supplyAPY}
 					isCollateralEnabled={data.isCollateralEnabled}
+					walletBalance={data.walletBalance}
 				/>
 			</div>
 		),
@@ -169,6 +172,7 @@ const availableAssetsColumns: TableColumnProps<MarketsSupplyTableData, MarketsSu
 					tokenSymbol={data.symbol}
 					supplyAPY={data.supplyAPY}
 					isCollateralEnabled={data.isCollateralEnabled}
+					walletBalance={data.walletBalance}
 					showMoreMenu
 				/>
 			</div>
@@ -185,9 +189,10 @@ export const MarketsSupplyTable: FC = () => {
 	const { data: marketsAPY, isLoading: apyLoading } = useMarketsAPY();
 	const { data: userSupplyPositions, isLoading: positionsLoading } = useUserSupplyPositions(userAddress);
 	const { data: userMarkets } = useUserMarkets(userAddress);
-	// Note: We no longer need exchange rates since we use balanceOfUnderlying directly
-	// const { data: exchangeRates, isLoading: exchangeRatesLoading } = useMarketsExchangeRates();
 	const [showZeroBalance, setShowZeroBalance] = useState(true);
+	
+	// Fetch wallet balances for all market underlying tokens
+	const { data: walletBalances, isLoading: walletBalancesLoading } = useMarketWalletBalances(allMarkets || []);
 
 	// Calculate underlying balances for all markets (reused for both display and USD conversion)
 	const marketBalances = useMemo(() => {
@@ -227,6 +232,7 @@ export const MarketsSupplyTable: FC = () => {
 	// Fetch USD values for balances
 	const { data: usdBalances, isLoading: usdLoading } = useUSDBalances(balanceData);
 
+
 	const { suppliedMarketsData, availableMarketsData } = useMemo(() => {
 		if (!allMarkets || marketsLoading || apyLoading) {
 			return { suppliedMarketsData: [], availableMarketsData: [] };
@@ -256,6 +262,9 @@ export const MarketsSupplyTable: FC = () => {
 			// Use pre-calculated symbol
 			const symbol = marketBalance?.symbol || displayName.replace('Market ', '').split(' ')[0];
 
+			// Get underlying token balance for this market
+			const walletBalance = walletBalances?.[marketAddress] || 0n;
+
 			const marketData: MarketsSupplyTableData = {
 				assets: displayName,
 				balance: tokenAmount,
@@ -271,6 +280,7 @@ export const MarketsSupplyTable: FC = () => {
 				isCollateralEligible,
 				hasSupplied,
 				supplyAPY: `${apy}%`,
+				walletBalance,
 			};
 
 			if (hasSupplied) {
@@ -293,6 +303,7 @@ export const MarketsSupplyTable: FC = () => {
 		userMarkets,
 		marketBalances,
 		usdBalances,
+		walletBalances,
 	]);
 
 	// Filter available markets based on showZeroBalance setting
@@ -304,7 +315,7 @@ export const MarketsSupplyTable: FC = () => {
 		return availableMarketsData.filter((market) => market.tokenAmount !== '0');
 	}, [availableMarketsData, showZeroBalance]);
 
-	if (marketsLoading || apyLoading || positionsLoading || usdLoading || !allMarkets) {
+	if (marketsLoading || apyLoading || positionsLoading || usdLoading || walletBalancesLoading || !allMarkets) {
 		return (
 			<div className={css.container}>
 				<p className={css.label}>Supply Markets</p>

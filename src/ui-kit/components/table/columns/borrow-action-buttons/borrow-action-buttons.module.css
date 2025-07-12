@@ -60,3 +60,16 @@
     outline: none;
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
 }
+
+.borrowButton:disabled,
+.repayButton:disabled {
+    background-color: #E5E7EB;
+    color: #9CA3AF;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.borrowButton:disabled:hover,
+.repayButton:disabled:hover {
+    background-color: #E5E7EB;
+}

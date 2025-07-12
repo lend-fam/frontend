@@ -101,3 +101,5 @@ This is a React + TypeScript frontend application built with Vite for the lend.f
 
 ## Memories
 - Always use contect7 mcp for getting docs
+- NEVER hardcode dynamic values
+- Do not use run dev directly it is infinit command
