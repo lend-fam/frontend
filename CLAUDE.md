@@ -60,7 +60,7 @@ This is a React + TypeScript frontend application built with Vite for the lend.f
   - Utility functions like `typedMemo` for type-safe memoization
 
 #### Web3 Integration (`src/config/`)
-- **Wagmi Configuration**: Configured with multiple chains (mainnet, polygon, optimism, arbitrum, base)
+- **Wagmi Configuration**: Configured for ApeChain mainnet and testnet with fallback RPC endpoints
 - **RainbowKit Integration**: Provides wallet connection UI and state management
 - **React Query**: Powers wagmi's caching and synchronization
 
@@ -79,8 +79,9 @@ This is a React + TypeScript frontend application built with Vite for the lend.f
 #### Web3 Architecture
 - **Wagmi Providers**: WagmiProvider, QueryClientProvider, and RainbowKitProvider wrap the app
 - **Wallet Connection**: RainbowKit's ConnectButton in header for seamless wallet integration
-- **Multi-chain Support**: Configured for mainnet, polygon, optimism, arbitrum, and base networks
+- **ApeChain Support**: Configured for ApeChain mainnet (33139) and testnet (33111) with Curtis RPC prioritization
 - **State Management**: React Query handles Web3 state caching and updates
+- **Environment-driven Configuration**: Contract addresses and RPC endpoints via environment variables
 
 ### Development Patterns
 
@@ -98,6 +99,55 @@ This is a React + TypeScript frontend application built with Vite for the lend.f
 - Strict TypeScript configuration with project references
 - Generated CSS Module types for compile-time style checking
 - Generic table components with type-safe column definitions
+
+#### Transaction Flow Architecture
+- **Modal-based interactions**: Supply, Borrow, Withdraw, Repay modals with consistent patterns
+- **Approval pattern**: ERC20 approval followed by contract interaction with auto-progression
+- **User preferences**: Unlimited vs exact approval amounts stored in localStorage
+- **State tracking**: Comprehensive loading/success/error states for all transactions
+
+## Environment Configuration
+
+### Required Environment Variables
+```bash
+# Mainnet Configuration
+VITE_COMPTROLLER_ADDRESS_MAINNET=0x7E81fAaF1132A17DCc0C76b1280E0C0e598D5635
+
+# Testnet Configuration  
+VITE_COMPTROLLER_ADDRESS_TESTNET=0x7E81fAaF1132A17DCc0C76b1280E0C0e598D5635
+
+# RPC Endpoints (with fallback defaults)
+VITE_APECHAIN_MAINNET_RPC_HTTP=https://rpc.apechain.com/http
+VITE_APECHAIN_MAINNET_RPC_WS=wss://rpc.apechain.com/ws
+VITE_APECHAIN_CURTIS_RPC_HTTP=https://curtis.rpc.caldera.xyz/http
+VITE_APECHAIN_CURTIS_RPC_WS=wss://curtis.rpc.caldera.xyz/ws
+```
+
+### Chain Configuration
+- **ApeChain Mainnet**: Chain ID 33139, Curtis RPC prioritized
+- **ApeChain Testnet**: Chain ID 33111, Curtis RPC only
+- **Native Currency**: ApeCoin (APE) with 18 decimals
+- **Block Explorer**: ApeScan (apescan.io)
+
+## Critical Development Rules
+
+### Code Standards
+- **No hardcoded values**: All contract addresses and configuration via environment variables
+- **Type-first development**: Use `typedMemo` for all component memoization
+- **CSS Modules pattern**: Co-locate `.module.css` with components for scoped styles
+- **Viem Address types**: Use `Address` type from viem for all blockchain addresses
+
+### Web3 Integration Patterns
+- **Service layer abstraction**: Use service classes for business logic (MarketService, TokenService)
+- **Batched contract reads**: Use `useReadContracts` for multiple contract calls
+- **Caching strategy**: Configure appropriate stale times for different data types in React Query
+- **Error handling**: Implement consistent transaction state management with retries
+
+### Component Architecture
+- **UI Kit separation**: Reusable components in `src/ui-kit/`, feature-specific in `src/ui/`
+- **Theme overrides**: Accept optional `theme` prop using `useTheme` hook
+- **Co-location**: Keep component, styles, and types together
+- **Automatic types**: CSS Modules generate TypeScript definitions via `vite-css-modules`
 
 ## Memories
 - Always use contect7 mcp for getting docs
