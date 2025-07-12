@@ -1,4 +1,4 @@
-import { useReadContracts, useBalance, useAccount } from 'wagmi';
+import { useReadContracts, useAccount } from 'wagmi';
 import type { Address } from 'viem';
 import { useMemo } from 'react';
 
@@ -50,7 +50,7 @@ export function useMarketWalletBalances(marketAddresses: Address[]) {
 
 	// Fetch balances for all unique underlying tokens
 	const balanceContracts = uniqueUnderlyingTokens.map((token) => ({
-		address: userAddress!,
+		address: token,
 		abi: [
 			{
 				inputs: [{ name: 'account', type: 'address' }],
@@ -62,8 +62,6 @@ export function useMarketWalletBalances(marketAddresses: Address[]) {
 		] as const,
 		functionName: 'balanceOf' as const,
 		args: [userAddress!] as const,
-		// Use the token as the contract address
-		address: token,
 	}));
 
 	const { data: balanceData, isLoading: balanceLoading } = useReadContracts({
@@ -76,7 +74,7 @@ export function useMarketWalletBalances(marketAddresses: Address[]) {
 	// Map balances back to market addresses
 	const marketBalances = useMemo(() => {
 		const balances: Record<Address, bigint> = {};
-		
+
 		if (balanceData && underlyingTokens) {
 			Object.entries(underlyingTokens).forEach(([marketAddress, underlyingToken]) => {
 				const tokenIndex = uniqueUnderlyingTokens.indexOf(underlyingToken);

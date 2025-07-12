@@ -1,4 +1,4 @@
-import { type FC, useCallback } from 'react';
+import { type FC, useCallback, useEffect } from 'react';
 import type { Address } from 'viem';
 import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { COMPTROLLER_ABI, getComptrollerAddress } from '../../../../../contracts';
@@ -24,7 +24,9 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 	const chainId = useChainId();
 	const comptrollerAddress = getComptrollerAddress(chainId);
 	const { writeContract: toggleCollateral, data: toggleHash, isPending: isTogglePending } = useWriteContract();
-	const { isLoading: isToggleConfirming } = useWaitForTransactionReceipt({ hash: toggleHash });
+	const { isLoading: isToggleConfirming, isError: isToggleError } = useWaitForTransactionReceipt({
+		hash: toggleHash,
+	});
 
 	const handleToggle = useCallback(() => {
 		if (!disabled && isEligible && comptrollerAddress) {
@@ -51,6 +53,14 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 			}
 		}
 	}, [disabled, isEligible, isEnabled, marketAddress, onToggle, comptrollerAddress, toggleCollateral]);
+
+	// Show alert for failed collateral toggle transaction
+	useEffect(() => {
+		if (isToggleError) {
+			console.log('CollateralToggle: Toggle transaction failed');
+			alert('Collateral toggle failed. Please try again.');
+		}
+	}, [isToggleError]);
 
 	if (!isEligible) {
 		return <div className={css.notEligible}>—</div>;

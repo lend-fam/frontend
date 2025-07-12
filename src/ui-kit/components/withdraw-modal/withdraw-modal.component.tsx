@@ -1,4 +1,4 @@
-import { type FC, useState, useMemo } from 'react';
+import { type FC, useState, useMemo, useEffect } from 'react';
 import type { Address } from 'viem';
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseUnits, formatUnits } from 'viem';
@@ -60,7 +60,11 @@ export const WithdrawModal: FC<WithdrawModalProps> = ({
 	});
 
 	const { writeContract: withdraw, data: withdrawHash, isPending: isWithdrawPending } = useWriteContract();
-	const { isLoading: isWithdrawConfirming } = useWaitForTransactionReceipt({ hash: withdrawHash });
+	const {
+		isLoading: isWithdrawConfirming,
+		isSuccess: isWithdrawSuccess,
+		isError: isWithdrawError,
+	} = useWaitForTransactionReceipt({ hash: withdrawHash });
 
 	const isProcessing = isWithdrawPending || isWithdrawConfirming;
 
@@ -106,6 +110,22 @@ export const WithdrawModal: FC<WithdrawModalProps> = ({
 			args: [cTokensToRedeem],
 		});
 	};
+
+	// Close modal after successful withdraw transaction
+	useEffect(() => {
+		if (isWithdrawSuccess) {
+			console.log('Withdraw: Transaction successful, closing modal');
+			onClose();
+		}
+	}, [isWithdrawSuccess, onClose]);
+
+	// Show alert for failed withdraw transaction
+	useEffect(() => {
+		if (isWithdrawError) {
+			console.log('Withdraw: Withdraw transaction failed');
+			alert('Withdraw transaction failed. Please try again.');
+		}
+	}, [isWithdrawError]);
 
 	const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
 	const cleanSymbol = displayName.replace('Market ', '').split(' ')[0];

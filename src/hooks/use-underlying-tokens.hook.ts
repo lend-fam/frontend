@@ -26,7 +26,7 @@ export function useUnderlyingTokens(marketAddresses: Address[]) {
 	});
 
 	const underlyingTokens: Record<Address, Address> = {};
-	
+
 	if (data) {
 		marketAddresses.forEach((marketAddress, index) => {
 			const result = data[index];

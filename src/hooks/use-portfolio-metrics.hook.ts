@@ -2,7 +2,13 @@ import { useMemo } from 'react';
 import { useAccount } from 'wagmi';
 import { formatUnits } from 'viem';
 import type { Address } from 'viem';
-import { useAccountLiquidity, useUserSupplyPositions, useUserBorrowPositions, useMarketsAPY, useMarketsCollateralFactors } from './use-markets.hook';
+import {
+	useAccountLiquidity,
+	useUserSupplyPositions,
+	useUserBorrowPositions,
+	useMarketsAPY,
+	useMarketsCollateralFactors,
+} from './use-markets.hook';
 
 export interface PortfolioMetrics {
 	netAPY: string;
@@ -33,7 +39,14 @@ export function usePortfolioMetrics(): {
 	const isLoading = supplyLoading || borrowLoading || liquidityLoading || apyLoading || collateralLoading;
 
 	const metrics = useMemo(() => {
-		if (!address || !supplyPositions || !borrowPositions || !accountLiquidity || !marketsAPY || !collateralFactors) {
+		if (
+			!address ||
+			!supplyPositions ||
+			!borrowPositions ||
+			!accountLiquidity ||
+			!marketsAPY ||
+			!collateralFactors
+		) {
 			return null;
 		}
 
@@ -132,10 +145,10 @@ export function usePortfolioMetrics(): {
 		Object.entries(supplyPositions).forEach(([marketAddress, position]) => {
 			if (position?.balance > 0n) {
 				const collateralFactor = collateralFactors[marketAddress as Address];
-				
+
 				if (collateralFactor !== undefined) {
 					const balanceInTokens = parseFloat(formatUnits(position.balance, 18));
-					
+
 					totalSuppliedValue += balanceInTokens;
 					totalMaxBorrowingCapacity += balanceInTokens * collateralFactor;
 				}

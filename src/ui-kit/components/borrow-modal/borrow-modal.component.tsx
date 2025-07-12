@@ -1,4 +1,4 @@
-import { type FC, useState, useMemo } from 'react';
+import { type FC, useState, useMemo, useEffect } from 'react';
 import type { Address } from 'viem';
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseUnits, formatUnits } from 'viem';
@@ -50,7 +50,11 @@ export const BorrowModal: FC<BorrowModalProps> = ({
 	const { data: accountLiquidity } = useAccountLiquidity(address);
 
 	const { writeContract: borrow, data: borrowHash, isPending: isBorrowPending } = useWriteContract();
-	const { isLoading: isBorrowConfirming } = useWaitForTransactionReceipt({ hash: borrowHash });
+	const {
+		isLoading: isBorrowConfirming,
+		isSuccess: isBorrowSuccess,
+		isError: isBorrowError,
+	} = useWaitForTransactionReceipt({ hash: borrowHash });
 
 	const isProcessing = isBorrowPending || isBorrowConfirming;
 
@@ -105,6 +109,22 @@ export const BorrowModal: FC<BorrowModalProps> = ({
 			args: [amountInWei],
 		});
 	};
+
+	// Close modal after successful borrow transaction
+	useEffect(() => {
+		if (isBorrowSuccess) {
+			console.log('Borrow: Transaction successful, closing modal');
+			onClose();
+		}
+	}, [isBorrowSuccess, onClose]);
+
+	// Show alert for failed borrow transaction
+	useEffect(() => {
+		if (isBorrowError) {
+			console.log('Borrow: Borrow transaction failed');
+			alert('Borrow transaction failed. Please try again.');
+		}
+	}, [isBorrowError]);
 
 	const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
 	const cleanSymbol = displayName.replace('Market ', '').split(' ')[0];
