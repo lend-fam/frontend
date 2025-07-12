@@ -209,6 +209,95 @@ export function useUserSupplyPositions(userAddress?: Address) {
 }
 
 /**
+ * Hook to fetch user borrow positions for all markets
+ */
+export function useUserBorrowPositions(userAddress?: Address) {
+	const { data: marketAddresses, isLoading: marketsLoading } = useAllMarkets();
+
+	const marketBorrowContracts =
+		marketAddresses?.map((address: Address) => ({
+			address,
+			abi: CTOKEN_ABI,
+			functionName: 'borrowBalanceStored',
+			args: userAddress ? [userAddress] : undefined,
+		})) || [];
+
+	const { data: contractResults, isLoading: dataLoading } = useReadContracts({
+		contracts: marketBorrowContracts,
+		query: {
+			enabled: !!userAddress && !!marketAddresses && marketAddresses.length > 0,
+			staleTime: 10000,
+			refetchInterval: 10000,
+		},
+	});
+
+	const processedData = useMemo(() => {
+		if (!marketAddresses || !contractResults || !userAddress) return {};
+
+		const positionData: Record<Address, { balance: bigint; hasBorrowed: boolean }> = {};
+
+		marketAddresses.forEach((address: Address, index: number) => {
+			const balanceResult = contractResults[index];
+			const balance = balanceResult?.result ? (balanceResult.result as bigint) : 0n;
+
+			positionData[address] = {
+				balance,
+				hasBorrowed: balance > 0n,
+			};
+		});
+
+		return positionData;
+	}, [marketAddresses, contractResults, userAddress]);
+
+	return {
+		data: processedData,
+		isLoading: marketsLoading || dataLoading,
+	};
+}
+
+/**
+ * Hook to fetch available liquidity for borrowing in all markets
+ */
+export function useMarketsAvailableLiquidity() {
+	const { data: marketAddresses, isLoading: marketsLoading } = useAllMarkets();
+
+	const liquidityContracts =
+		marketAddresses?.map((address: Address) => ({
+			address,
+			abi: CTOKEN_ABI,
+			functionName: 'getCash',
+		})) || [];
+
+	const { data: contractResults, isLoading: dataLoading } = useReadContracts({
+		contracts: liquidityContracts,
+		query: {
+			enabled: !!marketAddresses && marketAddresses.length > 0,
+			staleTime: 30000,
+			refetchInterval: 30000,
+		},
+	});
+
+	const processedData = useMemo(() => {
+		if (!marketAddresses || !contractResults) return {};
+
+		const liquidityData: Record<Address, bigint> = {};
+
+		marketAddresses.forEach((address: Address, index: number) => {
+			const liquidityResult = contractResults[index];
+			const availableLiquidity = liquidityResult?.result ? (liquidityResult.result as bigint) : 0n;
+			liquidityData[address] = availableLiquidity;
+		});
+
+		return liquidityData;
+	}, [marketAddresses, contractResults]);
+
+	return {
+		data: processedData,
+		isLoading: marketsLoading || dataLoading,
+	};
+}
+
+/**
  * Hook to fetch APY data for all markets
  */
 export function useMarketsAPY() {

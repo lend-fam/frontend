@@ -9,8 +9,8 @@ interface BalanceColumnProps {
 	symbol?: string;
 }
 
-export const BalanceColumn: FC<BalanceColumnProps> = ({ tokenAmount, usdValue }) => {
-	const displayAmount = tokenAmount === '0' ? '0' : tokenAmount;
+export const BalanceColumn: FC<BalanceColumnProps> = ({ tokenAmount, usdValue, symbol }) => {
+	const displayAmount = tokenAmount === '0' ? '0' : `${tokenAmount}${symbol ? ` ${symbol}` : ''}`;
 	const displayUSD = usdValue ? MarketService.formatUSDValue(usdValue) : '$0.00';
 
 	return (
