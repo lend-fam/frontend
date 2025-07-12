@@ -4,7 +4,6 @@ import type { Address } from 'viem';
 import { Table, type TableColumnProps, type TableData } from '../../../ui-kit/components/table/table.component';
 import { AssetsColumn } from '../../../ui-kit/components/table/columns/assets-column/assets-column.component';
 import { useAllMarkets, useUserMarkets, useMarketsAPY } from '../../../hooks/use-markets.hook';
-import { MarketService } from '../../../services/market.service';
 import { TokenService } from '../../../services/token.service';
 
 import css from './markets-borrow-table.module.css';
@@ -43,13 +42,13 @@ export const MarketsBorrowTable: FC = () => {
 		}
 
 		const tableData: TableData<MarketsBorrowTableData>[] = [];
-		
+
 		for (let i = 0; i < allMarkets.length; i++) {
 			const marketAddress = allMarkets[i];
 			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
 			const apyData = marketsAPY?.[marketAddress];
 			const apy = apyData?.borrowAPY || '0.00';
-			
+
 			tableData.push({
 				assets: displayName,
 				apy: `${apy}%`,
@@ -58,7 +57,7 @@ export const MarketsBorrowTable: FC = () => {
 				liquidity: '$21.68M',
 			});
 		}
-		
+
 		return tableData;
 	}, [allMarkets, marketsLoading, apyLoading, marketsAPY]);
 

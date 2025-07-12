@@ -1,12 +1,16 @@
 .container {
     display: flex;
     flex-direction: column;
+    width: 100%;
 }
 
 .header {
     display: flex;
+    width: 100%;
 }
 
 .row {
     display: flex;
+    width: 100%;
+    align-items: center;
 }
