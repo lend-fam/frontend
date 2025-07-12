@@ -8,7 +8,7 @@ import tableCss from './theme/table.module.css';
 type MarketsBorrowTableData = {
 	assets: string;
 	apy: string;
-    xp: string;
+	xp: string;
 	unknown1: string;
 	unknown2: string;
 };
