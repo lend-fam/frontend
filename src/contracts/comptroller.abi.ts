@@ -102,4 +102,42 @@ export const COMPTROLLER_ABI = [
 		stateMutability: 'view',
 		type: 'function',
 	},
+	{
+		inputs: [
+			{
+				internalType: 'address[]',
+				name: 'cTokens',
+				type: 'address[]',
+			},
+		],
+		name: 'enterMarkets',
+		outputs: [
+			{
+				internalType: 'uint256[]',
+				name: '',
+				type: 'uint256[]',
+			},
+		],
+		stateMutability: 'nonpayable',
+		type: 'function',
+	},
+	{
+		inputs: [
+			{
+				internalType: 'address',
+				name: 'cTokenAddress',
+				type: 'address',
+			},
+		],
+		name: 'exitMarket',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'nonpayable',
+		type: 'function',
+	},
 ] as const;

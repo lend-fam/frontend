@@ -28,6 +28,7 @@ type MarketsSupplyTableData = {
 	isCollateralEnabled: boolean;
 	isCollateralEligible: boolean;
 	hasSupplied: boolean;
+	supplyAPY: string;
 };
 
 type MarketsSupplyTableColumn = 'assets' | 'balance' | 'apy' | 'collateral' | 'actions';
@@ -91,7 +92,13 @@ const suppliedAssetsColumns: TableColumnProps<MarketsSupplyTableData, MarketsSup
 					padding: '0 12px',
 					height: '100%',
 				}}>
-				<ActionButtons marketAddress={data.marketAddress} hasSupplied={data.hasSupplied} />
+				<ActionButtons
+					marketAddress={data.marketAddress}
+					hasSupplied={data.hasSupplied}
+					tokenSymbol={data.symbol}
+					supplyAPY={data.supplyAPY}
+					isCollateralEnabled={data.isCollateralEnabled}
+				/>
 			</div>
 		),
 	},
@@ -156,7 +163,14 @@ const availableAssetsColumns: TableColumnProps<MarketsSupplyTableData, MarketsSu
 					padding: '0 12px',
 					height: '100%',
 				}}>
-				<ActionButtons marketAddress={data.marketAddress} hasSupplied={data.hasSupplied} showMoreMenu />
+				<ActionButtons
+					marketAddress={data.marketAddress}
+					hasSupplied={data.hasSupplied}
+					tokenSymbol={data.symbol}
+					supplyAPY={data.supplyAPY}
+					isCollateralEnabled={data.isCollateralEnabled}
+					showMoreMenu
+				/>
 			</div>
 		),
 	},
@@ -256,6 +270,7 @@ export const MarketsSupplyTable: FC = () => {
 				isCollateralEnabled,
 				isCollateralEligible,
 				hasSupplied,
+				supplyAPY: `${apy}%`,
 			};
 
 			if (hasSupplied) {

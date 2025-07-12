@@ -29,6 +29,8 @@ type MarketsBorrowTableData = {
 	usdValue: string;
 	symbol: string;
 	hasBorrowed: boolean;
+	borrowAPY: string;
+	availableLiquidity: bigint;
 };
 
 type MarketsBorrowTableColumn = 'assets' | 'available' | 'apy' | 'actions';
@@ -70,7 +72,13 @@ const borrowedAssetsColumns: TableColumnProps<MarketsBorrowTableData, MarketsBor
 					padding: '0 12px',
 					height: '100%',
 				}}>
-				<BorrowActionButtons marketAddress={data.marketAddress} hasBorrowed={data.hasBorrowed} />
+				<BorrowActionButtons
+					marketAddress={data.marketAddress}
+					hasBorrowed={data.hasBorrowed}
+					tokenSymbol={data.symbol}
+					borrowAPY={data.borrowAPY}
+					availableLiquidity={data.availableLiquidity}
+				/>
 			</div>
 		),
 	},
@@ -113,7 +121,13 @@ const availableAssetsColumns: TableColumnProps<MarketsBorrowTableData, MarketsBo
 					padding: '0 12px',
 					height: '100%',
 				}}>
-				<BorrowActionButtons marketAddress={data.marketAddress} hasBorrowed={data.hasBorrowed} />
+				<BorrowActionButtons
+					marketAddress={data.marketAddress}
+					hasBorrowed={data.hasBorrowed}
+					tokenSymbol={data.symbol}
+					borrowAPY={data.borrowAPY}
+					availableLiquidity={data.availableLiquidity}
+				/>
 			</div>
 		),
 	},
@@ -206,6 +220,8 @@ export const MarketsBorrowTable: FC = () => {
 				usdValue,
 				symbol,
 				hasBorrowed,
+				borrowAPY: `${apy}%`,
+				availableLiquidity: availableCash,
 			};
 
 			if (hasBorrowed) {
