@@ -9,7 +9,7 @@ import { CTOKEN_ABI, ERC20_ABI } from '../../../contracts';
 import { TokenService, MarketService } from '../../../services';
 import { useApprovalTransaction, useTransactionContext } from '../../../hooks';
 
-import css from '../supply-modal/supply-modal.module.css';
+import css from './supply-modal-enhanced.module.css';
 
 interface SupplyModalEnhancedProps {
 	isOpen: boolean;
