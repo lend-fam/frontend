@@ -3,9 +3,7 @@ import { MarketsMetrics } from '../markets-metrics/markets-metrics.components';
 import { MarketsSupplyTable } from '../markets-supply-table/markets-supply-table.component';
 import { Layout } from '../../layout/layout.component';
 import { MarketsBorrowTable } from '../markets-borrow-table/markets-borrow-table.component';
-import { useAllMarkets } from '../../../hooks/use-markets.hook';
-import { useUnderlyingTokens } from '../../../hooks/use-underlying-tokens.hook';
-import { useMarketEvents } from '../../../hooks/use-market-events.hook';
+import { useAllMarkets, useUnderlyingTokens, useMarketEvents } from '../../../hooks';
 
 import css from './markets-page.module.css';
 

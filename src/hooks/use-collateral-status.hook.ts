@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import type { Address } from 'viem';
-import { useUserMarkets, useAllMarkets, useUserSupplyPositions, useUserBorrowPositions } from './use-markets.hook';
+import { useAllMarkets, useUserMarkets } from './use-market-core.hook';
+import { useUserSupplyPositions, useUserBorrowPositions } from './use-user-positions.hook';
 import {
 	getCollateralStatusForAllMarkets,
 	getEnabledCollateralMarkets,

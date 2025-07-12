@@ -5,7 +5,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { COMPTROLLER_ABI, getComptrollerAddress } from '../../../../../contracts';
 import { useChainId } from 'wagmi';
 import { useIsCollateralEnabled } from '../../../../../hooks/use-collateral-status.hook';
-import { useUserMarkets, useUserMarketPosition } from '../../../../../hooks/use-markets.hook';
+import { useUserMarkets } from '../../../../../hooks/use-market-core.hook';
+import { useUserMarketPosition } from '../../../../../hooks/use-user-positions.hook';
 import { Tooltip } from '../../../tooltip/tooltip.component';
 import { formatUnits } from 'viem';
 

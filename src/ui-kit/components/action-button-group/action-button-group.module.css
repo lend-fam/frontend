@@ -1,0 +1,117 @@
+.container {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    justify-content: flex-end;
+    width: 100%;
+    min-width: 150px;
+}
+
+.supplyButton,
+.withdrawButton,
+.borrowButton,
+.repayButton,
+.detailsButton {
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-family: "Inter";
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    min-width: 60px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.supplyButton,
+.borrowButton {
+    background-color: #18171E;
+    color: #FFFFFF;
+}
+
+.supplyButton:hover,
+.borrowButton:hover {
+    background-color: #2D2A3A;
+}
+
+.withdrawButton,
+.repayButton {
+    background-color: #3B82F6;
+    color: #FFFFFF;
+}
+
+.withdrawButton:hover,
+.repayButton:hover {
+    background-color: #2563EB;
+}
+
+.detailsButton {
+    background-color: #F9FAFB;
+    color: #6B7280;
+    border: 1px solid #E5E7EB;
+}
+
+.detailsButton:hover {
+    background-color: #F3F4F6;
+    color: #374151;
+}
+
+.supplyButton:focus,
+.withdrawButton:focus,
+.borrowButton:focus,
+.repayButton:focus,
+.detailsButton:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+}
+
+.supplyButton:disabled,
+.withdrawButton:disabled,
+.borrowButton:disabled,
+.repayButton:disabled {
+    background-color: #E5E7EB;
+    color: #9CA3AF;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.supplyButton:disabled:hover,
+.withdrawButton:disabled:hover,
+.borrowButton:disabled:hover,
+.repayButton:disabled:hover {
+    background-color: #E5E7EB;
+}
+
+.moreButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 6px;
+    background-color: #F9FAFB;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.moreButton:hover {
+    background-color: #F3F4F6;
+}
+
+.moreButton:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #3B82F6;
+}
+
+.dots {
+    color: #6B7280;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1;
+    user-select: none;
+}

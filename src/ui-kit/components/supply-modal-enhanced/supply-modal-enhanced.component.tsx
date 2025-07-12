@@ -6,10 +6,8 @@ import { parseUnits, formatUnits, maxUint256 } from 'viem';
 
 import { Modal } from '../modal/modal.component';
 import { CTOKEN_ABI, ERC20_ABI } from '../../../contracts';
-import { TokenService } from '../../../services/token.service';
-import { MarketService } from '../../../services/market.service';
-import { useApprovalTransaction } from '../../../hooks/use-transaction-tracker.hook';
-import { useTransactionContext } from '../../../hooks/use-transaction-context.hook';
+import { TokenService, MarketService } from '../../../services';
+import { useApprovalTransaction, useTransactionContext } from '../../../hooks';
 
 import css from '../supply-modal/supply-modal.module.css';
 

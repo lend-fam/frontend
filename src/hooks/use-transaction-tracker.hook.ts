@@ -63,8 +63,8 @@ export function useTransactionTracker(options: UseTransactionTrackerOptions = {}
 			const relevantLog = logs.find(
 				(log) =>
 					log.transactionHash === hash ||
-					(address && (log as any).args?.from === address) ||
-					(address && (log as any).args?.to === address),
+					(address && (log as unknown as { args?: { from?: string } }).args?.from === address) ||
+					(address && (log as unknown as { args?: { to?: string } }).args?.to === address),
 			);
 
 			if (relevantLog && options.onStepComplete) {
