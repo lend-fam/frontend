@@ -101,3 +101,4 @@ This is a React + TypeScript frontend application built with Vite for the lend.f
 
 ## Memories
 - Always use contect7 mcp for getting docs
+- Use webdev mcp for taking project screenshots
