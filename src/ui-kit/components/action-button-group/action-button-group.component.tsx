@@ -28,14 +28,14 @@ export const ActionButtonGroup: FC<ActionButtonGroupProps> = (props) => {
 				<>
 					<button 
 						type="button" 
-						className={css[config.secondary.className]}
+						className={css[config.secondary.className as keyof typeof css]}
 						onClick={config.secondary.handler}
 					>
 						{config.secondary.text}
 					</button>
 					<button
 						type="button"
-						className={css[config.primary.className]}
+						className={css[config.primary.className as keyof typeof css]}
 						onClick={config.primary.handler}
 						disabled={config.primary.state?.disabled}
 					>
@@ -51,14 +51,14 @@ export const ActionButtonGroup: FC<ActionButtonGroupProps> = (props) => {
 				<>
 					<button 
 						type="button" 
-						className={css[config.secondary.className]}
+						className={css[config.secondary.className as keyof typeof css]}
 						onClick={config.secondary.handler}
 					>
 						{config.secondary.text}
 					</button>
 					<button
 						type="button"
-						className={css[config.primary.className]}
+						className={css[config.primary.className as keyof typeof css]}
 						onClick={config.primary.handler}
 						disabled={config.primary.state?.disabled}
 					>
@@ -74,7 +74,7 @@ export const ActionButtonGroup: FC<ActionButtonGroupProps> = (props) => {
 				<>
 					<button
 						type="button"
-						className={css[config.primary.className]}
+						className={css[config.primary.className as keyof typeof css]}
 						onClick={config.primary.handler}
 						disabled={config.primary.state?.disabled}
 					>
@@ -99,7 +99,7 @@ export const ActionButtonGroup: FC<ActionButtonGroupProps> = (props) => {
 			<>
 				<button
 					type="button"
-					className={css[config.primary.className]}
+					className={css[config.primary.className as keyof typeof css]}
 					onClick={config.primary.handler}
 					disabled={config.primary.state?.disabled}
 				>
@@ -107,7 +107,7 @@ export const ActionButtonGroup: FC<ActionButtonGroupProps> = (props) => {
 				</button>
 				<button 
 					type="button" 
-					className={css[config.secondary.className]}
+					className={css[config.secondary.className as keyof typeof css]}
 					onClick={config.secondary.handler}
 				>
 					{config.secondary.text}
