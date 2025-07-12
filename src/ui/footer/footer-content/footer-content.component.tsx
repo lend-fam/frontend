@@ -10,7 +10,7 @@ export const FooterContent: FC = () => {
 		<div className={css.container}>
 			<p className={css.description}>Together strong</p>
 			<p className={css.text}>Lend, borrow, and earn with your NFT fam</p>
-    		<Icon src={sloganIcon} />
+			<Icon src={sloganIcon} />
 		</div>
 	);
 };
