@@ -357,7 +357,7 @@ export const useTransactionFlow = ({
 		walletBalance: balance?.value,
 		balance,
 		availableToBorrow: config.type === 'borrow' ? maxAvailable : undefined,
-		accountLiquidity,
+		accountLiquidity: accountLiquidity ? [...accountLiquidity] as [bigint, bigint, bigint] : undefined,
 		availableLiquidity,
 		cTokenBalance,
 		exchangeRate,

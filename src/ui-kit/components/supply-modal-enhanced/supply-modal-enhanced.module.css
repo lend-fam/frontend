@@ -1,0 +1,285 @@
+/* Enhanced Supply Modal Styles */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sectionTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+}
+
+.info {
+  color: #999;
+  cursor: help;
+}
+
+.inputContainer {
+  display: flex;
+  align-items: center;
+  background: #f8f9fa;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+  padding: 16px;
+  gap: 12px;
+}
+
+.amountInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.tokenInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tokenIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e1e5e9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tokenSymbol {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+}
+
+.tokenName {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.balanceInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8px;
+}
+
+.usdValue {
+  font-size: 12px;
+  color: #999;
+}
+
+.walletBalance {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #666;
+}
+
+.maxButton {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.maxButton:hover {
+  background: #2563eb;
+}
+
+.progressContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.progressStep {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #e1e5e9;
+  border-radius: 8px;
+}
+
+.stepIndicator {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.stepIndicator.pending {
+  background: #f59e0b;
+  color: white;
+}
+
+.stepIndicator.success {
+  background: #10b981;
+  color: white;
+}
+
+.stepIndicator.error {
+  background: #ef4444;
+  color: white;
+}
+
+.stepInfo {
+  flex: 1;
+}
+
+.stepTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.stepDescription {
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+}
+
+.stepError {
+  color: #ef4444;
+}
+
+.approvalContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.approvalOption {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.approvalLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.approvalCheckbox {
+  margin: 0;
+}
+
+.approvalText {
+  font-size: 14px;
+  color: #1a1a1a;
+}
+
+.approvalDescription {
+  font-size: 12px;
+  color: #666;
+  margin-left: 24px;
+}
+
+.overviewContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.overviewRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.overviewLabel {
+  font-size: 14px;
+  color: #666;
+}
+
+.overviewValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.overviewValue.enabled {
+  color: #10b981;
+}
+
+.overviewValue.disabled {
+  color: #ef4444;
+}
+
+.gasSection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.gasIcon {
+  color: #666;
+}
+
+.gasText {
+  font-size: 14px;
+  color: #666;
+}
+
+.submitButton {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.submitButton:disabled {
+  background: #d1d5db;
+  cursor: not-allowed;
+}

@@ -83,7 +83,7 @@ export const ActionButtonGroup: FC<ActionButtonGroupProps> = (props) => {
 					{config.tertiary && (
 						<button
 							type="button"
-							className={css[config.tertiary.className]}
+							className={css[config.tertiary.className as keyof typeof css]}
 							onClick={config.tertiary.handler}
 							aria-label={config.tertiary.ariaLabel}
 						>
