@@ -1,10 +1,10 @@
 import { type FC, useState, useMemo } from 'react';
 import type { Address } from 'viem';
-import { useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseUnits, formatUnits } from 'viem';
 
 import { Modal } from '../modal/modal.component';
-import { CTOKEN_ABI } from '../../../contracts';
+import { CTOKEN_ABI, ERC20_ABI } from '../../../contracts';
 import { TokenService } from '../../../services/token.service';
 
 import css from './borrow-modal.module.css';
@@ -29,19 +29,34 @@ export const BorrowModal: FC<BorrowModalProps> = ({
 	const [amount, setAmount] = useState('');
 	// const { address } = useAccount();
 
+	// Get underlying token address
+	const { data: underlyingTokenAddress } = useReadContract({
+		address: marketAddress,
+		abi: CTOKEN_ABI,
+		functionName: 'underlying',
+	});
+
+	// Get token decimals
+	const { data: tokenDecimals } = useReadContract({
+		address: underlyingTokenAddress,
+		abi: ERC20_ABI,
+		functionName: 'decimals',
+		query: { enabled: !!underlyingTokenAddress },
+	});
+
 	const { writeContract: borrow, data: borrowHash, isPending: isBorrowPending } = useWriteContract();
 	const { isLoading: isBorrowConfirming } = useWaitForTransactionReceipt({ hash: borrowHash });
 
 	const isProcessing = isBorrowPending || isBorrowConfirming;
 
 	const amountInWei = useMemo(() => {
-		if (!amount || isNaN(Number(amount))) return 0n;
+		if (!amount || isNaN(Number(amount)) || !tokenDecimals) return 0n;
 		try {
-			return parseUnits(amount, 18);
+			return parseUnits(amount, tokenDecimals);
 		} catch {
 			return 0n;
 		}
-	}, [amount]);
+	}, [amount, tokenDecimals]);
 
 	const isValidAmount = useMemo(() => {
 		if (!amount) return false;
@@ -49,8 +64,8 @@ export const BorrowModal: FC<BorrowModalProps> = ({
 	}, [amount, amountInWei, availableLiquidity]);
 
 	const handleMaxClick = () => {
-		if (availableLiquidity > 0n) {
-			setAmount(formatUnits(availableLiquidity, 18));
+		if (availableLiquidity > 0n && tokenDecimals) {
+			setAmount(formatUnits(availableLiquidity, tokenDecimals));
 		}
 	};
 
@@ -107,7 +122,9 @@ export const BorrowModal: FC<BorrowModalProps> = ({
 					<div className={css.balanceInfo}>
 						<span className={css.usdValue}>$ 0</span>
 						<div className={css.walletBalance}>
-							<span>Available {formatUnits(availableLiquidity, 18)}</span>
+							<span>
+								Available {tokenDecimals ? formatUnits(availableLiquidity, tokenDecimals) : '0'}
+							</span>
 							<button type="button" onClick={handleMaxClick} className={css.maxButton}>
 								MAX
 							</button>

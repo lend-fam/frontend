@@ -4,7 +4,7 @@ import { useAccount, useReadContract, useWriteContract, useWaitForTransactionRec
 import { parseUnits, formatUnits } from 'viem';
 
 import { Modal } from '../modal/modal.component';
-import { CTOKEN_ABI } from '../../../contracts';
+import { CTOKEN_ABI, ERC20_ABI } from '../../../contracts';
 import { TokenService } from '../../../services/token.service';
 
 import css from './withdraw-modal.module.css';
@@ -26,6 +26,21 @@ export const WithdrawModal: FC<WithdrawModalProps> = ({
 }) => {
 	const [amount, setAmount] = useState('');
 	const { address } = useAccount();
+
+	// Get underlying token address
+	const { data: underlyingTokenAddress } = useReadContract({
+		address: marketAddress,
+		abi: CTOKEN_ABI,
+		functionName: 'underlying',
+	});
+
+	// Get token decimals
+	const { data: tokenDecimals } = useReadContract({
+		address: underlyingTokenAddress,
+		abi: ERC20_ABI,
+		functionName: 'decimals',
+		query: { enabled: !!underlyingTokenAddress },
+	});
 
 	// Get user's cToken balance (supplied amount)
 	const { data: cTokenBalance } = useReadContract({
@@ -49,19 +64,19 @@ export const WithdrawModal: FC<WithdrawModalProps> = ({
 	const isProcessing = isWithdrawPending || isWithdrawConfirming;
 
 	const maxWithdrawable = useMemo(() => {
-		if (!cTokenBalance || !exchangeRate) return 0n;
+		if (!cTokenBalance || !exchangeRate || !tokenDecimals) return 0n;
 		// Convert cTokens to underlying tokens using exchange rate
 		return (cTokenBalance * exchangeRate) / parseUnits('1', 18);
-	}, [cTokenBalance, exchangeRate]);
+	}, [cTokenBalance, exchangeRate, tokenDecimals]);
 
 	const amountInWei = useMemo(() => {
-		if (!amount || isNaN(Number(amount))) return 0n;
+		if (!amount || isNaN(Number(amount)) || !tokenDecimals) return 0n;
 		try {
-			return parseUnits(amount, 18);
+			return parseUnits(amount, tokenDecimals);
 		} catch {
 			return 0n;
 		}
-	}, [amount]);
+	}, [amount, tokenDecimals]);
 
 	const isValidAmount = useMemo(() => {
 		if (!amount) return false;
@@ -69,8 +84,8 @@ export const WithdrawModal: FC<WithdrawModalProps> = ({
 	}, [amount, amountInWei, maxWithdrawable]);
 
 	const handleMaxClick = () => {
-		if (maxWithdrawable > 0n) {
-			setAmount(formatUnits(maxWithdrawable, 18));
+		if (maxWithdrawable > 0n && tokenDecimals) {
+			setAmount(formatUnits(maxWithdrawable, tokenDecimals));
 		}
 	};
 
@@ -78,7 +93,7 @@ export const WithdrawModal: FC<WithdrawModalProps> = ({
 		if (!isValidAmount) return;
 
 		// Convert underlying amount to cTokens for redemption
-		const cTokensToRedeem = exchangeRate ? (amountInWei * parseUnits('1', 18)) / exchangeRate : 0n;
+		const cTokensToRedeem = exchangeRate && tokenDecimals ? (amountInWei * parseUnits('1', 18)) / exchangeRate : 0n;
 
 		withdraw({
 			address: marketAddress,
@@ -130,7 +145,7 @@ export const WithdrawModal: FC<WithdrawModalProps> = ({
 					<div className={css.balanceInfo}>
 						<span className={css.usdValue}>$ 0</span>
 						<div className={css.walletBalance}>
-							<span>Supplied {formatUnits(maxWithdrawable, 18)}</span>
+							<span>Supplied {tokenDecimals ? formatUnits(maxWithdrawable, tokenDecimals) : '0'}</span>
 							<button type="button" onClick={handleMaxClick} className={css.maxButton}>
 								MAX
 							</button>
@@ -149,9 +164,11 @@ export const WithdrawModal: FC<WithdrawModalProps> = ({
 						<div className={css.overviewRow}>
 							<span className={css.overviewLabel}>Remaining supplied</span>
 							<span className={css.overviewValue}>
-								{amount
-									? formatUnits(maxWithdrawable - amountInWei, 18)
-									: formatUnits(maxWithdrawable, 18)}{' '}
+								{amount && tokenDecimals
+									? formatUnits(maxWithdrawable - amountInWei, tokenDecimals)
+									: tokenDecimals
+										? formatUnits(maxWithdrawable, tokenDecimals)
+										: '0'}{' '}
 								{cleanSymbol}
 							</span>
 						</div>

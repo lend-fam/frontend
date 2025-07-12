@@ -4,7 +4,7 @@ import { useAccount, useBalance, useReadContract, useWriteContract, useWaitForTr
 import { parseUnits, formatUnits } from 'viem';
 
 import { Modal } from '../modal/modal.component';
-import { CTOKEN_ABI } from '../../../contracts';
+import { CTOKEN_ABI, ERC20_ABI } from '../../../contracts';
 import { TokenService } from '../../../services/token.service';
 
 import css from './repay-modal.module.css';
@@ -27,10 +27,26 @@ export const RepayModal: FC<RepayModalProps> = ({
 	const [amount, setAmount] = useState('');
 	const { address } = useAccount();
 
+	// Get underlying token address
+	const { data: underlyingTokenAddress } = useReadContract({
+		address: marketAddress,
+		abi: CTOKEN_ABI,
+		functionName: 'underlying',
+	});
+
+	// Get token decimals
+	const { data: tokenDecimals } = useReadContract({
+		address: underlyingTokenAddress,
+		abi: ERC20_ABI,
+		functionName: 'decimals',
+		query: { enabled: !!underlyingTokenAddress },
+	});
+
 	// Get wallet balance for repayment
 	const { data: balance } = useBalance({
 		address,
-		// TODO: Get underlying token address from market contract
+		token: underlyingTokenAddress,
+		query: { enabled: !!underlyingTokenAddress },
 	});
 
 	// Get user's borrow balance
@@ -54,13 +70,13 @@ export const RepayModal: FC<RepayModalProps> = ({
 	}, [balance, borrowBalance]);
 
 	const amountInWei = useMemo(() => {
-		if (!amount || isNaN(Number(amount))) return 0n;
+		if (!amount || isNaN(Number(amount)) || !tokenDecimals) return 0n;
 		try {
-			return parseUnits(amount, 18);
+			return parseUnits(amount, tokenDecimals);
 		} catch {
 			return 0n;
 		}
-	}, [amount]);
+	}, [amount, tokenDecimals]);
 
 	const isValidAmount = useMemo(() => {
 		if (!amount || !borrowBalance) return false;
@@ -68,8 +84,8 @@ export const RepayModal: FC<RepayModalProps> = ({
 	}, [amount, amountInWei, maxRepayable, borrowBalance]);
 
 	const handleMaxClick = () => {
-		if (maxRepayable > 0n) {
-			setAmount(formatUnits(maxRepayable, 18));
+		if (maxRepayable > 0n && tokenDecimals) {
+			setAmount(formatUnits(maxRepayable, tokenDecimals));
 		}
 	};
 
@@ -126,7 +142,10 @@ export const RepayModal: FC<RepayModalProps> = ({
 					<div className={css.balanceInfo}>
 						<span className={css.usdValue}>$ 0</span>
 						<div className={css.walletBalance}>
-							<span>Wallet balance {balance ? formatUnits(balance.value, balance.decimals) : '0'}</span>
+							<span>
+								Wallet balance{' '}
+								{balance && tokenDecimals ? formatUnits(balance.value, tokenDecimals) : '0'}
+							</span>
 							<button type="button" onClick={handleMaxClick} className={css.maxButton}>
 								MAX
 							</button>
@@ -145,16 +164,17 @@ export const RepayModal: FC<RepayModalProps> = ({
 						<div className={css.overviewRow}>
 							<span className={css.overviewLabel}>Borrowed amount</span>
 							<span className={css.overviewValue}>
-								{borrowBalance ? formatUnits(borrowBalance, 18) : '0'} {cleanSymbol}
+								{borrowBalance && tokenDecimals ? formatUnits(borrowBalance, tokenDecimals) : '0'}{' '}
+								{cleanSymbol}
 							</span>
 						</div>
 						<div className={css.overviewRow}>
 							<span className={css.overviewLabel}>Remaining debt</span>
 							<span className={css.overviewValue}>
-								{amount && borrowBalance
-									? formatUnits(borrowBalance - amountInWei, 18)
-									: borrowBalance
-										? formatUnits(borrowBalance, 18)
+								{amount && borrowBalance && tokenDecimals
+									? formatUnits(borrowBalance - amountInWei, tokenDecimals)
+									: borrowBalance && tokenDecimals
+										? formatUnits(borrowBalance, tokenDecimals)
 										: '0'}{' '}
 								{cleanSymbol}
 							</span>
