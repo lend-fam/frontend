@@ -1,8 +1,11 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { defineChain } from 'viem';
 
-// Define ApeChain Mainnet
-const apeChain = defineChain({
+/**
+ * ApeChain Mainnet configuration with multiple RPC endpoints.
+ * Curtis RPC is prioritized for optimal performance with deployed contracts.
+ */
+export const apeChainMainnet = defineChain({
 	id: 33139,
 	name: 'ApeChain',
 	nativeCurrency: {
@@ -12,7 +15,14 @@ const apeChain = defineChain({
 	},
 	rpcUrls: {
 		default: {
-			http: ['https://apechain.calderachain.xyz/http'],
+			http: [
+				import.meta.env.VITE_APECHAIN_CURTIS_RPC_HTTP || 'https://curtis.rpc.caldera.xyz/http',
+				import.meta.env.VITE_APECHAIN_MAINNET_RPC_HTTP || 'https://rpc.apechain.com/http',
+			],
+			webSocket: [
+				import.meta.env.VITE_APECHAIN_CURTIS_RPC_WS || 'wss://curtis.rpc.caldera.xyz/ws',
+				import.meta.env.VITE_APECHAIN_MAINNET_RPC_WS || 'wss://rpc.apechain.com/ws',
+			],
 		},
 	},
 	blockExplorers: {
@@ -23,8 +33,7 @@ const apeChain = defineChain({
 	},
 });
 
-// Define ApeChain Testnet
-const apeChainTestnet = defineChain({
+export const apeChainTestnet = defineChain({
 	id: 33111,
 	name: 'ApeChain Testnet',
 	nativeCurrency: {
@@ -34,7 +43,8 @@ const apeChainTestnet = defineChain({
 	},
 	rpcUrls: {
 		default: {
-			http: ['https://apechain-testnet.calderachain.xyz/http'],
+			http: [import.meta.env.VITE_APECHAIN_CURTIS_RPC_HTTP || 'https://curtis.rpc.caldera.xyz/http'],
+			webSocket: [import.meta.env.VITE_APECHAIN_CURTIS_RPC_WS || 'wss://curtis.rpc.caldera.xyz/ws'],
 		},
 	},
 	blockExplorers: {
@@ -48,7 +58,12 @@ const apeChainTestnet = defineChain({
 
 export const wagmiConfig = getDefaultConfig({
 	appName: 'lend.fam',
-	projectId: 'YOUR_PROJECT_ID', // Get this from WalletConnect Cloud
-	chains: [apeChain, apeChainTestnet],
-	ssr: false, // Since this is a SPA
+	projectId: 'YOUR_PROJECT_ID',
+	chains: [apeChainMainnet, apeChainTestnet],
+	ssr: false,
 });
+
+export const chains = {
+	mainnet: apeChainMainnet,
+	testnet: apeChainTestnet,
+};
