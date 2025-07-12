@@ -1,6 +1,6 @@
 /**
  * Transaction configurations for BaseTransactionModal component
- * 
+ *
  * This file contains pre-configured transaction settings for different operation types.
  */
 

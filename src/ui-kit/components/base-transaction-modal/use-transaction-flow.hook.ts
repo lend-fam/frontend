@@ -5,12 +5,12 @@ import { parseUnits, formatUnits, maxUint256 } from 'viem';
 
 import { CTOKEN_ABI, ERC20_ABI } from '../../../contracts';
 import { useAccountLiquidity } from '../../../hooks/use-account-liquidity.hook';
-import type { 
-	TransactionConfig, 
-	TransactionState, 
-	TokenData, 
-	BalanceData, 
-	ApprovalSettings 
+import type {
+	TransactionConfig,
+	TransactionState,
+	TokenData,
+	BalanceData,
+	ApprovalSettings,
 } from './transaction.types';
 
 interface UseTransactionFlowParams {
@@ -98,7 +98,11 @@ export const useTransactionFlow = ({
 		isError: isApproveError,
 	} = useWaitForTransactionReceipt({ hash: approveHash });
 
-	const { writeContract: executeTransaction, data: transactionHash, isPending: isTransactionPending } = useWriteContract();
+	const {
+		writeContract: executeTransaction,
+		data: transactionHash,
+		isPending: isTransactionPending,
+	} = useWriteContract();
 	const {
 		isLoading: isTransactionConfirming,
 		isSuccess: isTransactionSuccess,
@@ -138,7 +142,16 @@ export const useTransactionFlow = ({
 				return 0n;
 			}
 		}
-	}, [config.type, balance, accountLiquidity, availableLiquidity, cTokenBalance, exchangeRate, tokenDecimals, borrowBalance]);
+	}, [
+		config.type,
+		balance,
+		accountLiquidity,
+		availableLiquidity,
+		cTokenBalance,
+		exchangeRate,
+		tokenDecimals,
+		borrowBalance,
+	]);
 
 	const needsApproval = useMemo(() => {
 		if (!config.requiresApproval || !amountInWei || amountInWei === 0n) return false;
@@ -357,7 +370,7 @@ export const useTransactionFlow = ({
 		walletBalance: balance?.value,
 		balance,
 		availableToBorrow: config.type === 'borrow' ? maxAvailable : undefined,
-		accountLiquidity: accountLiquidity ? [...accountLiquidity] as [bigint, bigint, bigint] : undefined,
+		accountLiquidity: accountLiquidity ? ([...accountLiquidity] as [bigint, bigint, bigint]) : undefined,
 		availableLiquidity,
 		cTokenBalance,
 		exchangeRate,
@@ -379,12 +392,12 @@ export const useTransactionFlow = ({
 		tokenData,
 		balanceData,
 		approvalSettings,
-		
+
 		// Computed values
 		amountInWei,
 		maxAvailable,
 		isValidAmount,
-		
+
 		// Handlers
 		handleMaxClick,
 		handleSubmit,

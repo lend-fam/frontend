@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useAccount, useChainId } from 'wagmi';
-import type { 
-	ActionButtonGroupProps, 
-	ButtonState, 
+import type {
+	ActionButtonGroupProps,
+	ButtonState,
 	ActionButtonConfig,
 	SupplyActionButtonProps,
-	BorrowActionButtonProps 
+	BorrowActionButtonProps,
 } from './action-button-group.types';
 
 export interface UseActionButtonsReturn {
@@ -63,8 +63,8 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 	};
 
 	const getSupplyConfig = (supplyProps: SupplyActionButtonProps): ActionButtonConfig => {
-		const primaryButtonState = getWalletConnectionState(() => 
-			supplyProps.walletBalance ? supplyProps.walletBalance > BigInt(0) : true
+		const primaryButtonState = getWalletConnectionState(() =>
+			supplyProps.walletBalance ? supplyProps.walletBalance > BigInt(0) : true,
 		);
 
 		if (supplyProps.hasSupplied) {
@@ -72,15 +72,13 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 				primary: {
 					className: 'supplyButton',
 					handler: handlePrimaryAction,
-					state: primaryButtonState.disabled 
-						? primaryButtonState 
-						: { disabled: false, text: 'Supply' }
+					state: primaryButtonState.disabled ? primaryButtonState : { disabled: false, text: 'Supply' },
 				},
 				secondary: {
 					className: 'withdrawButton',
 					handler: handleSecondaryAction,
-					text: 'Withdraw'
-				}
+					text: 'Withdraw',
+				},
 			};
 		}
 
@@ -88,15 +86,13 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 			primary: {
 				className: 'supplyButton',
 				handler: handlePrimaryAction,
-				state: primaryButtonState.disabled 
-					? primaryButtonState 
-					: { disabled: false, text: 'Supply' }
+				state: primaryButtonState.disabled ? primaryButtonState : { disabled: false, text: 'Supply' },
 			},
 			secondary: {
 				className: 'supplyButton',
 				handler: handlePrimaryAction,
-				text: 'Supply'
-			}
+				text: 'Supply',
+			},
 		};
 
 		if (supplyProps.showMoreMenu) {
@@ -104,7 +100,7 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 				className: 'moreButton',
 				handler: handleTertiaryAction,
 				text: '...',
-				ariaLabel: 'More actions'
+				ariaLabel: 'More actions',
 			};
 		}
 
@@ -120,15 +116,15 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 				primary: {
 					className: 'borrowButton',
 					handler: handlePrimaryAction,
-					state: isBorrowDisabled 
+					state: isBorrowDisabled
 						? { disabled: true, text: 'No Liquidity' }
-						: { disabled: false, text: 'Borrow' }
+						: { disabled: false, text: 'Borrow' },
 				},
 				secondary: {
 					className: 'repayButton',
 					handler: handleSecondaryAction,
-					text: 'Repay'
-				}
+					text: 'Repay',
+				},
 			};
 		}
 
@@ -136,23 +132,24 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 			primary: {
 				className: 'borrowButton',
 				handler: handlePrimaryAction,
-				state: isBorrowDisabled 
+				state: isBorrowDisabled
 					? { disabled: true, text: 'No Liquidity' }
 					: primaryButtonState.disabled
 						? primaryButtonState
-						: { disabled: false, text: 'Borrow' }
+						: { disabled: false, text: 'Borrow' },
 			},
 			secondary: {
 				className: 'detailsButton',
 				handler: handleTertiaryAction,
-				text: 'Details'
-			}
+				text: 'Details',
+			},
 		};
 	};
 
-	const config = props.variant === 'supply' 
-		? getSupplyConfig(props as SupplyActionButtonProps)
-		: getBorrowConfig(props as BorrowActionButtonProps);
+	const config =
+		props.variant === 'supply'
+			? getSupplyConfig(props as SupplyActionButtonProps)
+			: getBorrowConfig(props as BorrowActionButtonProps);
 
 	return {
 		config,
@@ -160,7 +157,7 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 			isPrimaryModalOpen,
 			isSecondaryModalOpen,
 			setPrimaryModalOpen,
-			setSecondaryModalOpen
-		}
+			setSecondaryModalOpen,
+		},
 	};
 };

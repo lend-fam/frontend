@@ -19,13 +19,7 @@ const withdrawConfig: TransactionConfig = {
 	needsExchangeRateCalculation: true,
 };
 
-export const WithdrawModal: FC<WithdrawModalProps> = ({
-	isOpen,
-	onClose,
-	marketAddress,
-	tokenSymbol,
-	supplyAPY,
-}) => {
+export const WithdrawModal: FC<WithdrawModalProps> = ({ isOpen, onClose, marketAddress, tokenSymbol, supplyAPY }) => {
 	return (
 		<BaseTransactionModal
 			isOpen={isOpen}

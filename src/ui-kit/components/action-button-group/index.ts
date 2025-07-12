@@ -7,5 +7,5 @@ export type {
 	BorrowActionButtonProps,
 	ActionButtonGroupProps,
 	ButtonState,
-	ActionButtonConfig
+	ActionButtonConfig,
 } from './action-button-group.types';

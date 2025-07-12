@@ -1,13 +1,21 @@
 import { type FC, useMemo } from 'react';
 import { useAccount } from 'wagmi';
 import type { Address } from 'viem';
-import { Table, type TableData, type TableColumnProps, AssetsColumn, BalanceColumn, BorrowActionButtons } from '../../../ui-kit';
+import {
+	Table,
+	type TableData,
+	type TableColumnProps,
+	type TableColumnRendererProps,
+	AssetsColumn,
+	BalanceColumn,
+	BorrowActionButtons,
+} from '../../../ui-kit';
 import {
 	useAllMarkets,
 	useMarketsAPY,
 	useUserBorrowPositions,
 	useMarketsAvailableLiquidity,
-	useUSDBalances
+	useUSDBalances,
 } from '../../../hooks';
 import { TokenService, MarketService } from '../../../services';
 
@@ -39,7 +47,7 @@ const borrowedAssetsColumns: TableColumnProps<MarketsBorrowTableData, MarketsBor
 		label: 'Borrowed',
 		align: 'right',
 		width: '20%',
-		cellRenderer: ({ data, style }: any) => (
+		cellRenderer: ({ data, style }: TableColumnRendererProps<MarketsBorrowTableData>) => (
 			<div
 				style={{
 					...style,
@@ -58,7 +66,7 @@ const borrowedAssetsColumns: TableColumnProps<MarketsBorrowTableData, MarketsBor
 		label: 'Actions',
 		align: 'right',
 		width: '30%',
-		cellRenderer: ({ data, style }: any) => (
+		cellRenderer: ({ data, style }: TableColumnRendererProps<MarketsBorrowTableData>) => (
 			<div
 				style={{
 					...style,
@@ -88,7 +96,7 @@ const availableAssetsColumns: TableColumnProps<MarketsBorrowTableData, MarketsBo
 		label: 'Available',
 		align: 'right',
 		width: '20%',
-		cellRenderer: ({ data, style }: any) => (
+		cellRenderer: ({ data, style }: TableColumnRendererProps<MarketsBorrowTableData>) => (
 			<div
 				style={{
 					...style,
@@ -107,7 +115,7 @@ const availableAssetsColumns: TableColumnProps<MarketsBorrowTableData, MarketsBo
 		label: 'Actions',
 		align: 'right',
 		width: '30%',
-		cellRenderer: ({ data, style }: any) => (
+		cellRenderer: ({ data, style }: TableColumnRendererProps<MarketsBorrowTableData>) => (
 			<div
 				style={{
 					...style,
