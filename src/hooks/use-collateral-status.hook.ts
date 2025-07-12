@@ -20,10 +20,13 @@ export function useCollateralStatus(userAddress?: Address) {
 	const { data: userBorrowPositions } = useUserBorrowPositions(userAddress);
 
 	const collateralStatus = useMemo(() => {
+		const mutableEnteredMarkets = userEnteredMarkets ? Array.from(userEnteredMarkets) : undefined;
+		const mutableAllMarkets = allMarkets ? Array.from(allMarkets) : undefined;
+
 		return {
-			allMarketsStatus: getCollateralStatusForAllMarkets(userEnteredMarkets, allMarkets),
-			enabledCollateralMarkets: getEnabledCollateralMarkets(userEnteredMarkets),
-			supplyOnlyMarkets: getSupplyOnlyMarkets(userEnteredMarkets, userSupplyPositions),
+			allMarketsStatus: getCollateralStatusForAllMarkets(mutableEnteredMarkets, mutableAllMarkets),
+			enabledCollateralMarkets: getEnabledCollateralMarkets(mutableEnteredMarkets),
+			supplyOnlyMarkets: getSupplyOnlyMarkets(mutableEnteredMarkets, userSupplyPositions),
 			enteredMarkets: userEnteredMarkets || [],
 			allMarkets: allMarkets || [],
 		};

@@ -153,3 +153,4 @@ VITE_APECHAIN_CURTIS_RPC_WS=wss://curtis.rpc.caldera.xyz/ws
 - Always use contect7 mcp for getting docs
 - NEVER hardcode dynamic values
 - Do not use run dev directly it is infinit command
+- Use websocket for live interactions with chain node
