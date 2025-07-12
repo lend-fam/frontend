@@ -1,3 +1,3 @@
 declare interface Window {
-	ethereum?: import('ethers').Eip1193Provider;
+	ethereum?: import('viem').EIP1193Provider;
 }

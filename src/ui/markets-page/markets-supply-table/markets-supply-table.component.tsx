@@ -10,6 +10,7 @@ type MarketsSupplyTableData = {
 	assets: string;
 	apy: string;
 	wallet: string;
+	collateral: string;
 };
 
 type MarketsSupplyTableColumn = 'assets' | 'apy' | 'wallet' | 'collateral';
@@ -26,6 +27,7 @@ const yourMarketsSupplyTableData: TableData<MarketsSupplyTableData>[] = [
 		assets: 'ApeCoin',
 		apy: '3.41%',
 		wallet: '0 APE',
+		collateral: 'enabled',
 	},
 ];
 
@@ -34,21 +36,25 @@ const marketsSupplyTableData: TableData<MarketsSupplyTableData>[] = [
 		assets: 'ApeCoin',
 		apy: '3.41%',
 		wallet: '0 APE',
+		collateral: 'enabled',
 	},
 	{
 		assets: 'ApeCoin',
 		apy: '3.41%',
 		wallet: '0 APE',
+		collateral: 'enabled',
 	},
 	{
 		assets: 'ApeCoin',
 		apy: '3.41%',
 		wallet: '0 APE',
+		collateral: 'enabled',
 	},
 	{
 		assets: 'ApeCoin',
 		apy: '3.41%',
 		wallet: '0 APE',
+		collateral: 'enabled',
 	},
 ];
 
@@ -61,7 +67,7 @@ export const MarketsSupplyTable: FC = () => {
 			<p className={css.label}>Supply Markets</p>
 
 			{yourMarketsSupplyTableData.length > 0 && (
-				<Table<MarketsSupplyTableColumn, MarketsSupplyTableData>
+				<Table
 					data={yourMarketsSupplyTableData}
 					columns={marketsSupplyTableColumns}
 					columnHeight={COLUMN_HEIGHT}
@@ -73,7 +79,7 @@ export const MarketsSupplyTable: FC = () => {
 			<div className={css.delimiter} />
 
 			{marketsSupplyTableData.length > 0 && (
-				<Table<MarketsSupplyTableColumn, MarketsSupplyTableData>
+				<Table
 					data={marketsSupplyTableData}
 					columns={marketsSupplyTableColumns}
 					columnHeight={COLUMN_HEIGHT}

@@ -26,7 +26,7 @@ export interface TableColumnRendererProps<D extends object = object> {
 	style?: CSSProperties;
 }
 
-export interface TableColumnProps<D extends object, C extends string> {
+export interface TableColumnProps<D extends object, C extends keyof D> {
 	key: C;
 	label: string;
 	align?: TableAlign;
@@ -36,7 +36,7 @@ export interface TableColumnProps<D extends object, C extends string> {
 	width?: CSSProperties['width'];
 }
 
-interface TableProps<D extends object, C extends string> {
+interface TableProps<D extends object, C extends keyof D> {
 	columns: TableColumnProps<D, C>[];
 	data: TableData<D>[];
 	theme?: Partial<typeof css>;
@@ -44,7 +44,7 @@ interface TableProps<D extends object, C extends string> {
 	columnHeight?: CSSProperties['height'];
 }
 
-export const Table = typedMemo(<C extends string, D extends object>(props: TableProps<D, C>) => {
+export const Table = typedMemo(<C extends keyof D, D extends object>(props: TableProps<D, C>) => {
 	const { columns, data, columnHeight, columnWidth } = props;
 
 	const theme = useTheme(css, props.theme);
@@ -56,15 +56,15 @@ export const Table = typedMemo(<C extends string, D extends object>(props: Table
 					const style = { width: column.width || columnWidth };
 
 					if (column.headCellRenderer) {
-						createElement(column.headCellRenderer, {
-							key: column.key,
+						return createElement(column.headCellRenderer, {
+							key: String(column.key),
 							align: column.align || 'left',
 							style,
 						});
 					}
 
 					return (
-						<TableColumn key={column.key} align={column.align} style={style}>
+						<TableColumn key={String(column.key)} align={column.align} style={style}>
 							{column.label}
 						</TableColumn>
 					);
@@ -85,7 +85,7 @@ export const Table = typedMemo(<C extends string, D extends object>(props: Table
 	);
 });
 
-interface TableRawProps<D extends object, C extends string> {
+interface TableRawProps<D extends object, C extends keyof D> {
 	data: TableData<D>;
 	index: number;
 	columns: TableColumnProps<D, C>[];
@@ -94,7 +94,7 @@ interface TableRawProps<D extends object, C extends string> {
 	theme: typeof css;
 }
 
-const TableRaw = typedMemo(<C extends string, D extends object>(props: TableRawProps<D, C>) => {
+const TableRaw = typedMemo(<C extends keyof D, D extends object>(props: TableRawProps<D, C>) => {
 	const { data, columns, columnHeight, columnWidth, index, theme } = props;
 
 	return (
@@ -104,8 +104,8 @@ const TableRaw = typedMemo(<C extends string, D extends object>(props: TableRawP
 
 				if (column.cellRenderer) {
 					return createElement(column.cellRenderer, {
-						key: `${index}_${column.key}`,
-						value: data[column.key],
+						key: `${index}_${String(column.key)}`,
+						value: String(data[column.key]),
 						data,
 						columnIndex: index,
 						rowIndex: index,
@@ -114,8 +114,8 @@ const TableRaw = typedMemo(<C extends string, D extends object>(props: TableRawP
 					});
 				}
 				return (
-					<TableColumn key={`${index}_${column.key}`} align={column.align} style={style}>
-						<>{data[column.key]}</>
+					<TableColumn key={`${index}_${String(column.key)}`} align={column.align} style={style}>
+						<>{String(data[column.key])}</>
 					</TableColumn>
 				);
 			})}
