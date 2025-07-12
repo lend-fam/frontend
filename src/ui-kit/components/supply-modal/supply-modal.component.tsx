@@ -1,10 +1,10 @@
 import { type FC, useState, useMemo } from 'react';
 import type { Address } from 'viem';
-import { useAccount, useBalance, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useBalance, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseUnits, formatUnits } from 'viem';
 
 import { Modal } from '../modal/modal.component';
-import { CTOKEN_ABI } from '../../../contracts';
+import { CTOKEN_ABI, ERC20_ABI } from '../../../contracts';
 import { TokenService } from '../../../services/token.service';
 // import { MarketService } from '../../../services/market.service';
 
@@ -30,10 +30,26 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 	const [amount, setAmount] = useState('');
 	const { address } = useAccount();
 
-	// Get wallet balance
+	// Get underlying token address
+	const { data: underlyingTokenAddress } = useReadContract({
+		address: marketAddress,
+		abi: CTOKEN_ABI,
+		functionName: 'underlying',
+	});
+
+	// Get token decimals
+	const { data: tokenDecimals } = useReadContract({
+		address: underlyingTokenAddress,
+		abi: ERC20_ABI,
+		functionName: 'decimals',
+		query: { enabled: !!underlyingTokenAddress },
+	});
+
+	// Get wallet balance of underlying token
 	const { data: balance } = useBalance({
 		address,
-		// TODO: Get underlying token address from market contract
+		token: underlyingTokenAddress,
+		query: { enabled: !!underlyingTokenAddress },
 	});
 
 	const { writeContract: supply, data: supplyHash, isPending: isSupplyPending } = useWriteContract();
@@ -42,13 +58,13 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 	const isProcessing = isSupplyPending || isSupplyConfirming;
 
 	const amountInWei = useMemo(() => {
-		if (!amount || isNaN(Number(amount))) return 0n;
+		if (!amount || isNaN(Number(amount)) || !tokenDecimals) return 0n;
 		try {
-			return parseUnits(amount, 18);
+			return parseUnits(amount, tokenDecimals);
 		} catch {
 			return 0n;
 		}
-	}, [amount]);
+	}, [amount, tokenDecimals]);
 
 	const isValidAmount = useMemo(() => {
 		if (!amount || !balance) return false;
@@ -56,8 +72,8 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 	}, [amount, balance, amountInWei]);
 
 	const handleMaxClick = () => {
-		if (balance) {
-			setAmount(formatUnits(balance.value, balance.decimals));
+		if (balance && tokenDecimals) {
+			setAmount(formatUnits(balance.value, tokenDecimals));
 		}
 	};
 
@@ -114,7 +130,10 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 					<div className={css.balanceInfo}>
 						<span className={css.usdValue}>$ 0</span>
 						<div className={css.walletBalance}>
-							<span>Wallet balance {balance ? formatUnits(balance.value, balance.decimals) : '0'}</span>
+							<span>
+								Wallet balance{' '}
+								{balance && tokenDecimals ? formatUnits(balance.value, tokenDecimals) : '0'}
+							</span>
 							<button type="button" onClick={handleMaxClick} className={css.maxButton}>
 								MAX
 							</button>

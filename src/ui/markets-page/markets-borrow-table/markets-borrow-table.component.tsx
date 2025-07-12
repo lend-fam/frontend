@@ -204,7 +204,7 @@ export const MarketsBorrowTable: FC = () => {
 			const availableAmount = hasBorrowed
 				? MarketService.formatTokenBalance(userPosition?.balance || 0n, 18)
 				: MarketService.formatTokenBalance(availableCash, 18);
-			const usdValue = usdBalances?.[marketAddress] || '$0.00';
+			const usdValue = usdBalances?.[marketAddress] || '0';
 
 			// Get symbol from display name
 			const symbol = displayName.replace('Market ', '').split(' ')[0];
