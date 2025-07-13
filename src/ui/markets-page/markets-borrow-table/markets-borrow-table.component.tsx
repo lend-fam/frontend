@@ -287,6 +287,12 @@ export const MarketsBorrowTable: FC = () => {
 		userAddress,
 	]);
 
+	const totalBorrowedUSD = useMemo(() => {
+		return borrowedMarketsData.reduce((total, market) => {
+			return total + parseFloat(market.usdValue || '0');
+		}, 0);
+	}, [borrowedMarketsData]);
+
 	if (marketsLoading || apyLoading || positionsLoading || liquidityLoading || usdLoading || !allMarkets) {
 		return (
 			<div className={css.container}>
@@ -298,7 +304,12 @@ export const MarketsBorrowTable: FC = () => {
 
 	return (
 		<div className={css.container}>
-			<p className={css.label}>Borrow Markets</p>
+			<div className={css.headerSection}>
+				<p className={css.label}>Borrow Markets</p>
+				{borrowedMarketsData.length > 0 && (
+					<p className={css.totalValue}>Total Borrowed: ${totalBorrowedUSD.toFixed(2)}</p>
+				)}
+			</div>
 
 			{borrowedMarketsData.length > 0 ? (
 				<>

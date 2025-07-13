@@ -8,13 +8,29 @@
     overflow-x: auto;
 }
 
+.headerSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    margin-left: 42px;
+    margin-right: 42px;
+}
+
 .label {
     font-family: "Montserrat";
     color: #18171E;
     font-size: 24px;
     font-weight: 900;
-    margin-bottom: 30px;
-    margin-left: 42px;
+    margin: 0;
+}
+
+.totalValue {
+    font-family: "Inter";
+    color: #18171E;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
 }
 
 .delimiter {

@@ -311,6 +311,12 @@ export const MarketsSupplyTable: FC = () => {
 		return availableMarketsData.filter((market) => market.tokenAmount !== '0');
 	}, [availableMarketsData, showZeroBalance]);
 
+	const totalSuppliedUSD = useMemo(() => {
+		return suppliedMarketsData.reduce((total, market) => {
+			return total + parseFloat(market.usdValue || '0');
+		}, 0);
+	}, [suppliedMarketsData]);
+
 	if (marketsLoading || apyLoading || positionsLoading || usdLoading || walletBalancesLoading || !allMarkets) {
 		return (
 			<div className={css.container}>
@@ -322,7 +328,12 @@ export const MarketsSupplyTable: FC = () => {
 
 	return (
 		<div className={css.container}>
-			<p className={css.label}>Supply Markets</p>
+			<div className={css.headerSection}>
+				<p className={css.label}>Supply Markets</p>
+				{suppliedMarketsData.length > 0 && (
+					<p className={css.totalValue}>Total Supplied: ${totalSuppliedUSD.toFixed(2)}</p>
+				)}
+			</div>
 
 			{suppliedMarketsData.length > 0 && (
 				<>
