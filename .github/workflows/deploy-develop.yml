@@ -38,7 +38,30 @@ jobs:
         username: ${{ secrets.SERVER_USER }}
         key: ${{ secrets.SERVER_SSH_KEY }}
         script: |
+          mkdir -p /opt/lend-family
           cd /opt/lend-family
+          
+          # Create docker-compose.develop.yml if it doesn't exist
+          cat > docker-compose.develop.yml << EOF
+          version: '3.8'
+          
+          services:
+            frontend:
+              image: ${{ secrets.DOCKER_USERNAME }}/lend-family-app:develop
+              container_name: lend-family-app-develop
+              labels:
+                - "reproxy.server=app.lend.family"
+                - "reproxy.route=^/(.*)"
+                - "reproxy.dest=/"
+              restart: unless-stopped
+              networks:
+                - reproxy
+          
+          networks:
+            reproxy:
+              external: true
+          EOF
+          
           docker pull ${{ secrets.DOCKER_USERNAME }}/lend-family-app:develop
           docker compose -f docker-compose.develop.yml down
           docker compose -f docker-compose.develop.yml up -d
