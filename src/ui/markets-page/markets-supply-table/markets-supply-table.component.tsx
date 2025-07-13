@@ -23,7 +23,6 @@ type MarketsSupplyTableData = {
 	apy: string;
 	collateral: string;
 	actions: string;
-	// Additional data for rendering
 	marketAddress: Address;
 	tokenAmount: string;
 	usdValue: string;
@@ -37,7 +36,6 @@ type MarketsSupplyTableData = {
 
 type MarketsSupplyTableColumn = 'assets' | 'balance' | 'apy' | 'collateral' | 'actions';
 
-// Column definitions for supplied assets
 const suppliedAssetsColumns: TableColumnProps<MarketsSupplyTableData, MarketsSupplyTableColumn>[] = [
 	{ key: 'assets', label: 'Asset', width: '20%', cellRenderer: AssetsColumn },
 	{
@@ -109,7 +107,6 @@ const suppliedAssetsColumns: TableColumnProps<MarketsSupplyTableData, MarketsSup
 	},
 ];
 
-// Column definitions for available assets
 const availableAssetsColumns: TableColumnProps<MarketsSupplyTableData, MarketsSupplyTableColumn>[] = [
 	{ key: 'assets', label: 'Assets', width: '20%', cellRenderer: AssetsColumn },
 	{
@@ -193,12 +190,10 @@ export const MarketsSupplyTable: FC = () => {
 	const { data: userMarkets } = useUserMarkets(userAddress);
 	const [showZeroBalance, setShowZeroBalance] = useState(true);
 
-	// Fetch wallet balances for all market underlying tokens
 	const { data: walletBalances, isLoading: walletBalancesLoading } = useMarketWalletBalances(
 		(allMarkets as Address[]) || [],
 	);
 
-	// Calculate underlying balances for all markets (reused for both display and USD conversion)
 	const marketBalances = useMemo(() => {
 		if (!allMarkets || !userSupplyPositions) return {};
 
@@ -206,7 +201,6 @@ export const MarketsSupplyTable: FC = () => {
 
 		allMarkets.forEach((marketAddress) => {
 			const userPosition = userSupplyPositions[marketAddress];
-			// Now balance is already the underlying balance from balanceOfUnderlying
 			const underlyingBalance = userPosition?.balance || 0n;
 
 			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
@@ -221,7 +215,6 @@ export const MarketsSupplyTable: FC = () => {
 		return balances;
 	}, [allMarkets, userSupplyPositions]);
 
-	// Prepare balance data for USD conversion
 	const balanceData = useMemo(() => {
 		return Object.entries(marketBalances)
 			.filter(([, data]) => data.underlyingBalance > 0n)
@@ -229,11 +222,10 @@ export const MarketsSupplyTable: FC = () => {
 				marketAddress: marketAddress as Address,
 				balance: data.underlyingBalance,
 				symbol: data.symbol,
-				decimals: 18, // Underlying tokens typically use 18 decimals
+				decimals: 18,
 			}));
 	}, [marketBalances]);
 
-	// Fetch USD values for balances
 	const { data: usdBalances, isLoading: usdLoading } = useUSDBalances(balanceData);
 
 	const { suppliedMarketsData, availableMarketsData } = useMemo(() => {
@@ -252,20 +244,16 @@ export const MarketsSupplyTable: FC = () => {
 			const userPosition = userSupplyPositions?.[marketAddress];
 			const hasSupplied = userPosition?.hasSupplied || false;
 
-			// Use pre-calculated underlying balance
 			const marketBalance = marketBalances[marketAddress];
 			const underlyingBalance = marketBalance?.underlyingBalance || 0n;
 
 			const tokenAmount = hasSupplied ? MarketService.formatTokenBalance(underlyingBalance, 18) : '0';
 
-			// Check if market is in user's collateral markets
 			const isCollateralEnabled = userMarkets?.includes(marketAddress) || false;
-			const isCollateralEligible = true; // For now, assume all markets are eligible
+			const isCollateralEligible = true;
 
-			// Use pre-calculated symbol
 			const symbol = marketBalance?.symbol || displayName.replace('Market ', '').split(' ')[0];
 
-			// Get underlying token balance for this market
 			const walletBalance = walletBalances?.[marketAddress] || 0n;
 
 			const marketData: MarketsSupplyTableData = {
@@ -273,8 +261,7 @@ export const MarketsSupplyTable: FC = () => {
 				balance: tokenAmount,
 				apy: `${apy}%`,
 				collateral: isCollateralEnabled ? 'enabled' : 'disabled',
-				actions: '', // Will be handled by cellRenderer
-				// Additional data for rendering
+				actions: '',
 				marketAddress,
 				tokenAmount,
 				usdValue: usdBalances?.[marketAddress] || '0',
@@ -309,12 +296,10 @@ export const MarketsSupplyTable: FC = () => {
 		walletBalances,
 	]);
 
-	// Filter available markets based on showZeroBalance setting
 	const filteredAvailableMarketsData = useMemo(() => {
 		if (showZeroBalance) {
 			return availableMarketsData;
 		}
-		// TODO: Filter out assets with 0 wallet balance when we have real wallet balance data
 		return availableMarketsData.filter((market) => market.tokenAmount !== '0');
 	}, [availableMarketsData, showZeroBalance]);
 

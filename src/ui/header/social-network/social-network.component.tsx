@@ -10,8 +10,8 @@ import xIcon from '../../../assets/svg/x.svg';
 export const SocialNetwork: FC = () => {
 	return (
 		<ul className={css.container}>
-			<Network icon={discordIcon} path={'/'} />
-			<Network icon={xIcon} path={'/'} />
+			<Network icon={discordIcon} path="/" />
+			<Network icon={xIcon} path="/" />
 		</ul>
 	);
 };

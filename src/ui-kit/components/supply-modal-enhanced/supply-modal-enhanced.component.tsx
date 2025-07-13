@@ -87,21 +87,18 @@ export const SupplyModalEnhanced: FC<SupplyModalEnhancedProps> = ({
 		spenderAddress: marketAddress,
 		mainContractAddress: marketAddress,
 		onComplete: () => {
-			// Invalidate relevant queries to refresh data
 			queryClient.invalidateQueries({ queryKey: ['balance'] });
 			queryClient.invalidateQueries({ queryKey: ['readContract'] });
 			onClose();
 		},
 		onError: (error) => {
-			console.error('Supply transaction failed:', error);
 			alert(`Transaction failed: ${error.message}`);
 		},
 	});
 
 	const resetTracker = useCallback(() => {
 		tracker.reset();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [tracker.reset]);
+	}, [tracker]);
 
 	useEffect(() => {
 		if (isOpen) {
@@ -133,7 +130,6 @@ export const SupplyModalEnhanced: FC<SupplyModalEnhancedProps> = ({
 				args: [marketAddress, approvalAmount],
 			});
 
-			// Add to global transaction tracking
 			if (tracker.currentStep?.hash) {
 				addTransaction({
 					hash: tracker.currentStep.hash,
@@ -145,7 +141,6 @@ export const SupplyModalEnhanced: FC<SupplyModalEnhancedProps> = ({
 				});
 			}
 		} else {
-			// Execute supply directly
 			tracker.executeTransaction({
 				address: marketAddress,
 				abi: CTOKEN_ABI,
@@ -153,7 +148,6 @@ export const SupplyModalEnhanced: FC<SupplyModalEnhancedProps> = ({
 				args: [amountInWei],
 			});
 
-			// Add to global transaction tracking
 			if (tracker.currentStep?.hash) {
 				addTransaction({
 					hash: tracker.currentStep.hash,
@@ -167,7 +161,6 @@ export const SupplyModalEnhanced: FC<SupplyModalEnhancedProps> = ({
 		}
 	};
 
-	// Auto-proceed to supply after approval
 	useEffect(() => {
 		if (tracker.steps.length === 2 && tracker.steps[0].state === 'success' && tracker.currentStep?.id === 'main') {
 			tracker.executeTransaction({
@@ -177,7 +170,6 @@ export const SupplyModalEnhanced: FC<SupplyModalEnhancedProps> = ({
 				args: [amountInWei],
 			});
 
-			// Add supply transaction to tracking
 			if (tracker.currentStep?.hash) {
 				addTransaction({
 					hash: tracker.currentStep.hash,
@@ -189,17 +181,7 @@ export const SupplyModalEnhanced: FC<SupplyModalEnhancedProps> = ({
 				});
 			}
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [
-		tracker.steps,
-		tracker.currentStep,
-		tracker.executeTransaction,
-		amountInWei,
-		marketAddress,
-		underlyingTokenAddress,
-		amount,
-		addTransaction,
-	]);
+	}, [tracker, amountInWei, marketAddress, underlyingTokenAddress, amount, addTransaction]);
 
 	const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
 	const cleanSymbol = displayName.replace('Market ', '').split(' ')[0];
@@ -217,7 +199,6 @@ export const SupplyModalEnhanced: FC<SupplyModalEnhancedProps> = ({
 	return (
 		<Modal isOpen={isOpen} onClose={onClose} title={`Supply ${cleanSymbol}`}>
 			<div className={css.container}>
-				{/* Transaction Progress */}
 				{tracker.steps.length > 0 && (
 					<div className={css.section}>
 						<h3 className={css.sectionTitle}>Transaction Progress</h3>

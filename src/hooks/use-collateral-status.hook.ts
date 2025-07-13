@@ -33,23 +33,14 @@ export function useCollateralStatus(userAddress?: Address) {
 		};
 	}, [userEnteredMarkets, allMarkets, userSupplyPositions]);
 
-	/**
-	 * Check if a specific market has collateral enabled
-	 */
 	const isCollateralEnabled = (marketAddress: Address): boolean => {
 		return collateralStatus.enabledCollateralMarkets.includes(marketAddress);
 	};
 
-	/**
-	 * Check if user can exit a specific market
-	 */
 	const getExitabilityStatus = (marketAddress: Address) => {
 		return canExitMarket(marketAddress, userBorrowPositions);
 	};
 
-	/**
-	 * Get summary statistics
-	 */
 	const summary = useMemo(() => {
 		return {
 			totalMarkets: collateralStatus.allMarkets.length,

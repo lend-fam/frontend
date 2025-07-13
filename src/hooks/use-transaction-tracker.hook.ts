@@ -53,13 +53,11 @@ export function useTransactionTracker(options: UseTransactionTrackerOptions = {}
 		error: confirmError,
 	} = useWaitForTransactionReceipt({ hash });
 
-	// Watch for contract events if specified
 	useWatchContractEvent({
 		address: options.contractAddress,
 		eventName: options.eventName as string,
 		args: options.eventFilter,
 		onLogs: (logs) => {
-			// Check if any log matches our transaction
 			const relevantLog = logs.find(
 				(log) =>
 					log.transactionHash === hash ||
@@ -119,11 +117,9 @@ export function useTransactionTracker(options: UseTransactionTrackerOptions = {}
 		} else if (isConfirmed) {
 			updateStep(currentStep.id, { state: 'success' });
 
-			// Move to next step if available
 			if (currentStepIndex < steps.length - 1) {
 				setCurrentStepIndex((prev) => prev + 1);
 			} else {
-				// All steps completed
 				options.onSuccess?.();
 			}
 		} else if (writeError || isConfirmError) {

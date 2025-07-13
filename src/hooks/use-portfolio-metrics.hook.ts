@@ -25,7 +25,6 @@ export function usePortfolioMetrics(): {
 } {
 	const { address } = useAccount();
 
-	// Fetch user positions and market data
 	const { data: supplyPositions, isLoading: supplyLoading } = useUserSupplyPositions(address);
 	const { data: borrowPositions, isLoading: borrowLoading } = useUserBorrowPositions(address);
 	const { data: accountLiquidity, isLoading: liquidityLoading } = useAccountLiquidity(address);
@@ -81,8 +80,6 @@ export function usePortfolioMetrics(): {
 		const avgBorrowAPY = borrowPositionsCount > 0 ? totalBorrowAPY / borrowPositionsCount : 0;
 		const netAPY = avgSupplyAPY - avgBorrowAPY;
 
-		// Calculate Health Factor
-		// accountLiquidity returns [error, liquidity, shortfall]
 		const [, liquidity, shortfall] = accountLiquidity as [bigint, bigint, bigint];
 
 		let healthFactor = '∞';

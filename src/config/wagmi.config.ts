@@ -1,10 +1,6 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { defineChain } from 'viem';
 
-/**
- * ApeChain Mainnet configuration with multiple RPC endpoints.
- * Curtis RPC is prioritized for optimal performance with deployed contracts.
- */
 export const apeChainMainnet = defineChain({
 	id: 33139,
 	name: 'ApeChain',

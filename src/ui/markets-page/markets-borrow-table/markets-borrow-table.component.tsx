@@ -28,7 +28,6 @@ type MarketsBorrowTableData = {
 	available: string;
 	apy: string;
 	actions: string;
-	// Additional data for rendering
 	marketAddress: Address;
 	availableAmount: string;
 	usdValue: string;
@@ -40,7 +39,6 @@ type MarketsBorrowTableData = {
 
 type MarketsBorrowTableColumn = 'assets' | 'available' | 'apy' | 'actions';
 
-// Column definitions for borrowed assets
 const borrowedAssetsColumns: TableColumnProps<MarketsBorrowTableData, MarketsBorrowTableColumn>[] = [
 	{ key: 'assets', label: 'Asset', width: '20%', cellRenderer: AssetsColumn },
 	{
@@ -89,7 +87,6 @@ const borrowedAssetsColumns: TableColumnProps<MarketsBorrowTableData, MarketsBor
 	},
 ];
 
-// Column definitions for available assets to borrow
 const availableAssetsColumns: TableColumnProps<MarketsBorrowTableData, MarketsBorrowTableColumn>[] = [
 	{ key: 'assets', label: 'Asset', width: '20%', cellRenderer: AssetsColumn },
 	{
@@ -149,7 +146,6 @@ export const MarketsBorrowTable: FC = () => {
 	const { data: availableLiquidity, isLoading: liquidityLoading } = useMarketsAvailableLiquidity();
 	const { data: accountLiquidity } = useAccountLiquidity(userAddress);
 
-	// Prepare balance data for USD conversion
 	const balanceData = useMemo(() => {
 		if (!allMarkets || !userBorrowPositions || !availableLiquidity) return [];
 
@@ -162,7 +158,6 @@ export const MarketsBorrowTable: FC = () => {
 			const hasBorrowed = userPosition?.hasBorrowed || false;
 
 			if (hasBorrowed && userPosition?.balance && userPosition.balance > 0n) {
-				// Add borrowed balance for USD conversion
 				balances.push({
 					marketAddress,
 					balance: userPosition.balance,
@@ -170,7 +165,6 @@ export const MarketsBorrowTable: FC = () => {
 					decimals: 18,
 				});
 			} else {
-				// Add user's borrowing capacity for USD conversion instead of total protocol liquidity
 				if (accountLiquidity && userAddress) {
 					const [, liquidity] = accountLiquidity as [bigint, bigint, bigint];
 					const userBorrowCapacity = liquidity && liquidity > 0n ? liquidity : 0n;
@@ -186,9 +180,8 @@ export const MarketsBorrowTable: FC = () => {
 						});
 					}
 				} else {
-					// Fallback: use reasonable amount for USD calculation
 					const availableCash = availableLiquidity[marketAddress] || 0n;
-					const maxDisplayAmount = 1000n * 10n ** 18n; // 1000 tokens in wei
+					const maxDisplayAmount = 1000n * 10n ** 18n;
 					const displayAmount = availableCash < maxDisplayAmount ? availableCash : maxDisplayAmount;
 
 					if (displayAmount > 0n) {
@@ -206,7 +199,6 @@ export const MarketsBorrowTable: FC = () => {
 		return balances;
 	}, [allMarkets, userBorrowPositions, availableLiquidity, accountLiquidity, userAddress]);
 
-	// Fetch USD values for balances
 	const { data: usdBalances, isLoading: usdLoading } = useUSDBalances(balanceData);
 
 	const { borrowedMarketsData, availableMarketsData } = useMemo(() => {
@@ -225,40 +217,32 @@ export const MarketsBorrowTable: FC = () => {
 			const userPosition = userBorrowPositions?.[marketAddress];
 			const hasBorrowed = userPosition?.hasBorrowed || false;
 
-			// Get real available liquidity from contract
 			const availableCash = availableLiquidity?.[marketAddress] || 0n;
 
-			// For borrowed assets, show borrowed amount; for available assets, show user's available borrowing amount
 			let availableAmount: string;
 			if (hasBorrowed) {
-				// Show current borrowed amount
 				availableAmount = MarketService.formatTokenBalance(userPosition?.balance || 0n, 18);
 			} else {
-				// Show user's available borrowing capacity instead of total protocol liquidity
 				if (accountLiquidity && userAddress) {
 					const [, liquidity] = accountLiquidity as [bigint, bigint, bigint];
-					// Use the smaller of user's borrowing capacity or market liquidity
 					const userBorrowCapacity = liquidity && liquidity > 0n ? liquidity : 0n;
 					const actualAvailable = userBorrowCapacity < availableCash ? userBorrowCapacity : availableCash;
 					availableAmount = MarketService.formatTokenBalance(actualAvailable, 18);
 				} else {
-					// Fallback: show a reasonable portion of market liquidity (max 1000 tokens)
-					const maxDisplayAmount = 1000n * 10n ** 18n; // 1000 tokens in wei
+					const maxDisplayAmount = 1000n * 10n ** 18n;
 					const displayAmount = availableCash < maxDisplayAmount ? availableCash : maxDisplayAmount;
 					availableAmount = MarketService.formatTokenBalance(displayAmount, 18);
 				}
 			}
 			const usdValue = usdBalances?.[marketAddress] || '0';
 
-			// Get symbol from display name
 			const symbol = displayName.replace('Market ', '').split(' ')[0];
 
 			const marketData: MarketsBorrowTableData = {
 				assets: displayName,
 				available: availableAmount,
 				apy: `${apy}%`,
-				actions: '', // Will be handled by cellRenderer
-				// Additional data for rendering
+				actions: '',
 				marketAddress,
 				availableAmount,
 				usdValue,

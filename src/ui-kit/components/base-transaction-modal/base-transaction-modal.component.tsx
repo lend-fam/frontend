@@ -72,14 +72,14 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 	// Parse compact notation (5.2K, 1.3M) to actual number
 	const parseCompactNotation = useCallback((value: string): number => {
 		if (!value || value === '') return 0;
-		
+
 		const cleanValue = value.replace(/,/g, '').trim();
 		const lastChar = cleanValue.slice(-1).toLowerCase();
 		const numericPart = cleanValue.slice(0, -1);
-		
+
 		let multiplier = 1;
 		let numberStr = cleanValue;
-		
+
 		if (lastChar === 'k') {
 			multiplier = 1000;
 			numberStr = numericPart;
@@ -90,79 +90,83 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 			multiplier = 1000000000;
 			numberStr = numericPart;
 		}
-		
+
 		const baseNumber = parseFloat(numberStr);
 		if (isNaN(baseNumber)) return 0;
-		
+
 		return baseNumber * multiplier;
 	}, []);
 
 	// Calculate percentage from amount
-	const calculatePercentage = useCallback((inputAmount: string): number => {
-		if (!inputAmount || !tokenData.tokenDecimals || inputAmount === '0' || inputAmount === '') {
-			return 0;
-		}
-		
-		try {
-			let actualAmount: number;
-			
-			// First try to parse as pure number
-			const pureNumber = parseFloat(inputAmount.replace(/,/g, ''));
-			if (!isNaN(pureNumber) && isFinite(pureNumber)) {
-				actualAmount = pureNumber;
-			} else {
-				// Fall back to compact notation parsing (for when users type 5.2K)
-				actualAmount = parseCompactNotation(inputAmount);
+	const calculatePercentage = useCallback(
+		(inputAmount: string): number => {
+			if (!inputAmount || !tokenData.tokenDecimals || inputAmount === '0' || inputAmount === '') {
+				return 0;
 			}
-			
-			if (actualAmount === 0) return 0;
-			
-			// Convert to wei for comparison
-			const amountInWei = parseUnits(actualAmount.toString(), tokenData.tokenDecimals);
-			const maxBalance = getMaxBalance();
-			
-			if (maxBalance === 0n) return 0;
-			
-			const amountValue = parseFloat(formatUnits(amountInWei, tokenData.tokenDecimals));
-			const maxValue = parseFloat(formatUnits(maxBalance, tokenData.tokenDecimals));
-			
-			if (maxValue === 0) return 0;
-			const percentage = (amountValue / maxValue) * 100;
-			return Math.min(100, Math.max(0, Math.round(percentage)));
-		} catch {
-			return 0;
-		}
-	}, [tokenData.tokenDecimals, getMaxBalance, parseCompactNotation]);
+
+			try {
+				let actualAmount: number;
+
+				const pureNumber = parseFloat(inputAmount.replace(/,/g, ''));
+				if (!isNaN(pureNumber) && isFinite(pureNumber)) {
+					actualAmount = pureNumber;
+				} else {
+					actualAmount = parseCompactNotation(inputAmount);
+				}
+
+				if (actualAmount === 0) return 0;
+
+				// Convert to wei for comparison
+				const amountInWei = parseUnits(actualAmount.toString(), tokenData.tokenDecimals);
+				const maxBalance = getMaxBalance();
+
+				if (maxBalance === 0n) return 0;
+
+				const amountValue = parseFloat(formatUnits(amountInWei, tokenData.tokenDecimals));
+				const maxValue = parseFloat(formatUnits(maxBalance, tokenData.tokenDecimals));
+
+				if (maxValue === 0) return 0;
+				const percentage = (amountValue / maxValue) * 100;
+				return Math.min(100, Math.max(0, Math.round(percentage)));
+			} catch {
+				return 0;
+			}
+		},
+		[tokenData.tokenDecimals, getMaxBalance, parseCompactNotation],
+	);
 
 	// Format floating point numbers with exactly 8 decimal places
 	const formatFloatingPoint = useCallback((value: number): string => {
 		if (value === 0) return '0.00000000';
-		
+
 		// Always show exactly 8 decimal places
 		return value.toFixed(8);
 	}, []);
 
 	// Calculate amount from percentage
-	const calculateAmountFromPercentage = useCallback((percentage: number): string => {
-		if (!tokenData.tokenDecimals) return '0';
-		
-		const maxBalance = getMaxBalance();
-		if (maxBalance === 0n) return '0';
-		
-		const targetAmount = (maxBalance * BigInt(percentage)) / 100n;
-		// Return floating point number format (5200.50, 123.456, etc.)
-		const pureNumber = formatUnits(targetAmount, tokenData.tokenDecimals);
-		const numericValue = parseFloat(pureNumber);
-		
-		return formatFloatingPoint(numericValue);
-	}, [tokenData.tokenDecimals, getMaxBalance, formatFloatingPoint]);
+	const calculateAmountFromPercentage = useCallback(
+		(percentage: number): string => {
+			if (!tokenData.tokenDecimals) return '0';
+
+			const maxBalance = getMaxBalance();
+			if (maxBalance === 0n) return '0';
+
+			const targetAmount = (maxBalance * BigInt(percentage)) / 100n;
+			// Return floating point number format (5200.50, 123.456, etc.)
+			const pureNumber = formatUnits(targetAmount, tokenData.tokenDecimals);
+			const numericValue = parseFloat(pureNumber);
+
+			return formatFloatingPoint(numericValue);
+		},
+		[tokenData.tokenDecimals, getMaxBalance, formatFloatingPoint],
+	);
 
 	// Update slider when amount changes externally (typing, MAX button)
 	useEffect(() => {
 		if (!isDraggingRef.current) {
 			const newPercentage = calculatePercentage(amount);
 			setSliderValue(newPercentage);
-			
+
 			// Directly update DOM to ensure visual position updates
 			if (sliderRef.current) {
 				sliderRef.current.value = newPercentage.toString();
@@ -479,11 +483,11 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 			} else {
 				actualAmount = parseCompactNotation(amount);
 			}
-			
+
 			if (actualAmount === 0) return false;
-			
+
 			const amountInWei = parseUnits(actualAmount.toString(), tokenData.tokenDecimals);
-			
+
 			let maxBalance: bigint;
 			switch (config.type) {
 				case 'supply':
@@ -501,13 +505,13 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 				default:
 					return false;
 			}
-			
+
 			if (maxBalance === 0n) return false;
-			
+
 			// Add tolerance for rounding errors (allow up to 0.1% difference)
 			const tolerance = maxBalance / 1000n; // 0.1% tolerance
 			const maxBalanceWithTolerance = maxBalance + tolerance;
-			
+
 			return amountInWei > maxBalanceWithTolerance;
 		} catch {
 			return false;
@@ -548,15 +552,15 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 								if (numericRegex.test(value)) {
 									// Replace comma with period for internal consistency
 									let normalizedValue = value.replace(',', '.');
-									
+
 									// Ensure K/M/B is only at the end and uppercase
 									normalizedValue = normalizedValue.replace(/[kmb]/g, (match) => match.toUpperCase());
-									
+
 									// Prevent multiple decimal points
 									const beforeSuffix = normalizedValue.replace(/[KMB]$/, '');
 									const suffix = normalizedValue.match(/[KMB]$/)?.[0] || '';
 									const parts = beforeSuffix.split('.');
-									
+
 									if (parts.length <= 2) {
 										setAmount(beforeSuffix + suffix);
 									}
@@ -581,9 +585,11 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 							min="0"
 							max="100"
 							defaultValue={sliderValue}
-							style={{
-								'--fill-percent': `${sliderValue}%`
-							} as React.CSSProperties}
+							style={
+								{
+									'--fill-percent': `${sliderValue}%`,
+								} as React.CSSProperties
+							}
 							onMouseDown={() => {
 								isDraggingRef.current = true;
 							}}
@@ -600,12 +606,12 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 								// Use onInput for immediate feedback during drag
 								const percentage = parseInt(e.currentTarget.value);
 								setSliderValue(percentage);
-								
+
 								// Update CSS custom property for fill color
 								if (sliderRef.current) {
 									sliderRef.current.style.setProperty('--fill-percent', `${percentage}%`);
 								}
-								
+
 								// Update amount immediately during drag
 								const newAmount = calculateAmountFromPercentage(percentage);
 								setAmount(newAmount);
@@ -614,12 +620,12 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 								// Backup handler for when onInput isn't supported
 								const percentage = parseInt(e.target.value);
 								setSliderValue(percentage);
-								
+
 								// Update CSS custom property for fill color
 								if (sliderRef.current) {
 									sliderRef.current.style.setProperty('--fill-percent', `${percentage}%`);
 								}
-								
+
 								const newAmount = calculateAmountFromPercentage(percentage);
 								setAmount(newAmount);
 							}}
@@ -636,8 +642,7 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 									}
 									setAmount('0');
 								}}
-								className={styles.percentageLabel}
-							>
+								className={styles.percentageLabel}>
 								0%
 							</button>
 							<button
@@ -651,8 +656,7 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 									const newAmount = calculateAmountFromPercentage(25);
 									setAmount(newAmount);
 								}}
-								className={styles.percentageLabel}
-							>
+								className={styles.percentageLabel}>
 								25%
 							</button>
 							<button
@@ -666,8 +670,7 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 									const newAmount = calculateAmountFromPercentage(50);
 									setAmount(newAmount);
 								}}
-								className={styles.percentageLabel}
-							>
+								className={styles.percentageLabel}>
 								50%
 							</button>
 							<button
@@ -681,8 +684,7 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 									const newAmount = calculateAmountFromPercentage(75);
 									setAmount(newAmount);
 								}}
-								className={styles.percentageLabel}
-							>
+								className={styles.percentageLabel}>
 								75%
 							</button>
 							<button
@@ -696,8 +698,7 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 									const newAmount = calculateAmountFromPercentage(100);
 									setAmount(newAmount);
 								}}
-								className={styles.percentageLabel}
-							>
+								className={styles.percentageLabel}>
 								100%
 							</button>
 						</div>
