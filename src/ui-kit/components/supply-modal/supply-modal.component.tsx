@@ -10,6 +10,7 @@ interface SupplyModalProps {
 	marketAddress: Address;
 	supplyAPY: string;
 	isCollateralEnabled: boolean;
+	onSuccess?: () => void;
 }
 
 const SUPPLY_CONFIG: TransactionConfig = {
@@ -24,6 +25,7 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 	marketAddress,
 	supplyAPY,
 	isCollateralEnabled,
+	onSuccess,
 }) => {
 	return (
 		<BaseTransactionModal
@@ -33,6 +35,7 @@ export const SupplyModal: FC<SupplyModalProps> = ({
 			config={SUPPLY_CONFIG}
 			supplyAPY={supplyAPY}
 			isCollateralEnabled={isCollateralEnabled}
+			onSuccess={onSuccess}
 		/>
 	);
 };

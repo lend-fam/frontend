@@ -1,4 +1,4 @@
-import { type FC, useState } from 'react';
+import { type FC, useState, useRef } from 'react';
 import { useAccount, useChainId } from 'wagmi';
 import type { Address } from 'viem';
 
@@ -36,8 +36,22 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
 	const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
 	const { isConnected } = useAccount();
 	const chainId = useChainId();
+	const lastSupplyClickRef = useRef<number>(0);
+	const lastWithdrawClickRef = useRef<number>(0);
+	const lastSupplySuccessRef = useRef<number>(0);
 
 	const handleSupply = () => {
+		const now = Date.now();
+		const timeSinceLastClick = now - lastSupplyClickRef.current;
+		const timeSinceLastSuccess = now - lastSupplySuccessRef.current;
+
+		// Allow immediate reopening after successful transaction (within 2 seconds)
+		// Otherwise prevent rapid successive clicks (debounce with 500ms)
+		if (timeSinceLastClick < 500 && timeSinceLastSuccess > 2000) {
+			return;
+		}
+
+		lastSupplyClickRef.current = now;
 		setIsSupplyModalOpen(true);
 		if (onSupply) {
 			onSupply(marketAddress);
@@ -45,6 +59,15 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
 	};
 
 	const handleWithdraw = () => {
+		const now = Date.now();
+		const timeSinceLastClick = now - lastWithdrawClickRef.current;
+
+		// Prevent rapid successive clicks (debounce with 500ms)
+		if (timeSinceLastClick < 500) {
+			return;
+		}
+
+		lastWithdrawClickRef.current = now;
 		setIsWithdrawModalOpen(true);
 		if (onWithdraw) {
 			onWithdraw(marketAddress);
@@ -121,6 +144,9 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
 				marketAddress={marketAddress}
 				supplyAPY={supplyAPY}
 				isCollateralEnabled={isCollateralEnabled}
+				onSuccess={() => {
+					lastSupplySuccessRef.current = Date.now();
+				}}
 			/>
 
 			<WithdrawModal

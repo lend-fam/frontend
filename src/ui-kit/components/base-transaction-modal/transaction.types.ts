@@ -80,6 +80,9 @@ export interface BaseTransactionModalProps {
 	tokenSymbol?: string;
 	availableLiquidity?: bigint;
 
+	// Callbacks
+	onSuccess?: () => void;
+
 	// Theme override
 	theme?: Partial<Record<string, string>>;
 }
