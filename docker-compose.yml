@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: .
+    container_name: lend-family-app
+    labels:
+      - "reproxy.server=app.lend.family"
+      - "reproxy.route=^/(.*)"
+      - "reproxy.dest=/"
+    restart: unless-stopped
+    networks:
+      - reproxy
+
+networks:
+  reproxy:
+    external: true
