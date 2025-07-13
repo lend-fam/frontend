@@ -270,3 +270,98 @@
 	font-size: 12px;
 	margin-left: 32px;
 }
+
+.sliderContainer {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	margin-top: 12px;
+}
+
+.percentageSlider {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 100%;
+	height: 6px;
+	border-radius: 3px;
+	background: linear-gradient(to right, #3b82f6 0%, #3b82f6 var(--fill-percent, 0%), #374151 var(--fill-percent, 0%), #374151 100%);
+	outline: none;
+	cursor: pointer;
+	transition: background 0.2s;
+}
+
+.percentageSlider::-webkit-slider-track {
+	height: 6px;
+	border-radius: 3px;
+	background: #374151;
+}
+
+.percentageSlider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: #3b82f6;
+	cursor: pointer;
+	border: 2px solid #1e293b;
+	transition: all 0.2s;
+}
+
+.percentageSlider::-webkit-slider-thumb:hover {
+	background: #1d4ed8;
+	transform: scale(1.1);
+}
+
+.percentageSlider::-moz-range-track {
+	height: 6px;
+	border-radius: 3px;
+	background: #374151;
+	border: none;
+}
+
+.percentageSlider::-moz-range-thumb {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: #3b82f6;
+	cursor: pointer;
+	border: 2px solid #1e293b;
+	transition: all 0.2s;
+}
+
+.percentageSlider::-moz-range-thumb:hover {
+	background: #1d4ed8;
+	transform: scale(1.1);
+}
+
+.sliderLabels {
+	display: flex;
+	justify-content: space-between;
+	padding: 0 10px;
+}
+
+.percentageLabel {
+	background: none;
+	border: none;
+	color: #9ca3af;
+	font-size: 12px;
+	font-weight: 500;
+	cursor: pointer;
+	padding: 4px 8px;
+	border-radius: 4px;
+	transition: all 0.2s;
+	min-width: 32px;
+	text-align: center;
+}
+
+.percentageLabel:hover {
+	background: #374151;
+	color: #3b82f6;
+	transform: translateY(-1px);
+}
+
+.percentageLabel:active {
+	transform: translateY(0);
+	background: #4b5563;
+}

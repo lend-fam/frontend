@@ -1,4 +1,4 @@
-import { type FC, useMemo } from 'react';
+import { type FC, useMemo, useState, useEffect, useRef, useCallback } from 'react';
 import { parseUnits, formatUnits } from 'viem';
 
 import { Modal } from '../modal/modal.component';
@@ -47,6 +47,163 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 
 	const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
 	const cleanSymbol = displayName.replace('Market ', '').split(' ')[0];
+
+	// Use useRef to avoid re-rendering during slider interaction
+	const sliderRef = useRef<HTMLInputElement>(null);
+	const isDraggingRef = useRef(false);
+	const [sliderValue, setSliderValue] = useState(0);
+
+	// Get max balance for current transaction type
+	const getMaxBalance = useCallback(() => {
+		switch (config.type) {
+			case 'supply':
+				return balanceData.balance?.value || 0n;
+			case 'borrow':
+				return balanceData.availableToBorrow || 0n;
+			case 'withdraw':
+				return balanceData.maxWithdrawable || 0n;
+			case 'repay':
+				return balanceData.maxRepayable || 0n;
+			default:
+				return 0n;
+		}
+	}, [config.type, balanceData]);
+
+	// Parse compact notation (5.2K, 1.3M) to actual number
+	const parseCompactNotation = useCallback((value: string): number => {
+		if (!value || value === '') return 0;
+		
+		const cleanValue = value.replace(/,/g, '').trim();
+		const lastChar = cleanValue.slice(-1).toLowerCase();
+		const numericPart = cleanValue.slice(0, -1);
+		
+		let multiplier = 1;
+		let numberStr = cleanValue;
+		
+		if (lastChar === 'k') {
+			multiplier = 1000;
+			numberStr = numericPart;
+		} else if (lastChar === 'm') {
+			multiplier = 1000000;
+			numberStr = numericPart;
+		} else if (lastChar === 'b') {
+			multiplier = 1000000000;
+			numberStr = numericPart;
+		}
+		
+		const baseNumber = parseFloat(numberStr);
+		if (isNaN(baseNumber)) return 0;
+		
+		return baseNumber * multiplier;
+	}, []);
+
+	// Calculate percentage from amount
+	const calculatePercentage = useCallback((inputAmount: string): number => {
+		if (!inputAmount || !tokenData.tokenDecimals || inputAmount === '0' || inputAmount === '') {
+			return 0;
+		}
+		
+		try {
+			let actualAmount: number;
+			
+			// First try to parse as pure number
+			const pureNumber = parseFloat(inputAmount.replace(/,/g, ''));
+			if (!isNaN(pureNumber) && isFinite(pureNumber)) {
+				actualAmount = pureNumber;
+			} else {
+				// Fall back to compact notation parsing (for when users type 5.2K)
+				actualAmount = parseCompactNotation(inputAmount);
+			}
+			
+			if (actualAmount === 0) return 0;
+			
+			// Convert to wei for comparison
+			const amountInWei = parseUnits(actualAmount.toString(), tokenData.tokenDecimals);
+			const maxBalance = getMaxBalance();
+			
+			if (maxBalance === 0n) return 0;
+			
+			const amountValue = parseFloat(formatUnits(amountInWei, tokenData.tokenDecimals));
+			const maxValue = parseFloat(formatUnits(maxBalance, tokenData.tokenDecimals));
+			
+			if (maxValue === 0) return 0;
+			const percentage = (amountValue / maxValue) * 100;
+			return Math.min(100, Math.max(0, Math.round(percentage)));
+		} catch {
+			return 0;
+		}
+	}, [tokenData.tokenDecimals, getMaxBalance, parseCompactNotation]);
+
+	// Format floating point numbers with exactly 8 decimal places
+	const formatFloatingPoint = useCallback((value: number): string => {
+		if (value === 0) return '0.00000000';
+		
+		// Always show exactly 8 decimal places
+		return value.toFixed(8);
+	}, []);
+
+	// Calculate amount from percentage
+	const calculateAmountFromPercentage = useCallback((percentage: number): string => {
+		if (!tokenData.tokenDecimals) return '0';
+		
+		const maxBalance = getMaxBalance();
+		if (maxBalance === 0n) return '0';
+		
+		const targetAmount = (maxBalance * BigInt(percentage)) / 100n;
+		// Return floating point number format (5200.50, 123.456, etc.)
+		const pureNumber = formatUnits(targetAmount, tokenData.tokenDecimals);
+		const numericValue = parseFloat(pureNumber);
+		
+		return formatFloatingPoint(numericValue);
+	}, [tokenData.tokenDecimals, getMaxBalance, formatFloatingPoint]);
+
+	// Update slider when amount changes externally (typing, MAX button)
+	useEffect(() => {
+		if (!isDraggingRef.current) {
+			const newPercentage = calculatePercentage(amount);
+			setSliderValue(newPercentage);
+			
+			// Directly update DOM to ensure visual position updates
+			if (sliderRef.current) {
+				sliderRef.current.value = newPercentage.toString();
+				// Update fill color
+				sliderRef.current.style.setProperty('--fill-percent', `${newPercentage}%`);
+			}
+		}
+	}, [amount, calculatePercentage]);
+
+	// Reset when modal closes
+	useEffect(() => {
+		if (!isOpen) {
+			isDraggingRef.current = false;
+			setSliderValue(0);
+			if (sliderRef.current) {
+				sliderRef.current.value = '0';
+				sliderRef.current.style.setProperty('--fill-percent', '0%');
+			}
+		}
+	}, [isOpen]);
+
+	// Global event listeners to handle drag end outside slider
+	useEffect(() => {
+		const handleGlobalMouseUp = () => {
+			isDraggingRef.current = false;
+		};
+
+		const handleGlobalTouchEnd = () => {
+			isDraggingRef.current = false;
+		};
+
+		// Add listeners
+		document.addEventListener('mouseup', handleGlobalMouseUp);
+		document.addEventListener('touchend', handleGlobalTouchEnd);
+
+		return () => {
+			// Cleanup
+			document.removeEventListener('mouseup', handleGlobalMouseUp);
+			document.removeEventListener('touchend', handleGlobalTouchEnd);
+		};
+	}, []);
 
 	// Get balance label and value based on transaction type
 	const getBalanceInfo = () => {
@@ -310,27 +467,52 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 	const balanceInfo = getBalanceInfo();
 	const overviewRows = getOverviewRows();
 
-	// Check if amount exceeds available balance
+	// Check if amount exceeds available balance with tolerance for rounding
 	const isInsufficientBalance = useMemo(() => {
 		if (!amount || !tokenData.tokenDecimals) return false;
 		try {
-			const amountInWei = parseUnits(amount, tokenData.tokenDecimals);
+			// Parse the amount, handling both pure numbers and compact notation
+			let actualAmount: number;
+			const pureNumber = parseFloat(amount.replace(/,/g, ''));
+			if (!isNaN(pureNumber) && isFinite(pureNumber)) {
+				actualAmount = pureNumber;
+			} else {
+				actualAmount = parseCompactNotation(amount);
+			}
+			
+			if (actualAmount === 0) return false;
+			
+			const amountInWei = parseUnits(actualAmount.toString(), tokenData.tokenDecimals);
+			
+			let maxBalance: bigint;
 			switch (config.type) {
 				case 'supply':
-					return balanceData.balance ? amountInWei > balanceData.balance.value : false;
+					maxBalance = balanceData.balance?.value || 0n;
+					break;
 				case 'borrow':
-					return balanceData.availableToBorrow ? amountInWei > balanceData.availableToBorrow : false;
+					maxBalance = balanceData.availableToBorrow || 0n;
+					break;
 				case 'withdraw':
-					return balanceData.maxWithdrawable ? amountInWei > balanceData.maxWithdrawable : false;
+					maxBalance = balanceData.maxWithdrawable || 0n;
+					break;
 				case 'repay':
-					return balanceData.maxRepayable ? amountInWei > balanceData.maxRepayable : false;
+					maxBalance = balanceData.maxRepayable || 0n;
+					break;
 				default:
 					return false;
 			}
+			
+			if (maxBalance === 0n) return false;
+			
+			// Add tolerance for rounding errors (allow up to 0.1% difference)
+			const tolerance = maxBalance / 1000n; // 0.1% tolerance
+			const maxBalanceWithTolerance = maxBalance + tolerance;
+			
+			return amountInWei > maxBalanceWithTolerance;
 		} catch {
 			return false;
 		}
-	}, [amount, tokenData.tokenDecimals, config.type, balanceData]);
+	}, [amount, tokenData.tokenDecimals, config.type, balanceData, parseCompactNotation]);
 
 	return (
 		<Modal
@@ -361,15 +543,22 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 							value={amount}
 							onChange={(e) => {
 								const value = e.target.value;
-								// Only allow numbers, periods, and commas
-								const numericRegex = /^[0-9.,]*$/;
+								// Allow numbers, periods, commas, and K/M/B suffixes
+								const numericRegex = /^[0-9.,KMBkmb]*$/;
 								if (numericRegex.test(value)) {
 									// Replace comma with period for internal consistency
-									const normalizedValue = value.replace(',', '.');
+									let normalizedValue = value.replace(',', '.');
+									
+									// Ensure K/M/B is only at the end and uppercase
+									normalizedValue = normalizedValue.replace(/[kmb]/g, (match) => match.toUpperCase());
+									
 									// Prevent multiple decimal points
-									const parts = normalizedValue.split('.');
+									const beforeSuffix = normalizedValue.replace(/[KMB]$/, '');
+									const suffix = normalizedValue.match(/[KMB]$/)?.[0] || '';
+									const parts = beforeSuffix.split('.');
+									
 									if (parts.length <= 2) {
-										setAmount(normalizedValue);
+										setAmount(beforeSuffix + suffix);
 									}
 								}
 							}}
@@ -381,6 +570,136 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 								<div className={styles.tokenSymbol}>{cleanSymbol.charAt(0)}</div>
 							</div>
 							<span className={styles.tokenName}>{cleanSymbol}</span>
+						</div>
+					</div>
+
+					{/* Percentage Slider */}
+					<div className={styles.sliderContainer}>
+						<input
+							ref={sliderRef}
+							type="range"
+							min="0"
+							max="100"
+							defaultValue={sliderValue}
+							style={{
+								'--fill-percent': `${sliderValue}%`
+							} as React.CSSProperties}
+							onMouseDown={() => {
+								isDraggingRef.current = true;
+							}}
+							onMouseUp={() => {
+								isDraggingRef.current = false;
+							}}
+							onTouchStart={() => {
+								isDraggingRef.current = true;
+							}}
+							onTouchEnd={() => {
+								isDraggingRef.current = false;
+							}}
+							onInput={(e) => {
+								// Use onInput for immediate feedback during drag
+								const percentage = parseInt(e.currentTarget.value);
+								setSliderValue(percentage);
+								
+								// Update CSS custom property for fill color
+								if (sliderRef.current) {
+									sliderRef.current.style.setProperty('--fill-percent', `${percentage}%`);
+								}
+								
+								// Update amount immediately during drag
+								const newAmount = calculateAmountFromPercentage(percentage);
+								setAmount(newAmount);
+							}}
+							onChange={(e) => {
+								// Backup handler for when onInput isn't supported
+								const percentage = parseInt(e.target.value);
+								setSliderValue(percentage);
+								
+								// Update CSS custom property for fill color
+								if (sliderRef.current) {
+									sliderRef.current.style.setProperty('--fill-percent', `${percentage}%`);
+								}
+								
+								const newAmount = calculateAmountFromPercentage(percentage);
+								setAmount(newAmount);
+							}}
+							className={styles.percentageSlider}
+						/>
+						<div className={styles.sliderLabels}>
+							<button
+								type="button"
+								onClick={() => {
+									setSliderValue(0);
+									if (sliderRef.current) {
+										sliderRef.current.value = '0';
+										sliderRef.current.style.setProperty('--fill-percent', '0%');
+									}
+									setAmount('0');
+								}}
+								className={styles.percentageLabel}
+							>
+								0%
+							</button>
+							<button
+								type="button"
+								onClick={() => {
+									setSliderValue(25);
+									if (sliderRef.current) {
+										sliderRef.current.value = '25';
+										sliderRef.current.style.setProperty('--fill-percent', '25%');
+									}
+									const newAmount = calculateAmountFromPercentage(25);
+									setAmount(newAmount);
+								}}
+								className={styles.percentageLabel}
+							>
+								25%
+							</button>
+							<button
+								type="button"
+								onClick={() => {
+									setSliderValue(50);
+									if (sliderRef.current) {
+										sliderRef.current.value = '50';
+										sliderRef.current.style.setProperty('--fill-percent', '50%');
+									}
+									const newAmount = calculateAmountFromPercentage(50);
+									setAmount(newAmount);
+								}}
+								className={styles.percentageLabel}
+							>
+								50%
+							</button>
+							<button
+								type="button"
+								onClick={() => {
+									setSliderValue(75);
+									if (sliderRef.current) {
+										sliderRef.current.value = '75';
+										sliderRef.current.style.setProperty('--fill-percent', '75%');
+									}
+									const newAmount = calculateAmountFromPercentage(75);
+									setAmount(newAmount);
+								}}
+								className={styles.percentageLabel}
+							>
+								75%
+							</button>
+							<button
+								type="button"
+								onClick={() => {
+									setSliderValue(100);
+									if (sliderRef.current) {
+										sliderRef.current.value = '100';
+										sliderRef.current.style.setProperty('--fill-percent', '100%');
+									}
+									const newAmount = calculateAmountFromPercentage(100);
+									setAmount(newAmount);
+								}}
+								className={styles.percentageLabel}
+							>
+								100%
+							</button>
 						</div>
 					</div>
 

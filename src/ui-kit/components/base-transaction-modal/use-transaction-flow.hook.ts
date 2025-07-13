@@ -113,15 +113,54 @@ export const useTransactionFlow = ({
 		isError: isTransactionError,
 	} = useWaitForTransactionReceipt({ hash: transactionHash });
 
+	// Parse compact notation helper
+	const parseCompactNotation = useCallback((value: string): number => {
+		if (!value || value === '') return 0;
+		
+		const cleanValue = value.replace(/,/g, '').trim();
+		const lastChar = cleanValue.slice(-1).toLowerCase();
+		const numericPart = cleanValue.slice(0, -1);
+		
+		let multiplier = 1;
+		let numberStr = cleanValue;
+		
+		if (lastChar === 'k') {
+			multiplier = 1000;
+			numberStr = numericPart;
+		} else if (lastChar === 'm') {
+			multiplier = 1000000;
+			numberStr = numericPart;
+		} else if (lastChar === 'b') {
+			multiplier = 1000000000;
+			numberStr = numericPart;
+		}
+		
+		const baseNumber = parseFloat(numberStr);
+		if (isNaN(baseNumber)) return 0;
+		
+		return baseNumber * multiplier;
+	}, []);
+
 	// Computed values
 	const amountInWei = useMemo(() => {
-		if (!amount || isNaN(Number(amount)) || !tokenDecimals) return 0n;
+		if (!amount || !tokenDecimals) return 0n;
 		try {
-			return parseUnits(amount, tokenDecimals);
+			// Parse amount, handling both pure numbers and compact notation
+			let actualAmount: number;
+			const pureNumber = parseFloat(amount.replace(/,/g, ''));
+			if (!isNaN(pureNumber) && isFinite(pureNumber)) {
+				actualAmount = pureNumber;
+			} else {
+				actualAmount = parseCompactNotation(amount);
+			}
+			
+			if (actualAmount === 0 || !isFinite(actualAmount)) return 0n;
+			
+			return parseUnits(actualAmount.toString(), tokenDecimals);
 		} catch {
 			return 0n;
 		}
-	}, [amount, tokenDecimals]);
+	}, [amount, tokenDecimals, parseCompactNotation]);
 
 	// Calculate max available amount based on transaction type
 	const maxAvailable = useMemo(() => {
@@ -165,7 +204,27 @@ export const useTransactionFlow = ({
 
 	const isValidAmount = useMemo(() => {
 		if (!amount) return false;
-		return amountInWei > 0n && amountInWei <= maxAvailable;
+		
+		// Add small tolerance for precision errors when comparing with maxAvailable
+		if (amountInWei <= 0n) return false;
+		
+		// Allow up to 0.1% difference to account for precision loss in formatting/parsing
+		const tolerance = maxAvailable / 1000n; // 0.1% tolerance
+		const maxWithTolerance = maxAvailable + tolerance;
+		
+		const isValid = amountInWei <= maxWithTolerance;
+		
+		// Debug logging
+		console.log('isValidAmount check:', {
+			amount,
+			amountInWei: amountInWei.toString(),
+			maxAvailable: maxAvailable.toString(),
+			maxWithTolerance: maxWithTolerance.toString(),
+			isValid,
+			difference: amountInWei > maxAvailable ? (amountInWei - maxAvailable).toString() : '0'
+		});
+		
+		return isValid;
 	}, [amount, amountInWei, maxAvailable]);
 
 	const isProcessing = isApprovePending || isApproveConfirming || isTransactionPending || isTransactionConfirming;
