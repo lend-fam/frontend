@@ -16,6 +16,7 @@ import {
 	useUserBorrowPositions,
 	useMarketsAvailableLiquidity,
 	useUSDBalances,
+	useAccountLiquidity,
 } from '../../../hooks';
 import { TokenService, MarketService } from '../../../services';
 
@@ -146,6 +147,7 @@ export const MarketsBorrowTable: FC = () => {
 	const { data: marketsAPY, isLoading: apyLoading } = useMarketsAPY();
 	const { data: userBorrowPositions, isLoading: positionsLoading } = useUserBorrowPositions(userAddress);
 	const { data: availableLiquidity, isLoading: liquidityLoading } = useMarketsAvailableLiquidity();
+	const { data: accountLiquidity } = useAccountLiquidity(userAddress);
 
 	// Prepare balance data for USD conversion
 	const balanceData = useMemo(() => {
@@ -168,21 +170,41 @@ export const MarketsBorrowTable: FC = () => {
 					decimals: 18,
 				});
 			} else {
-				// Add available liquidity for USD conversion
-				const availableCash = availableLiquidity[marketAddress] || 0n;
-				if (availableCash > 0n) {
-					balances.push({
-						marketAddress,
-						balance: availableCash,
-						symbol,
-						decimals: 18,
-					});
+				// Add user's borrowing capacity for USD conversion instead of total protocol liquidity
+				if (accountLiquidity && userAddress) {
+					const [, liquidity] = accountLiquidity as [bigint, bigint, bigint];
+					const userBorrowCapacity = liquidity && liquidity > 0n ? liquidity : 0n;
+					const availableCash = availableLiquidity[marketAddress] || 0n;
+					const actualAvailable = userBorrowCapacity < availableCash ? userBorrowCapacity : availableCash;
+
+					if (actualAvailable > 0n) {
+						balances.push({
+							marketAddress,
+							balance: actualAvailable,
+							symbol,
+							decimals: 18,
+						});
+					}
+				} else {
+					// Fallback: use reasonable amount for USD calculation
+					const availableCash = availableLiquidity[marketAddress] || 0n;
+					const maxDisplayAmount = 1000n * 10n ** 18n; // 1000 tokens in wei
+					const displayAmount = availableCash < maxDisplayAmount ? availableCash : maxDisplayAmount;
+
+					if (displayAmount > 0n) {
+						balances.push({
+							marketAddress,
+							balance: displayAmount,
+							symbol,
+							decimals: 18,
+						});
+					}
 				}
 			}
 		});
 
 		return balances;
-	}, [allMarkets, userBorrowPositions, availableLiquidity]);
+	}, [allMarkets, userBorrowPositions, availableLiquidity, accountLiquidity, userAddress]);
 
 	// Fetch USD values for balances
 	const { data: usdBalances, isLoading: usdLoading } = useUSDBalances(balanceData);
@@ -212,9 +234,19 @@ export const MarketsBorrowTable: FC = () => {
 				// Show current borrowed amount
 				availableAmount = MarketService.formatTokenBalance(userPosition?.balance || 0n, 18);
 			} else {
-				// For available markets, show total market liquidity available for borrowing
-				// (User's actual borrowing capacity would need proper collateral calculation)
-				availableAmount = MarketService.formatTokenBalance(availableCash, 18);
+				// Show user's available borrowing capacity instead of total protocol liquidity
+				if (accountLiquidity && userAddress) {
+					const [, liquidity] = accountLiquidity as [bigint, bigint, bigint];
+					// Use the smaller of user's borrowing capacity or market liquidity
+					const userBorrowCapacity = liquidity && liquidity > 0n ? liquidity : 0n;
+					const actualAvailable = userBorrowCapacity < availableCash ? userBorrowCapacity : availableCash;
+					availableAmount = MarketService.formatTokenBalance(actualAvailable, 18);
+				} else {
+					// Fallback: show a reasonable portion of market liquidity (max 1000 tokens)
+					const maxDisplayAmount = 1000n * 10n ** 18n; // 1000 tokens in wei
+					const displayAmount = availableCash < maxDisplayAmount ? availableCash : maxDisplayAmount;
+					availableAmount = MarketService.formatTokenBalance(displayAmount, 18);
+				}
 			}
 			const usdValue = usdBalances?.[marketAddress] || '0';
 
@@ -257,6 +289,8 @@ export const MarketsBorrowTable: FC = () => {
 		userBorrowPositions,
 		availableLiquidity,
 		usdBalances,
+		accountLiquidity,
+		userAddress,
 	]);
 
 	if (marketsLoading || apyLoading || positionsLoading || liquidityLoading || usdLoading || !allMarkets) {

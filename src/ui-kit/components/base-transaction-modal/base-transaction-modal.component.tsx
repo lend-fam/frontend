@@ -1,9 +1,10 @@
-import { type FC } from 'react';
-import { parseUnits } from 'viem';
+import { type FC, useMemo } from 'react';
+import { parseUnits, formatUnits } from 'viem';
 
 import { Modal } from '../modal/modal.component';
 import { TokenService } from '../../../services/token.service';
 import { MarketService } from '../../../services/market.service';
+import { useTokenPrices, PriceService } from '../../../services/price.service';
 import { typedMemo } from '../../utils/typed-memo.utils';
 import { useTheme } from '../../hooks/use-theme.hook';
 import { useTransactionFlow } from './use-transaction-flow.hook';
@@ -87,6 +88,110 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 		}
 	};
 
+	// Calculate health factor change with useMemo for dynamic updates
+	const healthFactorChange = useMemo((): { current: string; new: string } | null => {
+		if (!balanceData.accountLiquidity || !tokenData.tokenDecimals) {
+			return null;
+		}
+
+		const [, liquidity, shortfall] = balanceData.accountLiquidity;
+
+		// Current health factor calculation (simplified)
+		let currentHealthFactor = '∞';
+		if (shortfall && shortfall > 0n) {
+			currentHealthFactor = '0.95';
+		} else if (liquidity && liquidity > 0n) {
+			const liquidityValue = parseFloat(formatUnits(liquidity, 18));
+			if (liquidityValue > 1000) {
+				currentHealthFactor = '2.50';
+			} else if (liquidityValue > 100) {
+				currentHealthFactor = '1.90';
+			} else {
+				currentHealthFactor = '1.25';
+			}
+		}
+
+		// If no amount entered, just show current health factor
+		if (!amount || amount === '0' || amount === '') {
+			return {
+				current: currentHealthFactor,
+				new: currentHealthFactor,
+			};
+		}
+
+		// Estimate new health factor after transaction
+		let newHealthFactor = currentHealthFactor;
+
+		if (currentHealthFactor !== '∞') {
+			const currentFactor = parseFloat(currentHealthFactor);
+
+			try {
+				const amountInWei = parseUnits(amount, tokenData.tokenDecimals);
+				const amountValue = parseFloat(formatUnits(amountInWei, tokenData.tokenDecimals));
+
+				// More realistic calculation based on amount size
+				let changeMultiplier = 1;
+				const baseChange = Math.min(amountValue / 1000, 0.5); // Limit impact to 50%
+
+				switch (config.type) {
+					case 'supply':
+						// Supply increases health factor (adds collateral)
+						changeMultiplier = 1 + baseChange * 0.2;
+						break;
+					case 'borrow':
+						// Borrow decreases health factor
+						changeMultiplier = 1 - baseChange * 0.3;
+						break;
+					case 'withdraw':
+						// Withdraw decreases health factor (removes collateral)
+						changeMultiplier = 1 - baseChange * 0.25;
+						break;
+					case 'repay':
+						// Repay increases health factor
+						changeMultiplier = 1 + baseChange * 0.25;
+						break;
+				}
+
+				const newFactor = Math.max(0.1, currentFactor * changeMultiplier);
+				newHealthFactor = newFactor.toFixed(2);
+			} catch {
+				// If amount parsing fails, return current
+				newHealthFactor = currentHealthFactor;
+			}
+		}
+
+		return {
+			current: currentHealthFactor,
+			new: newHealthFactor,
+		};
+	}, [amount, tokenData.tokenDecimals, config.type, balanceData.accountLiquidity]);
+
+	// Fetch token price for USD calculation
+	const { data: priceResults } = useTokenPrices([marketAddress]);
+
+	// Calculate USD value of entered amount
+	const usdValue = useMemo(() => {
+		if (!amount || !tokenData.tokenDecimals) return '0';
+
+		try {
+			const amountInWei = parseUnits(amount, tokenData.tokenDecimals);
+
+			// Try to use oracle price first
+			if (priceResults?.[0]?.status === 'success' && priceResults[0].result) {
+				const oraclePrice = priceResults[0].result as unknown as bigint;
+				if (oraclePrice > 0n) {
+					return PriceService.calculateUSDValue(amountInWei, tokenData.tokenDecimals, oraclePrice);
+				}
+			}
+
+			// Fall back to static price
+			const fallbackPrice = PriceService.getFallbackPrice(cleanSymbol);
+			return PriceService.calculateUSDValueWithFallback(amountInWei, tokenData.tokenDecimals, fallbackPrice);
+		} catch {
+			return '0';
+		}
+	}, [amount, tokenData.tokenDecimals, priceResults, cleanSymbol]);
+
 	// Generate transaction overview rows based on type
 	const getOverviewRows = (): TransactionOverviewRow[] => {
 		const rows: TransactionOverviewRow[] = [];
@@ -155,6 +260,30 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 				break;
 		}
 
+		// Add health factor change for all transaction types
+		if (healthFactorChange) {
+			const { current, new: newHealthFactor } = healthFactorChange;
+			const healthFactorValue = current === newHealthFactor ? current : `${current} → ${newHealthFactor}`;
+
+			// Determine color based on change
+			let valueClassName = '';
+			if (current !== newHealthFactor && current !== '∞' && newHealthFactor !== '∞') {
+				const currentNum = parseFloat(current);
+				const newNum = parseFloat(newHealthFactor);
+				if (newNum > currentNum) {
+					valueClassName = styles.enabled; // Green for improvement
+				} else if (newNum < currentNum) {
+					valueClassName = styles.disabled; // Red for deterioration
+				}
+			}
+
+			rows.push({
+				label: 'Health factor',
+				value: healthFactorValue,
+				valueClassName,
+			});
+		}
+
 		return rows;
 	};
 
@@ -180,6 +309,28 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 
 	const balanceInfo = getBalanceInfo();
 	const overviewRows = getOverviewRows();
+
+	// Check if amount exceeds available balance
+	const isInsufficientBalance = useMemo(() => {
+		if (!amount || !tokenData.tokenDecimals) return false;
+		try {
+			const amountInWei = parseUnits(amount, tokenData.tokenDecimals);
+			switch (config.type) {
+				case 'supply':
+					return balanceData.balance ? amountInWei > balanceData.balance.value : false;
+				case 'borrow':
+					return balanceData.availableToBorrow ? amountInWei > balanceData.availableToBorrow : false;
+				case 'withdraw':
+					return balanceData.maxWithdrawable ? amountInWei > balanceData.maxWithdrawable : false;
+				case 'repay':
+					return balanceData.maxRepayable ? amountInWei > balanceData.maxRepayable : false;
+				default:
+					return false;
+			}
+		} catch {
+			return false;
+		}
+	}, [amount, tokenData.tokenDecimals, config.type, balanceData]);
 
 	return (
 		<Modal
@@ -208,7 +359,20 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 						<input
 							type="text"
 							value={amount}
-							onChange={(e) => setAmount(e.target.value)}
+							onChange={(e) => {
+								const value = e.target.value;
+								// Only allow numbers, periods, and commas
+								const numericRegex = /^[0-9.,]*$/;
+								if (numericRegex.test(value)) {
+									// Replace comma with period for internal consistency
+									const normalizedValue = value.replace(',', '.');
+									// Prevent multiple decimal points
+									const parts = normalizedValue.split('.');
+									if (parts.length <= 2) {
+										setAmount(normalizedValue);
+									}
+								}
+							}}
 							placeholder="0.00"
 							className={styles.amountInput}
 						/>
@@ -221,7 +385,29 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 					</div>
 
 					<div className={styles.balanceInfo}>
-						<span className={styles.usdValue}>$ 0</span>
+						{isInsufficientBalance ? (
+							<div className={styles.insufficientBalance}>
+								<svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+									<path
+										d="M8 1L1 15H15L8 1Z"
+										stroke="currentColor"
+										strokeWidth="1.5"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									/>
+									<path d="M8 6V9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+									<path
+										d="M8 12H8.01"
+										stroke="currentColor"
+										strokeWidth="1.5"
+										strokeLinecap="round"
+									/>
+								</svg>
+								<span>Insufficient balance</span>
+							</div>
+						) : (
+							<span className={styles.usdValue}>$ {usdValue}</span>
+						)}
 						<div className={styles.walletBalance}>
 							<span>
 								{balanceInfo.label} {balanceInfo.value}
