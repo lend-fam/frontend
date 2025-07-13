@@ -24,7 +24,7 @@ export const apeChainMainnet = defineChain({
 	blockExplorers: {
 		default: {
 			name: 'ApeScan',
-			url: 'https://apescan.io',
+			url: import.meta.env.VITE_APECHAIN_MAINNET_BLOCK_EXPLORER || 'https://apescan.io',
 		},
 	},
 });
@@ -46,7 +46,7 @@ export const apeChainTestnet = defineChain({
 	blockExplorers: {
 		default: {
 			name: 'ApeScan Testnet',
-			url: 'https://testnet.apescan.io',
+			url: import.meta.env.VITE_APECHAIN_CURTIS_BLOCK_EXPLORER || 'https://curtis.apescan.io',
 		},
 	},
 	testnet: true,
@@ -62,4 +62,13 @@ export const wagmiConfig = getDefaultConfig({
 export const chains = {
 	mainnet: apeChainMainnet,
 	testnet: apeChainTestnet,
+};
+
+export const getBlockExplorerUrl = (chainId: number): string => {
+	if (chainId === 33139) {
+		return import.meta.env.VITE_APECHAIN_MAINNET_BLOCK_EXPLORER || 'https://apescan.io';
+	} else if (chainId === 33111) {
+		return import.meta.env.VITE_APECHAIN_CURTIS_BLOCK_EXPLORER || 'https://curtis.apescan.io';
+	}
+	return 'https://apescan.io';
 };
