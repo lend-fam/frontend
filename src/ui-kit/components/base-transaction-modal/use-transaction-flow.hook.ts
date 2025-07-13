@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import type { Address } from 'viem';
 import { useAccount, useBalance, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseUnits, formatUnits, maxUint256 } from 'viem';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { CTOKEN_ABI, ERC20_ABI } from '../../../contracts';
 import { useAccountLiquidity } from '../../../hooks/use-account-liquidity.hook';
@@ -39,8 +40,8 @@ export const useTransactionFlow = ({
 	const [transactionStarted, setTransactionStarted] = useState(false);
 	const { address } = useAccount();
 	const lastSuccessTimeRef = useRef<number>(0);
+	const queryClient = useQueryClient();
 
-	// Token data
 	const { data: underlyingTokenAddress } = useReadContract({
 		address: marketAddress,
 		abi: CTOKEN_ABI,
@@ -54,7 +55,6 @@ export const useTransactionFlow = ({
 		query: { enabled: !!underlyingTokenAddress },
 	});
 
-	// Balance data based on transaction type
 	const { data: balance } = useBalance({
 		address,
 		token: underlyingTokenAddress,
@@ -94,7 +94,6 @@ export const useTransactionFlow = ({
 		query: { enabled: !!address && !!underlyingTokenAddress && config.requiresApproval },
 	});
 
-	// Contract write hooks
 	const { writeContract: approve, data: approveHash, isPending: isApprovePending } = useWriteContract();
 	const {
 		isLoading: isApproveConfirming,
@@ -153,7 +152,10 @@ export const useTransactionFlow = ({
 
 			if (actualAmount === 0 || !isFinite(actualAmount)) return 0n;
 
-			return parseUnits(actualAmount.toString(), tokenDecimals);
+			const decimalString = actualAmount.toFixed(tokenDecimals);
+			const result = parseUnits(decimalString, tokenDecimals);
+
+			return result;
 		} catch {
 			return 0n;
 		}
@@ -195,19 +197,37 @@ export const useTransactionFlow = ({
 	const needsApproval = useMemo(() => {
 		if (!config.requiresApproval || !amountInWei || amountInWei === 0n) return false;
 		const allowance = currentAllowance ?? 0n;
+
+		if (config.type === 'repay' && borrowBalance && amountInWei >= borrowBalance) {
+			return allowance < maxUint256;
+		}
+
 		return allowance < amountInWei;
-	}, [config.requiresApproval, currentAllowance, amountInWei]);
+	}, [config.requiresApproval, currentAllowance, amountInWei, config.type, borrowBalance]);
 
 	const isValidAmount = useMemo(() => {
 		if (!amount) return false;
 
 		if (amountInWei <= 0n) return false;
 
-		const tolerance = maxAvailable / 1000n;
+		if (config.type === 'repay') {
+			if (!balance || !borrowBalance) return false;
+
+			const hasWalletBalance = balance.value >= amountInWei;
+
+			const isMaxRepayAttempt = amountInWei >= borrowBalance;
+			const isValidPartialRepay = amountInWei <= borrowBalance;
+
+			const isValid = hasWalletBalance && (isMaxRepayAttempt || isValidPartialRepay);
+
+			return isValid;
+		}
+
+		const tolerance = maxAvailable > 1000n ? maxAvailable / 1000n : 1n;
 		const maxWithTolerance = maxAvailable + tolerance;
 
 		return amountInWei <= maxWithTolerance;
-	}, [amount, amountInWei, maxAvailable]);
+	}, [amount, amountInWei, maxAvailable, config.type, balance, borrowBalance]);
 
 	const isProcessing = isApprovePending || isApproveConfirming || isTransactionPending || isTransactionConfirming;
 
@@ -234,27 +254,51 @@ export const useTransactionFlow = ({
 			}
 			case 'withdraw': {
 				if (exchangeRate && tokenDecimals) {
-					const cTokensToRedeem = (amountInWei * parseUnits('1', 18)) / exchangeRate;
-					executeTransaction({
-						address: marketAddress,
-						abi: CTOKEN_ABI,
-						functionName: 'redeem',
-						args: [cTokensToRedeem],
-					});
+					const maxWithdrawable = (cTokenBalance! * exchangeRate) / parseUnits('1', 18);
+					const isMaxWithdraw = amountInWei >= maxWithdrawable;
+
+					if (isMaxWithdraw) {
+						executeTransaction({
+							address: marketAddress,
+							abi: CTOKEN_ABI,
+							functionName: 'redeem',
+							args: [cTokenBalance],
+						});
+					} else {
+						const cTokensToRedeem = (amountInWei * parseUnits('1', 18)) / exchangeRate;
+						executeTransaction({
+							address: marketAddress,
+							abi: CTOKEN_ABI,
+							functionName: 'redeem',
+							args: [cTokensToRedeem],
+						});
+					}
 				}
 				break;
 			}
 			case 'repay': {
+				const isMaxRepay = borrowBalance && amountInWei >= borrowBalance;
+				const repayAmount = isMaxRepay ? maxUint256 : amountInWei;
+
 				executeTransaction({
 					address: marketAddress,
 					abi: CTOKEN_ABI,
 					functionName: 'repayBorrow',
-					args: [amountInWei],
+					args: [repayAmount],
 				});
 				break;
 			}
 		}
-	}, [config.type, executeTransaction, marketAddress, amountInWei, exchangeRate, tokenDecimals]);
+	}, [
+		config.type,
+		executeTransaction,
+		marketAddress,
+		amountInWei,
+		exchangeRate,
+		tokenDecimals,
+		borrowBalance,
+		cTokenBalance,
+	]);
 
 	useEffect(() => {
 		if (
@@ -288,12 +332,91 @@ export const useTransactionFlow = ({
 			lastSuccessTimeRef.current = Date.now();
 			setHasAutoProceeded(false);
 			setTransactionStarted(false);
+
+			queryClient.invalidateQueries({
+				predicate: (query) => {
+					const queryKey = query.queryKey;
+					if (!queryKey || !Array.isArray(queryKey)) return false;
+
+					const keyString = JSON.stringify(queryKey).toLowerCase();
+
+					return (
+						keyString.includes('userborrow') ||
+						keyString.includes('accountliquidity') ||
+						((queryKey[0] === 'readContract' || queryKey[0] === 'readContracts') &&
+							keyString.includes(address?.toLowerCase() || ''))
+					);
+				},
+			});
+
+			setTimeout(async () => {
+				await Promise.all([
+					queryClient.invalidateQueries({
+						predicate: (query) => {
+							const queryKey = query.queryKey;
+							if (!queryKey || !Array.isArray(queryKey)) return false;
+
+							const keyString = JSON.stringify(queryKey).toLowerCase();
+
+							if (queryKey[0] === 'readContract' || queryKey[0] === 'readContracts') {
+								return (
+									keyString.includes(address?.toLowerCase() || '') ||
+									keyString.includes(marketAddress.toLowerCase())
+								);
+							}
+
+							if (queryKey[0] === 'balance' && keyString.includes(address?.toLowerCase() || '')) {
+								return true;
+							}
+
+							return (
+								keyString.includes('userborrow') ||
+								keyString.includes('usersupply') ||
+								keyString.includes('accountliquidity') ||
+								keyString.includes('marketsavailable') ||
+								keyString.includes('usermarkets') ||
+								keyString.includes('usdbalances') ||
+								keyString.includes('marketwallet') ||
+								keyString.includes('borrowbalancestored') ||
+								keyString.includes('balanceofunderlying')
+							);
+						},
+					}),
+
+					queryClient.refetchQueries({
+						predicate: (query) => {
+							const queryKey = query.queryKey;
+							if (!queryKey || !Array.isArray(queryKey)) return false;
+
+							const keyString = JSON.stringify(queryKey).toLowerCase();
+
+							return (
+								keyString.includes('userborrow') ||
+								keyString.includes('accountliquidity') ||
+								keyString.includes('borrowbalancestored') ||
+								(queryKey[0] === 'readContracts' && keyString.includes(address?.toLowerCase() || ''))
+							);
+						},
+					}),
+				]);
+			}, 50); // Reduced delay for faster response
+
 			if (onSuccess) {
 				onSuccess();
 			}
 			onClose();
 		}
-	}, [isTransactionSuccess, isOpen, transactionStarted, onClose, onSuccess, config.type]);
+	}, [
+		isTransactionSuccess,
+		isOpen,
+		transactionStarted,
+		onClose,
+		onSuccess,
+		config.type,
+		queryClient,
+		address,
+		marketAddress,
+	]);
 
 	useEffect(() => {
 		if (isOpen) {
@@ -326,8 +449,16 @@ export const useTransactionFlow = ({
 	const handleMaxClick = () => {
 		if (maxAvailable > 0n && tokenDecimals) {
 			const formatted = formatUnits(maxAvailable, tokenDecimals);
-			const number = parseFloat(formatted);
-			setAmount(number.toFixed(Math.min(8, tokenDecimals)));
+
+			let finalAmount: string;
+			if (config.type === 'repay' || config.type === 'withdraw') {
+				finalAmount = formatted;
+			} else {
+				const number = parseFloat(formatted);
+				finalAmount = number.toFixed(Math.min(8, tokenDecimals));
+			}
+
+			setAmount(finalAmount);
 		}
 	};
 
@@ -336,7 +467,8 @@ export const useTransactionFlow = ({
 			return;
 		}
 
-		const approvalAmount = useMaxApproval ? maxUint256 : amountInWei;
+		const isMaxRepay = config.type === 'repay' && borrowBalance && amountInWei >= borrowBalance;
+		const approvalAmount = useMaxApproval || isMaxRepay ? maxUint256 : amountInWei;
 		setTransactionStarted(true);
 		approve({
 			address: underlyingTokenAddress,

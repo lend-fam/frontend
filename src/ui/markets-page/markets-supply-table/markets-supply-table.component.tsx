@@ -1,18 +1,24 @@
 import { type FC, useMemo, useState } from 'react';
 import { useAccount } from 'wagmi';
 import type { Address } from 'viem';
-import { Table, type TableColumnProps, type TableData } from '../../../ui-kit/components/table/table.component';
-import { AssetsColumn } from '../../../ui-kit/components/table/columns/assets-column/assets-column.component';
-import { BalanceColumn } from '../../../ui-kit/components/table/columns/balance-column/balance-column.component';
-import { CollateralToggle } from '../../../ui-kit/components/table/columns/collateral-toggle/collateral-toggle.component';
-import { ActionButtons } from '../../../ui-kit/components/table/columns/action-buttons/action-buttons.component';
-import { useAllMarkets, useUserMarkets } from '../../../hooks/use-market-core.hook';
-import { useUserSupplyPositions } from '../../../hooks/use-user-positions.hook';
-import { useMarketsAPY } from '../../../hooks/use-market-data.hook';
-import { useUSDBalances } from '../../../hooks/use-usd-balances.hook';
-import { useMarketWalletBalances } from '../../../hooks/use-market-wallet-balances.hook';
-import { MarketService } from '../../../services/market.service';
-import { TokenService } from '../../../services/token.service';
+import {
+	Table,
+	type TableColumnProps,
+	type TableData,
+	AssetsColumn,
+	BalanceColumn,
+	CollateralToggle,
+	ActionButtons,
+} from '../../../ui-kit';
+import {
+	useAllMarkets,
+	useUserMarkets,
+	useUserSupplyPositions,
+	useMarketsAPY,
+	useUSDBalances,
+	useMarketWalletBalances,
+} from '../../../hooks';
+import { MarketService, TokenService } from '../../../services';
 
 import css from './markets-supply-table.module.css';
 import tableCss from './theme/table.module.css';
@@ -132,7 +138,7 @@ const availableAssetsColumns: TableColumnProps<MarketsSupplyTableData, MarketsSu
 	{ key: 'apy', label: 'APY', align: 'right', width: '20%' },
 	{
 		key: 'collateral',
-		label: 'Can be collateral',
+		label: 'Enter market',
 		align: 'center',
 		width: '20%',
 		cellRenderer: ({ data, style }) => (
@@ -144,9 +150,11 @@ const availableAssetsColumns: TableColumnProps<MarketsSupplyTableData, MarketsSu
 					justifyContent: 'center',
 					padding: '0 12px',
 				}}>
-				<div style={{ textAlign: 'center', fontFamily: 'Inter', fontSize: '14px', fontWeight: '500' }}>
-					{data.isCollateralEligible ? '✓' : '—'}
-				</div>
+				<CollateralToggle
+					marketAddress={data.marketAddress}
+					isEnabled={data.isCollateralEnabled}
+					isEligible={data.isCollateralEligible}
+				/>
 			</div>
 		),
 	},

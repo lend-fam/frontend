@@ -35,6 +35,7 @@ type MarketsBorrowTableData = {
 	hasBorrowed: boolean;
 	borrowAPY: string;
 	availableLiquidity: bigint;
+	userBorrowCapacity: bigint;
 };
 
 type MarketsBorrowTableColumn = 'assets' | 'available' | 'apy' | 'actions';
@@ -81,6 +82,7 @@ const borrowedAssetsColumns: TableColumnProps<MarketsBorrowTableData, MarketsBor
 					tokenSymbol={data.symbol}
 					borrowAPY={data.borrowAPY}
 					availableLiquidity={data.availableLiquidity}
+					userBorrowCapacity={data.userBorrowCapacity}
 				/>
 			</div>
 		),
@@ -129,6 +131,7 @@ const availableAssetsColumns: TableColumnProps<MarketsBorrowTableData, MarketsBo
 					tokenSymbol={data.symbol}
 					borrowAPY={data.borrowAPY}
 					availableLiquidity={data.availableLiquidity}
+					userBorrowCapacity={data.userBorrowCapacity}
 				/>
 			</div>
 		),
@@ -165,22 +168,22 @@ export const MarketsBorrowTable: FC = () => {
 					decimals: 18,
 				});
 			} else {
+				const availableCash = availableLiquidity[marketAddress] || 0n;
+
 				if (accountLiquidity && userAddress) {
 					const [, liquidity] = accountLiquidity as [bigint, bigint, bigint];
 					const userBorrowCapacity = liquidity && liquidity > 0n ? liquidity : 0n;
-					const availableCash = availableLiquidity[marketAddress] || 0n;
 					const actualAvailable = userBorrowCapacity < availableCash ? userBorrowCapacity : availableCash;
 
-					if (actualAvailable > 0n) {
-						balances.push({
-							marketAddress,
-							balance: actualAvailable,
-							symbol,
-							decimals: 18,
-						});
-					}
+					const displayAmount = actualAvailable > 0n ? actualAvailable : availableCash > 0n ? 0n : 0n;
+
+					balances.push({
+						marketAddress,
+						balance: displayAmount,
+						symbol,
+						decimals: 18,
+					});
 				} else {
-					const availableCash = availableLiquidity[marketAddress] || 0n;
 					const maxDisplayAmount = 1000n * 10n ** 18n;
 					const displayAmount = availableCash < maxDisplayAmount ? availableCash : maxDisplayAmount;
 
@@ -238,6 +241,12 @@ export const MarketsBorrowTable: FC = () => {
 
 			const symbol = displayName.replace('Market ', '').split(' ')[0];
 
+			let userBorrowCapacity: bigint = 0n;
+			if (accountLiquidity && userAddress) {
+				const [, liquidity] = accountLiquidity as [bigint, bigint, bigint];
+				userBorrowCapacity = liquidity && liquidity > 0n ? liquidity : 0n;
+			}
+
 			const marketData: MarketsBorrowTableData = {
 				assets: displayName,
 				available: availableAmount,
@@ -250,6 +259,7 @@ export const MarketsBorrowTable: FC = () => {
 				hasBorrowed,
 				borrowAPY: `${apy}%`,
 				availableLiquidity: availableCash,
+				userBorrowCapacity,
 			};
 
 			if (hasBorrowed) {

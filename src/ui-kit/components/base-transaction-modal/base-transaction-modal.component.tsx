@@ -48,12 +48,10 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 	const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
 	const cleanSymbol = displayName.replace('Market ', '').split(' ')[0];
 
-	// Use useRef to avoid re-rendering during slider interaction
 	const sliderRef = useRef<HTMLInputElement>(null);
 	const isDraggingRef = useRef(false);
 	const [sliderValue, setSliderValue] = useState(0);
 
-	// Get max balance for current transaction type
 	const getMaxBalance = useCallback(() => {
 		switch (config.type) {
 			case 'supply':
@@ -69,7 +67,6 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 		}
 	}, [config.type, balanceData]);
 
-	// Parse compact notation (5.2K, 1.3M) to actual number
 	const parseCompactNotation = useCallback((value: string): number => {
 		if (!value || value === '') return 0;
 
@@ -97,7 +94,6 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 		return baseNumber * multiplier;
 	}, []);
 
-	// Calculate percentage from amount
 	const calculatePercentage = useCallback(
 		(inputAmount: string): number => {
 			if (!inputAmount || !tokenData.tokenDecimals || inputAmount === '0' || inputAmount === '') {
@@ -116,7 +112,6 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 
 				if (actualAmount === 0) return 0;
 
-				// Convert to wei for comparison
 				const amountInWei = parseUnits(actualAmount.toString(), tokenData.tokenDecimals);
 				const maxBalance = getMaxBalance();
 
@@ -135,15 +130,12 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 		[tokenData.tokenDecimals, getMaxBalance, parseCompactNotation],
 	);
 
-	// Format floating point numbers with exactly 8 decimal places
 	const formatFloatingPoint = useCallback((value: number): string => {
 		if (value === 0) return '0.00000000';
 
-		// Always show exactly 8 decimal places
 		return value.toFixed(8);
 	}, []);
 
-	// Calculate amount from percentage
 	const calculateAmountFromPercentage = useCallback(
 		(percentage: number): string => {
 			if (!tokenData.tokenDecimals) return '0';
@@ -152,7 +144,6 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 			if (maxBalance === 0n) return '0';
 
 			const targetAmount = (maxBalance * BigInt(percentage)) / 100n;
-			// Return floating point number format (5200.50, 123.456, etc.)
 			const pureNumber = formatUnits(targetAmount, tokenData.tokenDecimals);
 			const numericValue = parseFloat(pureNumber);
 
@@ -161,22 +152,18 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 		[tokenData.tokenDecimals, getMaxBalance, formatFloatingPoint],
 	);
 
-	// Update slider when amount changes externally (typing, MAX button)
 	useEffect(() => {
 		if (!isDraggingRef.current) {
 			const newPercentage = calculatePercentage(amount);
 			setSliderValue(newPercentage);
 
-			// Directly update DOM to ensure visual position updates
 			if (sliderRef.current) {
 				sliderRef.current.value = newPercentage.toString();
-				// Update fill color
 				sliderRef.current.style.setProperty('--fill-percent', `${newPercentage}%`);
 			}
 		}
 	}, [amount, calculatePercentage]);
 
-	// Reset when modal closes
 	useEffect(() => {
 		if (!isOpen) {
 			isDraggingRef.current = false;
@@ -188,7 +175,6 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 		}
 	}, [isOpen]);
 
-	// Global event listeners to handle drag end outside slider
 	useEffect(() => {
 		const handleGlobalMouseUp = () => {
 			isDraggingRef.current = false;
@@ -198,18 +184,15 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 			isDraggingRef.current = false;
 		};
 
-		// Add listeners
 		document.addEventListener('mouseup', handleGlobalMouseUp);
 		document.addEventListener('touchend', handleGlobalTouchEnd);
 
 		return () => {
-			// Cleanup
 			document.removeEventListener('mouseup', handleGlobalMouseUp);
 			document.removeEventListener('touchend', handleGlobalTouchEnd);
 		};
 	}, []);
 
-	// Get balance label and value based on transaction type
 	const getBalanceInfo = () => {
 		switch (config.type) {
 			case 'supply':
@@ -249,7 +232,6 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 		}
 	};
 
-	// Calculate health factor change with useMemo for dynamic updates
 	const healthFactorChange = useMemo((): { current: string; new: string } | null => {
 		if (!balanceData.accountLiquidity || !tokenData.tokenDecimals) {
 			return null;
@@ -257,7 +239,6 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 
 		const [, liquidity, shortfall] = balanceData.accountLiquidity;
 
-		// Current health factor calculation (simplified)
 		let currentHealthFactor = '∞';
 		if (shortfall && shortfall > 0n) {
 			currentHealthFactor = '0.95';
@@ -272,7 +253,6 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 			}
 		}
 
-		// If no amount entered, just show current health factor
 		if (!amount || amount === '0' || amount === '') {
 			return {
 				current: currentHealthFactor,
@@ -280,7 +260,6 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 			};
 		}
 
-		// Estimate new health factor after transaction
 		let newHealthFactor = currentHealthFactor;
 
 		if (currentHealthFactor !== '∞') {
@@ -290,25 +269,20 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 				const amountInWei = parseUnits(amount, tokenData.tokenDecimals);
 				const amountValue = parseFloat(formatUnits(amountInWei, tokenData.tokenDecimals));
 
-				// More realistic calculation based on amount size
 				let changeMultiplier = 1;
-				const baseChange = Math.min(amountValue / 1000, 0.5); // Limit impact to 50%
+				const baseChange = Math.min(amountValue / 1000, 0.5);
 
 				switch (config.type) {
 					case 'supply':
-						// Supply increases health factor (adds collateral)
 						changeMultiplier = 1 + baseChange * 0.2;
 						break;
 					case 'borrow':
-						// Borrow decreases health factor
 						changeMultiplier = 1 - baseChange * 0.3;
 						break;
 					case 'withdraw':
-						// Withdraw decreases health factor (removes collateral)
 						changeMultiplier = 1 - baseChange * 0.25;
 						break;
 					case 'repay':
-						// Repay increases health factor
 						changeMultiplier = 1 + baseChange * 0.25;
 						break;
 				}
@@ -316,7 +290,6 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 				const newFactor = Math.max(0.1, currentFactor * changeMultiplier);
 				newHealthFactor = newFactor.toFixed(2);
 			} catch {
-				// If amount parsing fails, return current
 				newHealthFactor = currentHealthFactor;
 			}
 		}
@@ -327,17 +300,14 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 		};
 	}, [amount, tokenData.tokenDecimals, config.type, balanceData.accountLiquidity]);
 
-	// Fetch token price for USD calculation
 	const { data: priceResults } = useTokenPrices([marketAddress]);
 
-	// Calculate USD value of entered amount
 	const usdValue = useMemo(() => {
 		if (!amount || !tokenData.tokenDecimals) return '0';
 
 		try {
 			const amountInWei = parseUnits(amount, tokenData.tokenDecimals);
 
-			// Try to use oracle price first
 			if (priceResults?.[0]?.status === 'success' && priceResults[0].result) {
 				const oraclePrice = priceResults[0].result as unknown as bigint;
 				if (oraclePrice > 0n) {
@@ -345,7 +315,6 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 				}
 			}
 
-			// Fall back to static price
 			const fallbackPrice = PriceService.getFallbackPrice(cleanSymbol);
 			return PriceService.calculateUSDValueWithFallback(amountInWei, tokenData.tokenDecimals, fallbackPrice);
 		} catch {
@@ -353,7 +322,6 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 		}
 	}, [amount, tokenData.tokenDecimals, priceResults, cleanSymbol]);
 
-	// Generate transaction overview rows based on type
 	const getOverviewRows = (): TransactionOverviewRow[] => {
 		const rows: TransactionOverviewRow[] = [];
 
@@ -421,20 +389,18 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 				break;
 		}
 
-		// Add health factor change for all transaction types
 		if (healthFactorChange) {
 			const { current, new: newHealthFactor } = healthFactorChange;
 			const healthFactorValue = current === newHealthFactor ? current : `${current} → ${newHealthFactor}`;
 
-			// Determine color based on change
 			let valueClassName = '';
 			if (current !== newHealthFactor && current !== '∞' && newHealthFactor !== '∞') {
 				const currentNum = parseFloat(current);
 				const newNum = parseFloat(newHealthFactor);
 				if (newNum > currentNum) {
-					valueClassName = styles.enabled; // Green for improvement
+					valueClassName = styles.enabled;
 				} else if (newNum < currentNum) {
-					valueClassName = styles.disabled; // Red for deterioration
+					valueClassName = styles.disabled;
 				}
 			}
 
@@ -448,7 +414,6 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 		return rows;
 	};
 
-	// Get submit button text
 	const getSubmitButtonText = () => {
 		if (transactionState.isProcessing) {
 			if (transactionState.isApprovePending || transactionState.isApproveConfirming) {
@@ -471,11 +436,9 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 	const balanceInfo = getBalanceInfo();
 	const overviewRows = getOverviewRows();
 
-	// Check if amount exceeds available balance with tolerance for rounding
 	const isInsufficientBalance = useMemo(() => {
 		if (!amount || !tokenData.tokenDecimals) return false;
 		try {
-			// Parse the amount, handling both pure numbers and compact notation
 			let actualAmount: number;
 			const pureNumber = parseFloat(amount.replace(/,/g, ''));
 			if (!isNaN(pureNumber) && isFinite(pureNumber)) {
@@ -508,8 +471,7 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 
 			if (maxBalance === 0n) return false;
 
-			// Add tolerance for rounding errors (allow up to 0.1% difference)
-			const tolerance = maxBalance / 1000n; // 0.1% tolerance
+			const tolerance = maxBalance / 1000n;
 			const maxBalanceWithTolerance = maxBalance + tolerance;
 
 			return amountInWei > maxBalanceWithTolerance;
@@ -518,13 +480,25 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 		}
 	}, [amount, tokenData.tokenDecimals, config.type, balanceData, parseCompactNotation]);
 
+	const isMaxRepay = useMemo(() => {
+		if (config.type !== 'repay' || !amount || !balanceData.borrowBalance || !tokenData.tokenDecimals) {
+			return false;
+		}
+
+		try {
+			const amountInWei = parseUnits(amount, tokenData.tokenDecimals);
+			return amountInWei >= balanceData.borrowBalance;
+		} catch {
+			return false;
+		}
+	}, [config.type, amount, balanceData.borrowBalance, tokenData.tokenDecimals]);
+
 	return (
 		<Modal
 			isOpen={isOpen}
 			onClose={onClose}
 			title={`${config.type.charAt(0).toUpperCase() + config.type.slice(1)} ${cleanSymbol}`}>
 			<div className={styles.container}>
-				{/* Amount Section */}
 				<div className={styles.section}>
 					<div className={styles.sectionHeader}>
 						<label className={styles.label}>Amount</label>
@@ -547,16 +521,12 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 							value={amount}
 							onChange={(e) => {
 								const value = e.target.value;
-								// Allow numbers, periods, commas, and K/M/B suffixes
 								const numericRegex = /^[0-9.,KMBkmb]*$/;
 								if (numericRegex.test(value)) {
-									// Replace comma with period for internal consistency
 									let normalizedValue = value.replace(',', '.');
 
-									// Ensure K/M/B is only at the end and uppercase
 									normalizedValue = normalizedValue.replace(/[kmb]/g, (match) => match.toUpperCase());
 
-									// Prevent multiple decimal points
 									const beforeSuffix = normalizedValue.replace(/[KMB]$/, '');
 									const suffix = normalizedValue.match(/[KMB]$/)?.[0] || '';
 									const parts = beforeSuffix.split('.');
@@ -577,7 +547,6 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 						</div>
 					</div>
 
-					{/* Percentage Slider */}
 					<div className={styles.sliderContainer}>
 						<input
 							ref={sliderRef}
@@ -603,25 +572,20 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 								isDraggingRef.current = false;
 							}}
 							onInput={(e) => {
-								// Use onInput for immediate feedback during drag
 								const percentage = parseInt(e.currentTarget.value);
 								setSliderValue(percentage);
 
-								// Update CSS custom property for fill color
 								if (sliderRef.current) {
 									sliderRef.current.style.setProperty('--fill-percent', `${percentage}%`);
 								}
 
-								// Update amount immediately during drag
 								const newAmount = calculateAmountFromPercentage(percentage);
 								setAmount(newAmount);
 							}}
 							onChange={(e) => {
-								// Backup handler for when onInput isn't supported
 								const percentage = parseInt(e.target.value);
 								setSliderValue(percentage);
 
-								// Update CSS custom property for fill color
 								if (sliderRef.current) {
 									sliderRef.current.style.setProperty('--fill-percent', `${percentage}%`);
 								}
@@ -739,7 +703,6 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 					</div>
 				</div>
 
-				{/* Approval Settings (only for transactions that require approval) */}
 				{config.requiresApproval && (
 					<div className={styles.section}>
 						<h3 className={styles.sectionTitle}>Approval Settings</h3>
@@ -748,25 +711,35 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 								<label className={styles.approvalLabel}>
 									<input
 										type="checkbox"
-										checked={approvalSettings.useMaxApproval}
+										checked={approvalSettings.useMaxApproval || isMaxRepay}
 										onChange={(e) => handleApprovalSettingChange(e.target.checked)}
+										disabled={isMaxRepay}
 										className={styles.approvalCheckbox}
 									/>
 									<span className={styles.approvalText}>
-										Unlimited approval (gas efficient for future transactions)
+										<span className={styles.approvalTextMain}>
+											Unlimited approval (gas efficient for future transactions)
+										</span>
+										<span className={styles.requiredIndicator}>
+											<span
+												className={`${styles.requiredText} ${isMaxRepay ? styles.visible : styles.hidden}`}>
+												Required
+											</span>
+										</span>
 									</span>
 								</label>
 								<div className={styles.approvalDescription}>
-									{approvalSettings.useMaxApproval
-										? 'Approve unlimited amount for future transactions'
-										: `Approve only ${amount || '0'} ${cleanSymbol} for this transaction`}
+									{isMaxRepay
+										? 'Required for max repay to handle interest accrual'
+										: approvalSettings.useMaxApproval
+											? 'Approve unlimited amount for future transactions'
+											: `Approve only ${amount || '0'} ${cleanSymbol} for this transaction`}
 								</div>
 							</div>
 						</div>
 					</div>
 				)}
 
-				{/* Transaction Overview */}
 				{overviewRows.length > 0 && (
 					<div className={styles.section}>
 						<h3 className={styles.sectionTitle}>Transaction overview</h3>
@@ -783,7 +756,6 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 					</div>
 				)}
 
-				{/* Gas Fee Indicator */}
 				<div className={styles.gasSection}>
 					<div className={styles.gasIcon}>
 						<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -799,7 +771,6 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 					<span className={styles.gasText}>-</span>
 				</div>
 
-				{/* Submit Button */}
 				<button
 					type="button"
 					onClick={handleSubmit}
