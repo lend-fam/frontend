@@ -15,7 +15,6 @@ const CTOKEN_ABI = [
 export function useMarketWalletBalances(marketAddresses: Address[]) {
 	const { address: userAddress } = useAccount();
 
-	// First, fetch all underlying token addresses
 	const contracts = marketAddresses.map((address) => ({
 		address,
 		abi: CTOKEN_ABI,
@@ -28,8 +27,6 @@ export function useMarketWalletBalances(marketAddresses: Address[]) {
 			enabled: marketAddresses.length > 0,
 		},
 	});
-
-	// Extract underlying tokens from the results
 	const underlyingTokens = useMemo(() => {
 		const tokens: Record<Address, Address> = {};
 		if (underlyingData) {
@@ -43,12 +40,9 @@ export function useMarketWalletBalances(marketAddresses: Address[]) {
 		return tokens;
 	}, [underlyingData, marketAddresses]);
 
-	// Create an array of underlying token addresses for balance queries
 	const uniqueUnderlyingTokens = useMemo(() => {
 		return [...new Set(Object.values(underlyingTokens))];
 	}, [underlyingTokens]);
-
-	// Fetch balances for all unique underlying tokens
 	const balanceContracts = uniqueUnderlyingTokens.map((token) => ({
 		address: token,
 		abi: [
@@ -71,7 +65,6 @@ export function useMarketWalletBalances(marketAddresses: Address[]) {
 		},
 	});
 
-	// Map balances back to market addresses
 	const marketBalances = useMemo(() => {
 		const balances: Record<Address, bigint> = {};
 

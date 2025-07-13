@@ -62,51 +62,12 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 
 	const isEnabled = isPendingToggle !== null ? isPendingToggle : (isEnabledProp ?? actualIsEnabled);
 
-	useEffect(() => {
-		console.log('CollateralToggle state:', {
-			marketAddress,
-			userAddress,
-			actualIsEnabled,
-			isEnabledProp,
-			isPendingToggle,
-			finalIsEnabled: isEnabled,
-		});
-	}, [marketAddress, userAddress, actualIsEnabled, isEnabledProp, isPendingToggle, isEnabled]);
-
-	useEffect(() => {
-		if (toggleHash) {
-			console.log('CollateralToggle: Transaction hash received:', toggleHash);
-		}
-	}, [toggleHash]);
-
-	useEffect(() => {
-		if (isTogglePending) {
-			console.log('CollateralToggle: Transaction pending...');
-		}
-	}, [isTogglePending]);
-
-	useEffect(() => {
-		if (isToggleConfirming) {
-			console.log('CollateralToggle: Transaction confirming...');
-		}
-	}, [isToggleConfirming]);
-
 	const handleToggle = useCallback(() => {
 		if (!disabled && isEligible && comptrollerAddress) {
 			const newPendingState = !isEnabled;
 			setIsPendingToggle(newPendingState);
 
-			console.log('CollateralToggle: Starting transaction:', {
-				currentState: isEnabled,
-				pendingState: newPendingState,
-				action: isEnabled ? 'exitMarket' : 'enterMarkets',
-				marketAddress,
-				comptrollerAddress,
-			});
-
 			if (isEnabled && hasOutstandingBorrows) {
-				console.log('❌ Cannot exit market: User has outstanding borrows');
-				console.log('Borrow balance:', formatUnits(borrowBalance, 18));
 				alert(
 					`Cannot disable collateral: You have ${formatUnits(borrowBalance, 18)} tokens borrowed in this market. Please repay your borrows first.`,
 				);
@@ -153,33 +114,12 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 
 	useEffect(() => {
 		if (isToggleSuccess && userMarketsQueryKey) {
-			console.log('🔄 Transaction successful! Effect triggered');
-			console.log('📋 Current effect dependencies:', {
-				isToggleSuccess,
-				hasUserMarketsQueryKey: !!userMarketsQueryKey,
-				toggleHash,
-			});
-
 			queryClient.invalidateQueries({ queryKey: userMarketsQueryKey });
-			console.log('✅ Query invalidation called');
 
-			console.log('⏱️ Checking if exitMarket actually worked...');
 			manualRefetch().then((freshResult) => {
 				const stillInArray = freshResult.data?.includes(marketAddress);
-				console.log('🔍 IMMEDIATE blockchain check result:', {
-					markets: freshResult.data?.map((addr) => addr.slice(0, 10) + '...'),
-					includesOurMarket: stillInArray,
-					ourMarket: marketAddress.slice(0, 10) + '...',
-					actualResult: stillInArray ? 'STILL IN ARRAY (BAD)' : 'REMOVED FROM ARRAY (GOOD)',
-				});
 
 				if (stillInArray) {
-					console.error('❌ exitMarket FAILED! Likely reasons:');
-					console.error('1. Outstanding borrow balance in this market');
-					console.error('2. Insufficient collateral in other markets');
-					console.error('3. Market-specific restrictions');
-					console.error('Check borrowBalanceStored for this market and user');
-
 					alert(
 						'Cannot disable collateral: You may have outstanding borrows in this market. Please repay your borrows first.',
 					);
@@ -187,18 +127,15 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 			});
 
 			setTimeout(() => {
-				console.log('🧹 Clearing pending state');
 				setIsPendingToggle(null);
 			}, 2000);
 		} else if (isToggleError) {
-			console.log('❌ Transaction failed!');
 			setIsPendingToggle(null);
 		}
 	}, [isToggleSuccess, toggleHash, isToggleError, manualRefetch, marketAddress, queryClient, userMarketsQueryKey]);
 
 	useEffect(() => {
 		if (isToggleError) {
-			console.log('CollateralToggle: Toggle transaction failed');
 			alert('Collateral toggle failed. Please try again.');
 		}
 	}, [isToggleError]);

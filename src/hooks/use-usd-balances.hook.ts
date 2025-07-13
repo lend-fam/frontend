@@ -17,18 +17,9 @@ export function useUSDBalances(balances: TokenBalance[]): {
 	isLoading: boolean;
 	error: string | null;
 } {
-	// Extract market addresses for price fetching
 	const marketAddresses = useMemo(() => balances.map((b) => b.marketAddress), [balances]);
 
-	// Fetch prices from Compound oracle
 	const { data: priceResults, isLoading, error } = useTokenPrices(marketAddresses);
-
-	// Log only when there are oracle failures for debugging
-	if (error) {
-		console.warn('Price oracle error:', error);
-	}
-
-	// Calculate USD values
 	const usdValues = useMemo(() => {
 		if (!priceResults || isLoading) return {};
 
@@ -40,7 +31,6 @@ export function useUSDBalances(balances: TokenBalance[]): {
 			if (priceResult?.status === 'success' && priceResult.result && balance.balance > 0n) {
 				const oraclePrice = priceResult.result as unknown as bigint;
 
-				// If oracle price is 0, use fallback pricing
 				if (oraclePrice === 0n) {
 					const fallbackPrice = PriceService.getFallbackPrice(balance.symbol);
 					const usdValue = PriceService.calculateUSDValueWithFallback(
@@ -54,7 +44,6 @@ export function useUSDBalances(balances: TokenBalance[]): {
 					result[balance.marketAddress] = usdValue;
 				}
 			} else {
-				// Use fallback pricing when oracle fails
 				const fallbackPrice = PriceService.getFallbackPrice(balance.symbol);
 				const usdValue = PriceService.calculateUSDValueWithFallback(
 					balance.balance,

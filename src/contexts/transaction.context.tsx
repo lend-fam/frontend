@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import { createContext, useReducer, type ReactNode } from 'react';
 import type { Hash, Address } from 'viem';
 
@@ -25,7 +24,7 @@ type TransactionAction =
 	| { type: 'ADD_TRANSACTION'; payload: TransactionInfo }
 	| { type: 'UPDATE_TRANSACTION'; payload: { hash: Hash; updates: Partial<TransactionInfo> } }
 	| { type: 'REMOVE_TRANSACTION'; payload: Hash }
-	| { type: 'CLEAR_OLD_TRANSACTIONS'; payload: number }; // timestamp threshold
+	| { type: 'CLEAR_OLD_TRANSACTIONS'; payload: number };
 
 const initialState: TransactionState = {
 	transactions: {},
@@ -87,7 +86,7 @@ function transactionReducer(state: TransactionState, action: TransactionAction):
 
 		case 'REMOVE_TRANSACTION': {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { [action.payload]: _removed, ...remaining } = state.transactions;
+			const { [action.payload]: _, ...remaining } = state.transactions;
 
 			const allTransactions = Object.values(remaining);
 			const pendingCount = allTransactions.filter(
@@ -139,6 +138,7 @@ interface TransactionContextValue extends TransactionState {
 	getTransactionsByType: (type: TransactionInfo['type']) => TransactionInfo[];
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const TransactionContext = createContext<TransactionContextValue | null>(null);
 
 export function TransactionProvider({ children }: { children: ReactNode }) {
@@ -196,5 +196,3 @@ export function TransactionProvider({ children }: { children: ReactNode }) {
 
 	return <TransactionContext.Provider value={value}>{children}</TransactionContext.Provider>;
 }
-
-// Moved useTransactionContext to separate file to avoid react-refresh issues

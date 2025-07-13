@@ -76,8 +76,7 @@ export class PriceService {
 			}
 
 			return usdValue.toFixed(2);
-		} catch (error) {
-			console.error('Error calculating fallback USD value:', error);
+		} catch {
 			return '0';
 		}
 	}
@@ -90,7 +89,6 @@ export class PriceService {
 	 */
 	static calculateUSDValue(balance: bigint, decimals: number, oraclePrice: bigint): string {
 		try {
-			// Oracle price is scaled by 1e18, balance needs to be converted to token amount
 			const tokenAmount = formatUnits(balance, decimals);
 			const priceInUSD = formatUnits(oraclePrice, 18);
 
@@ -101,8 +99,7 @@ export class PriceService {
 			}
 
 			return usdValue.toFixed(2);
-		} catch (error) {
-			console.error('Error calculating USD value:', error);
+		} catch {
 			return '0';
 		}
 	}

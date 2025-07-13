@@ -20,7 +20,6 @@ const REPAY_CONFIG: TransactionConfig = {
 };
 
 export const RepayModal: FC<RepayModalProps> = ({ isOpen, onClose, marketAddress, borrowAPY }) => {
-	// Green theme for repay button using CSS module class
 	const repayTheme = {
 		submitButton: css.submitButton,
 	};

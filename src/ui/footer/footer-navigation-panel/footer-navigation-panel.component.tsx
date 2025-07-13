@@ -8,22 +8,22 @@ export const FooterNavigationPanel: FC = () => {
 		<nav className={css.container}>
 			<ul>
 				<li className={css.item}>
-					<Link href={''} className={css.link}>
+					<Link href="" className={css.link}>
 						Markets
 					</Link>
 				</li>
 				<li className={css.item}>
-					<Link href={''} className={css.link}>
+					<Link href="" className={css.link}>
 						Dashboard
 					</Link>
 				</li>
 				<li className={css.item}>
-					<Link href={''} className={css.link}>
-						Markets
+					<Link href="" className={css.link}>
+						Collections
 					</Link>
 				</li>
 				<li className={css.item}>
-					<Link href={''} className={css.link}>
+					<Link href="" className={css.link}>
 						XP
 					</Link>
 				</li>

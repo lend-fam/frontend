@@ -1,9 +1,5 @@
 import type { Address } from 'viem';
 
-/**
- * Utility functions for managing collateral state in Compound V2 protocol
- */
-
 export function isMarketCollateralEnabled(userEnteredMarkets: Address[] | undefined, marketAddress: Address): boolean {
 	if (!userEnteredMarkets) return false;
 	return userEnteredMarkets.includes(marketAddress);

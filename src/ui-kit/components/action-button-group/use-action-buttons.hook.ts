@@ -31,7 +31,6 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 	const lastSecondaryClickRef = useRef<number>(0);
 	const lastPrimarySuccessRef = useRef<number>(0);
 
-	// ApeChain network IDs
 	const APECHAIN_MAINNET = 33139;
 	const APECHAIN_TESTNET = 33111;
 	const isValidNetwork = chainId === APECHAIN_MAINNET || chainId === APECHAIN_TESTNET;
@@ -54,8 +53,6 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 		const timeSinceLastClick = now - lastPrimaryClickRef.current;
 		const timeSinceLastSuccess = now - lastPrimarySuccessRef.current;
 
-		// Allow immediate reopening after successful transaction (within 2 seconds)
-		// Otherwise prevent rapid successive clicks (debounce with 500ms)
 		if (timeSinceLastClick < 500 && timeSinceLastSuccess > 2000) {
 			return;
 		}
@@ -71,7 +68,6 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 		const now = Date.now();
 		const timeSinceLastClick = now - lastSecondaryClickRef.current;
 
-		// Prevent rapid successive clicks (debounce with 500ms)
 		if (timeSinceLastClick < 500) {
 			return;
 		}

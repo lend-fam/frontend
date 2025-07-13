@@ -19,7 +19,7 @@ export const Tooltip: FC<TooltipProps> = ({ content, children, position = 'top',
 			{children}
 			{isVisible && (
 				<div className={`${css.tooltip} ${css[position]}`}>
-					<div className={css.tooltipContent}>{content}</div>
+					<div>{content}</div>
 					<div className={css.tooltipArrow} />
 				</div>
 			)}

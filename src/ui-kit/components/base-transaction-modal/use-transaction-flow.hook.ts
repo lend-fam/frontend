@@ -113,17 +113,16 @@ export const useTransactionFlow = ({
 		isError: isTransactionError,
 	} = useWaitForTransactionReceipt({ hash: transactionHash });
 
-	// Parse compact notation helper
 	const parseCompactNotation = useCallback((value: string): number => {
 		if (!value || value === '') return 0;
-		
+
 		const cleanValue = value.replace(/,/g, '').trim();
 		const lastChar = cleanValue.slice(-1).toLowerCase();
 		const numericPart = cleanValue.slice(0, -1);
-		
+
 		let multiplier = 1;
 		let numberStr = cleanValue;
-		
+
 		if (lastChar === 'k') {
 			multiplier = 1000;
 			numberStr = numericPart;
@@ -134,18 +133,16 @@ export const useTransactionFlow = ({
 			multiplier = 1000000000;
 			numberStr = numericPart;
 		}
-		
+
 		const baseNumber = parseFloat(numberStr);
 		if (isNaN(baseNumber)) return 0;
-		
+
 		return baseNumber * multiplier;
 	}, []);
 
-	// Computed values
 	const amountInWei = useMemo(() => {
 		if (!amount || !tokenDecimals) return 0n;
 		try {
-			// Parse amount, handling both pure numbers and compact notation
 			let actualAmount: number;
 			const pureNumber = parseFloat(amount.replace(/,/g, ''));
 			if (!isNaN(pureNumber) && isFinite(pureNumber)) {
@@ -153,16 +150,15 @@ export const useTransactionFlow = ({
 			} else {
 				actualAmount = parseCompactNotation(amount);
 			}
-			
+
 			if (actualAmount === 0 || !isFinite(actualAmount)) return 0n;
-			
+
 			return parseUnits(actualAmount.toString(), tokenDecimals);
 		} catch {
 			return 0n;
 		}
 	}, [amount, tokenDecimals, parseCompactNotation]);
 
-	// Calculate max available amount based on transaction type
 	const maxAvailable = useMemo(() => {
 		switch (config.type) {
 			case 'supply': {
@@ -204,32 +200,17 @@ export const useTransactionFlow = ({
 
 	const isValidAmount = useMemo(() => {
 		if (!amount) return false;
-		
-		// Add small tolerance for precision errors when comparing with maxAvailable
+
 		if (amountInWei <= 0n) return false;
-		
-		// Allow up to 0.1% difference to account for precision loss in formatting/parsing
-		const tolerance = maxAvailable / 1000n; // 0.1% tolerance
+
+		const tolerance = maxAvailable / 1000n;
 		const maxWithTolerance = maxAvailable + tolerance;
-		
-		const isValid = amountInWei <= maxWithTolerance;
-		
-		// Debug logging
-		console.log('isValidAmount check:', {
-			amount,
-			amountInWei: amountInWei.toString(),
-			maxAvailable: maxAvailable.toString(),
-			maxWithTolerance: maxWithTolerance.toString(),
-			isValid,
-			difference: amountInWei > maxAvailable ? (amountInWei - maxAvailable).toString() : '0'
-		});
-		
-		return isValid;
+
+		return amountInWei <= maxWithTolerance;
 	}, [amount, amountInWei, maxAvailable]);
 
 	const isProcessing = isApprovePending || isApproveConfirming || isTransactionPending || isTransactionConfirming;
 
-	// Define the main transaction execution function
 	const executeMainTransaction = useCallback(() => {
 		setTransactionStarted(true);
 		switch (config.type) {
@@ -275,18 +256,7 @@ export const useTransactionFlow = ({
 		}
 	}, [config.type, executeTransaction, marketAddress, amountInWei, exchangeRate, tokenDecimals]);
 
-	// Auto-progression logic for approval flow
 	useEffect(() => {
-		console.log(`${config.type}: Auto-proceed effect triggered`, {
-			isOpen,
-			isApproveSuccess,
-			isTransactionPending,
-			isTransactionConfirming,
-			isValidAmount,
-			hasAutoProceeded,
-			transactionStarted,
-		});
-
 		if (
 			isOpen &&
 			isApproveSuccess &&
@@ -297,7 +267,6 @@ export const useTransactionFlow = ({
 			config.requiresApproval &&
 			transactionStarted
 		) {
-			console.log(`${config.type}: Auto-proceeding with transaction after approval success`);
 			setHasAutoProceeded(true);
 			executeMainTransaction();
 		}
@@ -314,10 +283,8 @@ export const useTransactionFlow = ({
 		executeMainTransaction,
 	]);
 
-	// Close modal on success
 	useEffect(() => {
 		if (isTransactionSuccess && isOpen && transactionStarted) {
-			console.log(`${config.type}: Transaction successful, closing modal`);
 			lastSuccessTimeRef.current = Date.now();
 			setHasAutoProceeded(false);
 			setTransactionStarted(false);
@@ -328,27 +295,22 @@ export const useTransactionFlow = ({
 		}
 	}, [isTransactionSuccess, isOpen, transactionStarted, onClose, onSuccess, config.type]);
 
-	// Reset state when modal opens
 	useEffect(() => {
 		if (isOpen) {
 			setHasAutoProceeded(false);
 			setTransactionStarted(false);
-			// Reset amount on new modal open to avoid stale state
 			setAmount('');
 		}
 	}, [isOpen]);
 
-	// Reset auto-proceed flag on amount change (for repay)
 	useEffect(() => {
 		if (config.type === 'repay') {
 			setHasAutoProceeded(false);
 		}
 	}, [amount, config.type]);
 
-	// Error handling
 	useEffect(() => {
 		if (isApproveError) {
-			console.log(`${config.type}: Approval transaction failed`);
 			setHasAutoProceeded(false);
 			alert('Token approval failed. Please try again.');
 		}
@@ -356,13 +318,11 @@ export const useTransactionFlow = ({
 
 	useEffect(() => {
 		if (isTransactionError) {
-			console.log(`${config.type}: Transaction failed`);
 			setHasAutoProceeded(false);
 			alert(`${config.type} transaction failed. Please try again.`);
 		}
 	}, [isTransactionError, config.type]);
 
-	// Handlers
 	const handleMaxClick = () => {
 		if (maxAvailable > 0n && tokenDecimals) {
 			const formatted = formatUnits(maxAvailable, tokenDecimals);
@@ -372,20 +332,11 @@ export const useTransactionFlow = ({
 	};
 
 	const handleApprove = () => {
-		console.log(`${config.type}: handleApprove called`, {
-			underlyingTokenAddress,
-			isValidAmount,
-			marketAddress,
-			amountInWei: amountInWei.toString(),
-		});
-
 		if (!underlyingTokenAddress || !isValidAmount) {
-			console.log(`${config.type}: handleApprove early return - missing requirements`);
 			return;
 		}
 
 		const approvalAmount = useMaxApproval ? maxUint256 : amountInWei;
-		console.log(`${config.type}: Calling approve transaction with amount:`, approvalAmount.toString());
 		setTransactionStarted(true);
 		approve({
 			address: underlyingTokenAddress,
@@ -396,22 +347,13 @@ export const useTransactionFlow = ({
 	};
 
 	const handleSubmit = () => {
-		console.log(`${config.type}: handleSubmit called`, {
-			isValidAmount,
-			needsApproval,
-			amountInWei: amountInWei.toString(),
-		});
-
 		if (!isValidAmount) {
-			console.log(`${config.type}: handleSubmit early return - invalid amount`);
 			return;
 		}
 
 		if (needsApproval) {
-			console.log(`${config.type}: Triggering approval first`);
 			handleApprove();
 		} else {
-			console.log(`${config.type}: Proceeding with main transaction`);
 			executeMainTransaction();
 		}
 	};
@@ -421,7 +363,6 @@ export const useTransactionFlow = ({
 		localStorage.setItem('useMaxApproval', JSON.stringify(checked));
 	};
 
-	// Computed state objects
 	const transactionState: TransactionState = {
 		isProcessing,
 		hasAutoProceeded,
@@ -439,7 +380,7 @@ export const useTransactionFlow = ({
 	const tokenData: TokenData = {
 		underlyingTokenAddress,
 		tokenDecimals,
-		cleanSymbol: '', // Will be set by the component
+		cleanSymbol: '',
 	};
 
 	const balanceData: BalanceData = {
@@ -461,21 +402,16 @@ export const useTransactionFlow = ({
 	};
 
 	return {
-		// State
 		amount,
 		setAmount,
 		transactionState,
 		tokenData,
 		balanceData,
 		approvalSettings,
-
-		// Computed values
 		amountInWei,
 		maxAvailable,
 		isValidAmount,
 		lastSuccessTime: lastSuccessTimeRef.current,
-
-		// Handlers
 		handleMaxClick,
 		handleSubmit,
 		handleApprovalSettingChange,

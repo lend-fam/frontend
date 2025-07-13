@@ -8,10 +8,10 @@ export const NavigationPanel: FC = () => {
 	return (
 		<nav className={css.container}>
 			<ul className={css.list}>
-				<NavigationLink label={'Markets'} path={'/'} />
-				<NavigationLink label={'Dashboard'} path={'/'} isActive={true} />
-				<NavigationLink label={'Collections'} path={'/'} />
-				<NavigationLink label={'Profile'} path={'/'} />
+				<NavigationLink label="Markets" path="/" />
+				<NavigationLink label="Dashboard" path="/" isActive />
+				<NavigationLink label="Collections" path="/" />
+				<NavigationLink label="Profile" path="/" />
 			</ul>
 		</nav>
 	);

@@ -115,7 +115,7 @@ const TableRaw = typedMemo(<C extends keyof D, D extends object>(props: TableRaw
 				}
 				return (
 					<TableColumn key={`${index}_${String(column.key)}`} align={column.align} style={style}>
-						<>{String(data[column.key])}</>
+						{String(data[column.key])}
 					</TableColumn>
 				);
 			})}

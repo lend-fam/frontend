@@ -11,7 +11,6 @@ export const MarketsPage: FC = () => {
 	const { data: markets } = useAllMarkets();
 	const { data: tokens } = useUnderlyingTokens(markets ? [...markets] : []);
 
-	// Set up WebSocket event listeners for real-time data updates
 	useMarketEvents({
 		marketAddresses: markets ? [...markets] : [],
 		tokenAddresses: tokens ? Object.values(tokens) : [],
