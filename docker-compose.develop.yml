@@ -8,6 +8,9 @@ services:
       - "reproxy.server=app.lend.family"
       - "reproxy.route=^/(.*)"
       - "reproxy.dest=/"
+    ports:
+      - "80:8080"
+      - "443:8443"
     restart: unless-stopped
     networks:
       - reproxy
