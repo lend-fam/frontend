@@ -1,13 +1,17 @@
 import { type FC, useMemo, useState, useEffect, useRef, useCallback } from 'react';
-import { parseUnits, formatUnits } from 'viem';
+import { parseUnits, formatUnits, type Address } from 'viem';
 
 import { Modal } from '../modal/modal.component';
 import { TokenService } from '../../../services/token.service';
 import { MarketService } from '../../../services/market.service';
 import { useTokenPrices, PriceService } from '../../../services/price.service';
+import { HealthFactorService, type PositionData } from '../../../services/health-factor.service';
 import { typedMemo } from '../../utils/typed-memo.utils';
 import { useTheme } from '../../hooks/use-theme.hook';
 import { useTransactionFlow } from './use-transaction-flow.hook';
+import { useUserSupplyPositions, useUserBorrowPositions } from '../../../hooks/use-user-positions.hook';
+import { useMarketsCollateralFactors } from '../../../hooks/use-market-data.hook';
+import { useAccount } from 'wagmi';
 import type { BaseTransactionModalProps, TransactionOverviewRow } from './transaction.types';
 
 import css from './base-transaction-modal.module.css';
@@ -44,6 +48,12 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 		availableLiquidity,
 		onSuccess,
 	});
+
+	const { address } = useAccount();
+	const { data: supplyPositions } = useUserSupplyPositions(address);
+	const { data: borrowPositions } = useUserBorrowPositions(address);
+	const { data: collateralFactors } = useMarketsCollateralFactors();
+	const { data: priceResults } = useTokenPrices([marketAddress]);
 
 	const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
 	const cleanSymbol = displayName.replace('Market ', '').split(' ')[0];
@@ -101,14 +111,9 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 			}
 
 			try {
-				let actualAmount: number;
-
 				const pureNumber = parseFloat(inputAmount.replace(/,/g, ''));
-				if (!isNaN(pureNumber) && isFinite(pureNumber)) {
-					actualAmount = pureNumber;
-				} else {
-					actualAmount = parseCompactNotation(inputAmount);
-				}
+				const actualAmount =
+					!isNaN(pureNumber) && isFinite(pureNumber) ? pureNumber : parseCompactNotation(inputAmount);
 
 				if (actualAmount === 0) return 0;
 
@@ -233,74 +238,113 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 	};
 
 	const healthFactorChange = useMemo((): { current: string; new: string } | null => {
-		if (!balanceData.accountLiquidity || !tokenData.tokenDecimals) {
+		if (
+			!balanceData.accountLiquidity ||
+			!tokenData.tokenDecimals ||
+			!supplyPositions ||
+			!borrowPositions ||
+			!collateralFactors ||
+			!priceResults
+		) {
 			return null;
 		}
 
-		const [, liquidity, shortfall] = balanceData.accountLiquidity;
+		const positions: PositionData[] = [];
 
-		let currentHealthFactor = '∞';
-		if (shortfall && shortfall > 0n) {
-			currentHealthFactor = '0.95';
-		} else if (liquidity && liquidity > 0n) {
-			const liquidityValue = parseFloat(formatUnits(liquidity, 18));
-			if (liquidityValue > 1000) {
-				currentHealthFactor = '2.50';
-			} else if (liquidityValue > 100) {
-				currentHealthFactor = '1.90';
-			} else {
-				currentHealthFactor = '1.25';
-			}
+		let transactionMarketPrice = 1;
+		if (priceResults?.[0]?.status === 'success' && priceResults[0].result) {
+			const result = priceResults[0].result;
+			const oraclePrice = typeof result === 'bigint' ? result : BigInt(String(result));
+			transactionMarketPrice = parseFloat(formatUnits(oraclePrice, 18));
+		} else {
+			transactionMarketPrice = PriceService.getFallbackPrice(cleanSymbol);
 		}
+
+		Object.entries(supplyPositions).forEach(([marketAddr, position]) => {
+			const borrowBalance = borrowPositions[marketAddr as Address]?.balance || 0n;
+			if (position.balance > 0n || borrowBalance > 0n) {
+				const collateralFactor = collateralFactors[marketAddr as Address] || 0;
+				const priceUSD =
+					marketAddr === marketAddress ? transactionMarketPrice : PriceService.getFallbackPrice(marketAddr);
+
+				positions.push({
+					marketAddress: marketAddr as Address,
+					suppliedBalance: position.balance,
+					borrowedBalance: borrowBalance,
+					collateralFactor,
+					priceUSD,
+					decimals: tokenData.tokenDecimals || 18,
+				});
+			}
+		});
+
+		Object.entries(borrowPositions).forEach(([marketAddr, position]) => {
+			if (position.balance > 0n && !supplyPositions[marketAddr as Address]) {
+				const collateralFactor = collateralFactors[marketAddr as Address] || 0;
+				const priceUSD =
+					marketAddr === marketAddress ? transactionMarketPrice : PriceService.getFallbackPrice(marketAddr);
+
+				positions.push({
+					marketAddress: marketAddr as Address,
+					suppliedBalance: 0n,
+					borrowedBalance: position.balance,
+					collateralFactor,
+					priceUSD,
+					decimals: tokenData.tokenDecimals || 18,
+				});
+			}
+		});
+
+		if (!positions.find((p) => p.marketAddress === marketAddress)) {
+			const collateralFactor = collateralFactors[marketAddress] || 0;
+			positions.push({
+				marketAddress,
+				suppliedBalance: 0n,
+				borrowedBalance: 0n,
+				collateralFactor,
+				priceUSD: transactionMarketPrice,
+				decimals: tokenData.tokenDecimals || 18,
+			});
+		}
+
+		const currentHealthFactor = HealthFactorService.calculateHealthFactor(positions, balanceData.accountLiquidity);
 
 		if (!amount || amount === '0' || amount === '') {
 			return {
-				current: currentHealthFactor,
-				new: currentHealthFactor,
+				current: currentHealthFactor.healthFactor,
+				new: currentHealthFactor.healthFactor,
 			};
 		}
 
-		let newHealthFactor = currentHealthFactor;
+		try {
+			const transactionAmount = parseUnits(amount, tokenData.tokenDecimals);
+			const healthFactorChangeResult = HealthFactorService.calculateHealthFactorChange(
+				positions,
+				config.type,
+				transactionAmount,
+				marketAddress,
+				balanceData.accountLiquidity,
+			);
 
-		if (currentHealthFactor !== '∞') {
-			const currentFactor = parseFloat(currentHealthFactor);
-
-			try {
-				const amountInWei = parseUnits(amount, tokenData.tokenDecimals);
-				const amountValue = parseFloat(formatUnits(amountInWei, tokenData.tokenDecimals));
-
-				let changeMultiplier = 1;
-				const baseChange = Math.min(amountValue / 1000, 0.5);
-
-				switch (config.type) {
-					case 'supply':
-						changeMultiplier = 1 + baseChange * 0.2;
-						break;
-					case 'borrow':
-						changeMultiplier = 1 - baseChange * 0.3;
-						break;
-					case 'withdraw':
-						changeMultiplier = 1 - baseChange * 0.25;
-						break;
-					case 'repay':
-						changeMultiplier = 1 + baseChange * 0.25;
-						break;
-				}
-
-				const newFactor = Math.max(0.1, currentFactor * changeMultiplier);
-				newHealthFactor = newFactor.toFixed(2);
-			} catch {
-				newHealthFactor = currentHealthFactor;
-			}
+			return healthFactorChangeResult;
+		} catch {
+			return {
+				current: currentHealthFactor.healthFactor,
+				new: currentHealthFactor.healthFactor,
+			};
 		}
-
-		return {
-			current: currentHealthFactor,
-			new: newHealthFactor,
-		};
-	}, [amount, tokenData.tokenDecimals, config.type, balanceData.accountLiquidity]);
-
-	const { data: priceResults } = useTokenPrices([marketAddress]);
+	}, [
+		amount,
+		tokenData.tokenDecimals,
+		config.type,
+		balanceData.accountLiquidity,
+		supplyPositions,
+		borrowPositions,
+		collateralFactors,
+		priceResults,
+		marketAddress,
+		cleanSymbol,
+	]);
 
 	const usdValue = useMemo(() => {
 		if (!amount || !tokenData.tokenDecimals) return '0';
@@ -397,11 +441,7 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 			if (current !== newHealthFactor && current !== '∞' && newHealthFactor !== '∞') {
 				const currentNum = parseFloat(current);
 				const newNum = parseFloat(newHealthFactor);
-				if (newNum > currentNum) {
-					valueClassName = styles.enabled;
-				} else if (newNum < currentNum) {
-					valueClassName = styles.disabled;
-				}
+				valueClassName = newNum > currentNum ? styles.enabled : newNum < currentNum ? styles.disabled : '';
 			}
 
 			rows.push({
@@ -439,46 +479,22 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 	const isInsufficientBalance = useMemo(() => {
 		if (!amount || !tokenData.tokenDecimals) return false;
 		try {
-			let actualAmount: number;
 			const pureNumber = parseFloat(amount.replace(/,/g, ''));
-			if (!isNaN(pureNumber) && isFinite(pureNumber)) {
-				actualAmount = pureNumber;
-			} else {
-				actualAmount = parseCompactNotation(amount);
-			}
+			const actualAmount = !isNaN(pureNumber) && isFinite(pureNumber) ? pureNumber : parseCompactNotation(amount);
 
 			if (actualAmount === 0) return false;
 
 			const amountInWei = parseUnits(actualAmount.toString(), tokenData.tokenDecimals);
-
-			let maxBalance: bigint;
-			switch (config.type) {
-				case 'supply':
-					maxBalance = balanceData.balance?.value || 0n;
-					break;
-				case 'borrow':
-					maxBalance = balanceData.availableToBorrow || 0n;
-					break;
-				case 'withdraw':
-					maxBalance = balanceData.maxWithdrawable || 0n;
-					break;
-				case 'repay':
-					maxBalance = balanceData.maxRepayable || 0n;
-					break;
-				default:
-					return false;
-			}
+			const maxBalance = getMaxBalance();
 
 			if (maxBalance === 0n) return false;
 
 			const tolerance = maxBalance / 1000n;
-			const maxBalanceWithTolerance = maxBalance + tolerance;
-
-			return amountInWei > maxBalanceWithTolerance;
+			return amountInWei > maxBalance + tolerance;
 		} catch {
 			return false;
 		}
-	}, [amount, tokenData.tokenDecimals, config.type, balanceData, parseCompactNotation]);
+	}, [amount, tokenData.tokenDecimals, getMaxBalance, parseCompactNotation]);
 
 	const isMaxRepay = useMemo(() => {
 		if (config.type !== 'repay' || !amount || !balanceData.borrowBalance || !tokenData.tokenDecimals) {
@@ -521,17 +537,14 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 							value={amount}
 							onChange={(e) => {
 								const value = e.target.value;
-								const numericRegex = /^[0-9.,KMBkmb]*$/;
-								if (numericRegex.test(value)) {
-									let normalizedValue = value.replace(',', '.');
-
-									normalizedValue = normalizedValue.replace(/[kmb]/g, (match) => match.toUpperCase());
-
+								if (/^[0-9.,KMBkmb]*$/.test(value)) {
+									const normalizedValue = value
+										.replace(',', '.')
+										.replace(/[kmb]/g, (match) => match.toUpperCase());
 									const beforeSuffix = normalizedValue.replace(/[KMB]$/, '');
 									const suffix = normalizedValue.match(/[KMB]$/)?.[0] || '';
-									const parts = beforeSuffix.split('.');
 
-									if (parts.length <= 2) {
+									if (beforeSuffix.split('.').length <= 2) {
 										setAmount(beforeSuffix + suffix);
 									}
 								}
@@ -571,17 +584,6 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 							onTouchEnd={() => {
 								isDraggingRef.current = false;
 							}}
-							onInput={(e) => {
-								const percentage = parseInt(e.currentTarget.value);
-								setSliderValue(percentage);
-
-								if (sliderRef.current) {
-									sliderRef.current.style.setProperty('--fill-percent', `${percentage}%`);
-								}
-
-								const newAmount = calculateAmountFromPercentage(percentage);
-								setAmount(newAmount);
-							}}
 							onChange={(e) => {
 								const percentage = parseInt(e.target.value);
 								setSliderValue(percentage);
@@ -596,75 +598,24 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 							className={styles.percentageSlider}
 						/>
 						<div className={styles.sliderLabels}>
-							<button
-								type="button"
-								onClick={() => {
-									setSliderValue(0);
-									if (sliderRef.current) {
-										sliderRef.current.value = '0';
-										sliderRef.current.style.setProperty('--fill-percent', '0%');
-									}
-									setAmount('0');
-								}}
-								className={styles.percentageLabel}>
-								0%
-							</button>
-							<button
-								type="button"
-								onClick={() => {
-									setSliderValue(25);
-									if (sliderRef.current) {
-										sliderRef.current.value = '25';
-										sliderRef.current.style.setProperty('--fill-percent', '25%');
-									}
-									const newAmount = calculateAmountFromPercentage(25);
-									setAmount(newAmount);
-								}}
-								className={styles.percentageLabel}>
-								25%
-							</button>
-							<button
-								type="button"
-								onClick={() => {
-									setSliderValue(50);
-									if (sliderRef.current) {
-										sliderRef.current.value = '50';
-										sliderRef.current.style.setProperty('--fill-percent', '50%');
-									}
-									const newAmount = calculateAmountFromPercentage(50);
-									setAmount(newAmount);
-								}}
-								className={styles.percentageLabel}>
-								50%
-							</button>
-							<button
-								type="button"
-								onClick={() => {
-									setSliderValue(75);
-									if (sliderRef.current) {
-										sliderRef.current.value = '75';
-										sliderRef.current.style.setProperty('--fill-percent', '75%');
-									}
-									const newAmount = calculateAmountFromPercentage(75);
-									setAmount(newAmount);
-								}}
-								className={styles.percentageLabel}>
-								75%
-							</button>
-							<button
-								type="button"
-								onClick={() => {
-									setSliderValue(100);
-									if (sliderRef.current) {
-										sliderRef.current.value = '100';
-										sliderRef.current.style.setProperty('--fill-percent', '100%');
-									}
-									const newAmount = calculateAmountFromPercentage(100);
-									setAmount(newAmount);
-								}}
-								className={styles.percentageLabel}>
-								100%
-							</button>
+							{[0, 25, 50, 75, 100].map((percentage) => (
+								<button
+									key={percentage}
+									type="button"
+									onClick={() => {
+										setSliderValue(percentage);
+										if (sliderRef.current) {
+											sliderRef.current.value = percentage.toString();
+											sliderRef.current.style.setProperty('--fill-percent', `${percentage}%`);
+										}
+										const newAmount =
+											percentage === 0 ? '0' : calculateAmountFromPercentage(percentage);
+										setAmount(newAmount);
+									}}
+									className={styles.percentageLabel}>
+									{percentage}%
+								</button>
+							))}
 						</div>
 					</div>
 
