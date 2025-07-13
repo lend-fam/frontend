@@ -7,10 +7,10 @@ import css from './markets-overview-page.module.css';
 
 export const MarketsOverviewPage: FC = () => {
 	const { data: markets } = useAllMarkets();
-	const { data: tokens } = useUnderlyingTokens(markets || []);
+	const { data: tokens } = useUnderlyingTokens(markets ? [...markets] : []);
 
 	useMarketEvents({
-		marketAddresses: markets || [],
+		marketAddresses: markets ? [...markets] : [],
 		tokenAddresses: tokens ? Object.values(tokens) : [],
 		enabled: true,
 	});

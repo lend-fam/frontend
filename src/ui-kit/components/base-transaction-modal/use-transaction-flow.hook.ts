@@ -262,7 +262,7 @@ export const useTransactionFlow = ({
 							address: marketAddress,
 							abi: CTOKEN_ABI,
 							functionName: 'redeem',
-							args: [cTokenBalance],
+							args: [cTokenBalance!],
 						});
 					} else {
 						const cTokensToRedeem = (amountInWei * parseUnits('1', 18)) / exchangeRate;
