@@ -31,7 +31,21 @@ export const MarketHeader: FC<MarketHeaderProps> = ({ symbol, marketAddress, mar
 
 	const handleCopyAddress = useCallback(async () => {
 		try {
-			await navigator.clipboard.writeText(marketAddress);
+			if (navigator.clipboard && navigator.clipboard.writeText) {
+				await navigator.clipboard.writeText(marketAddress);
+			} else {
+				// Fallback for browsers without clipboard API
+				const textArea = document.createElement('textarea');
+				textArea.value = marketAddress;
+				textArea.style.position = 'fixed';
+				textArea.style.left = '-999999px';
+				textArea.style.top = '-999999px';
+				document.body.appendChild(textArea);
+				textArea.focus();
+				textArea.select();
+				document.execCommand('copy');
+				document.body.removeChild(textArea);
+			}
 			setIsCopied(true);
 			setTimeout(() => setIsCopied(false), 2000);
 		} catch (error) {
