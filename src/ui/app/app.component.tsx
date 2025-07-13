@@ -8,6 +8,7 @@ import { hashFn } from '@wagmi/core/query';
 import { Header } from '../header/header.component';
 import { MarketsPage } from '../markets-page/markets-page/markets-page.component';
 import { MarketsOverviewPage } from '../markets-overview-page';
+import { MarketDetailPage } from '../market-detail-page';
 import { Footer } from '../footer/footer.component';
 import { wagmiConfig } from '../../config/wagmi.config';
 import { TransactionProvider } from '../../contexts/transaction.context';
@@ -37,6 +38,7 @@ export const App: FC = () => {
 									<Route path="/" element={<MarketsPage />} />
 									<Route path="/dashboard" element={<MarketsPage />} />
 									<Route path="/markets" element={<MarketsOverviewPage />} />
+									<Route path="/markets/:marketAddress" element={<MarketDetailPage />} />
 									<Route path="/collections" element={<MarketsPage />} />
 									<Route path="/profile" element={<MarketsPage />} />
 								</Routes>

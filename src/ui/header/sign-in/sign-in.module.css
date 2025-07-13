@@ -6,9 +6,6 @@
 
 .container button {
     background: #FE8258 !important;
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
     color: #fff !important;
     border-radius: 18px !important;
     font-size: 14px !important;
@@ -31,13 +28,13 @@
 .container button:focus,
 .container button:hover,
 .container button:active {
-    outline: none !important;
-    box-shadow: none !important;
-    border: none !important;
     background: #FE8258 !important;
 }
 
-.container :global([class*="rk-"]) {
+.container *,
+.container :global([class*="rk-"]),
+.container :global([class*="rk-"]) *,
+.container [style*="border"] {
     border: none !important;
     outline: none !important;
     box-shadow: none !important;

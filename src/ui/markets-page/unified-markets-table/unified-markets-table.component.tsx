@@ -1,4 +1,5 @@
 import { type FC, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { Address } from 'viem';
 import { Table, type TableColumnProps, type TableData } from '../../../ui-kit/components/table/table.component';
 import { AssetsColumn } from '../../../ui-kit/components/table/columns/assets-column/assets-column.component';
@@ -29,12 +30,21 @@ type UnifiedMarketsTableData = {
 
 type UnifiedMarketsTableColumn = 'assets' | 'totalSupplied' | 'supplyAPY' | 'totalBorrowed' | 'borrowAPY' | 'details';
 
-const unifiedMarketsColumns: TableColumnProps<UnifiedMarketsTableData, UnifiedMarketsTableColumn>[] = [
+const createUnifiedMarketsColumns = (
+	navigate: (path: string) => void,
+): TableColumnProps<UnifiedMarketsTableData, UnifiedMarketsTableColumn>[] => [
 	{
 		key: 'assets',
 		label: 'Asset',
 		width: '20%',
-		cellRenderer: AssetsColumn,
+		cellRenderer: ({ data, ...props }) => (
+			<AssetsColumn
+				{...props}
+				data={data}
+				onClick={() => navigate(`/markets/${data.marketAddress}`)}
+				style={{ ...props.style, cursor: 'pointer' }}
+			/>
+		),
 	},
 	{
 		key: 'totalSupplied',
@@ -97,7 +107,7 @@ const unifiedMarketsColumns: TableColumnProps<UnifiedMarketsTableData, UnifiedMa
 		label: '',
 		align: 'right',
 		width: '20%',
-		cellRenderer: ({ style }) => (
+		cellRenderer: ({ data, style }) => (
 			<div
 				style={{
 					...style,
@@ -107,16 +117,16 @@ const unifiedMarketsColumns: TableColumnProps<UnifiedMarketsTableData, UnifiedMa
 					padding: '0 12px',
 					height: '100%',
 				}}>
-				<Button className={css.detailsButton}>Details</Button>
+				<Button className={css.detailsButton} onClick={() => navigate(`/markets/${data.marketAddress}`)}>
+					Details
+				</Button>
 			</div>
 		),
 	},
 ];
 
-const COLUMN_HEIGHT = '72px';
-const COLUMN_WIDTH = '120px';
-
 export const UnifiedMarketsTable: FC = () => {
+	const navigate = useNavigate();
 	const { data: allMarkets, isLoading: marketsLoading } = useAllMarkets();
 	const { data: marketsAPY, isLoading: apyLoading } = useMarketsAPY();
 	const { data: marketTotals, isLoading: totalsLoading } = useMarketTotals();
@@ -164,6 +174,8 @@ export const UnifiedMarketsTable: FC = () => {
 
 	const { data: suppliedUSDBalances, isLoading: suppliedUSDLoading } = useUSDBalances(totalSuppliedBalanceData);
 	const { data: borrowedUSDBalances, isLoading: borrowedUSDLoading } = useUSDBalances(totalBorrowedBalanceData);
+
+	const unifiedMarketsColumns = useMemo(() => createUnifiedMarketsColumns(navigate), [navigate]);
 
 	const marketsData = useMemo(() => {
 		if (!allMarkets || marketsLoading || apyLoading || totalsLoading || suppliedUSDLoading || borrowedUSDLoading) {
@@ -241,8 +253,8 @@ export const UnifiedMarketsTable: FC = () => {
 			<Table
 				data={marketsData}
 				columns={unifiedMarketsColumns}
-				columnHeight={COLUMN_HEIGHT}
-				columnWidth={COLUMN_WIDTH}
+				columnHeight="72px"
+				columnWidth="120px"
 				theme={tableCss}
 			/>
 		</div>

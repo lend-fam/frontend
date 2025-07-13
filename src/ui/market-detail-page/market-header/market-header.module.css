@@ -1,0 +1,129 @@
+.container {
+	border-radius: 16px;
+	padding: 32px;
+	color: white;
+}
+
+.tokenInfo {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	margin-bottom: 32px;
+}
+
+.tokenIcon {
+	width: 48px;
+	height: 48px;
+	background: rgba(255, 255, 255, 0.2);
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.tokenDetails {
+	flex: 1;
+}
+
+.tokenName {
+	font-size: 32px;
+	font-weight: 700;
+	margin: 0 0 4px 0;
+	font-family: 'Montserrat', sans-serif;
+}
+
+.tokenSymbol {
+	font-size: 16px;
+	opacity: 0.8;
+}
+
+.tokenActions {
+	display: flex;
+	gap: 8px;
+}
+
+.copyButton,
+.externalButton {
+	width: 40px;
+	height: 40px;
+	border: none;
+	background: rgba(255, 255, 255, 0.2);
+	border-radius: 8px;
+	color: white;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background 0.2s;
+}
+
+.copyButton:hover,
+.externalButton:hover {
+	background: rgba(255, 255, 255, 0.3);
+}
+
+.copyButton.copied {
+	background: rgba(76, 175, 80, 0.3);
+	transform: scale(1.1);
+	animation: copySuccess 0.3s ease-in-out;
+}
+
+@keyframes copySuccess {
+	0% {
+		transform: scale(1);
+	}
+	50% {
+		transform: scale(1.2);
+	}
+	100% {
+		transform: scale(1.1);
+	}
+}
+
+.metrics {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 24px;
+}
+
+.metric {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.metricLabel {
+	font-size: 14px;
+	opacity: 0.8;
+}
+
+.metricValue {
+	font-size: 20px;
+	font-weight: 600;
+}
+
+.oraclePrice {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.priceChange {
+	font-size: 16px;
+	color: #F58FC7;
+}
+
+@media (max-width: 768px) {
+	.container {
+		padding: 24px;
+	}
+	
+	.tokenName {
+		font-size: 24px;
+	}
+	
+	.metrics {
+		grid-template-columns: repeat(2, 1fr);
+		gap: 16px;
+	}
+}

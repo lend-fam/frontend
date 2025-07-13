@@ -89,7 +89,7 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
 			return { disabled: true, text: 'Wrong Network' };
 		}
 		if (walletBalance === 0n) {
-			return { disabled: true, text: 'No Balance' };
+			return { disabled: true, text: 'Supply' };
 		}
 		return { disabled: false, text: 'Supply' };
 	};

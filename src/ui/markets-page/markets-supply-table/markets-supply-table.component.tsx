@@ -1,5 +1,6 @@
 import { type FC, useMemo, useState } from 'react';
 import { useAccount } from 'wagmi';
+import { useNavigate } from 'react-router-dom';
 import type { Address } from 'viem';
 import {
 	Table,
@@ -42,8 +43,22 @@ type MarketsSupplyTableData = {
 
 type MarketsSupplyTableColumn = 'assets' | 'balance' | 'apy' | 'collateral' | 'actions';
 
-const suppliedAssetsColumns: TableColumnProps<MarketsSupplyTableData, MarketsSupplyTableColumn>[] = [
-	{ key: 'assets', label: 'Asset', width: '20%', cellRenderer: AssetsColumn },
+const createSuppliedAssetsColumns = (
+	navigate: (path: string) => void,
+): TableColumnProps<MarketsSupplyTableData, MarketsSupplyTableColumn>[] => [
+	{
+		key: 'assets',
+		label: 'Asset',
+		width: '20%',
+		cellRenderer: ({ data, ...props }) => (
+			<AssetsColumn
+				{...props}
+				data={data}
+				onClick={() => navigate(`/markets/${data.marketAddress}`)}
+				style={{ ...props.style, cursor: 'pointer' }}
+			/>
+		),
+	},
 	{
 		key: 'balance',
 		label: 'Balance',
@@ -113,8 +128,22 @@ const suppliedAssetsColumns: TableColumnProps<MarketsSupplyTableData, MarketsSup
 	},
 ];
 
-const availableAssetsColumns: TableColumnProps<MarketsSupplyTableData, MarketsSupplyTableColumn>[] = [
-	{ key: 'assets', label: 'Assets', width: '20%', cellRenderer: AssetsColumn },
+const createAvailableAssetsColumns = (
+	navigate: (path: string) => void,
+): TableColumnProps<MarketsSupplyTableData, MarketsSupplyTableColumn>[] => [
+	{
+		key: 'assets',
+		label: 'Assets',
+		width: '20%',
+		cellRenderer: ({ data, ...props }) => (
+			<AssetsColumn
+				{...props}
+				data={data}
+				onClick={() => navigate(`/markets/${data.marketAddress}`)}
+				style={{ ...props.style, cursor: 'pointer' }}
+			/>
+		),
+	},
 	{
 		key: 'balance',
 		label: 'Wallet balance',
@@ -191,6 +220,7 @@ const COLUMN_HEIGHT = '72px';
 const COLUMN_WIDTH = '120px';
 
 export const MarketsSupplyTable: FC = () => {
+	const navigate = useNavigate();
 	const { address: userAddress } = useAccount();
 	const { data: allMarkets, isLoading: marketsLoading } = useAllMarkets();
 	const { data: marketsAPY, isLoading: apyLoading } = useMarketsAPY();
@@ -235,6 +265,9 @@ export const MarketsSupplyTable: FC = () => {
 	}, [marketBalances]);
 
 	const { data: usdBalances, isLoading: usdLoading } = useUSDBalances(balanceData);
+
+	const suppliedAssetsColumns = useMemo(() => createSuppliedAssetsColumns(navigate), [navigate]);
+	const availableAssetsColumns = useMemo(() => createAvailableAssetsColumns(navigate), [navigate]);
 
 	const { suppliedMarketsData, availableMarketsData } = useMemo(() => {
 		if (!allMarkets || marketsLoading || apyLoading) {

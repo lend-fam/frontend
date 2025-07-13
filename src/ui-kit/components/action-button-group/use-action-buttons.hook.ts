@@ -43,7 +43,7 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 			return { disabled: true, text: 'Wrong Network' };
 		}
 		if (additionalCheck && !additionalCheck()) {
-			return { disabled: true, text: 'No Balance' };
+			return { disabled: true, text: 'Supply' };
 		}
 		return { disabled: false, text: '' };
 	};

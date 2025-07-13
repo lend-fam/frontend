@@ -1,0 +1,64 @@
+.container {
+	background: white;
+	border-radius: 16px;
+	padding: 24px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+	border: 1px solid rgba(0, 0, 0, 0.05);
+	min-height: 120px;
+}
+
+.title {
+	font-size: 20px;
+	font-weight: 600;
+	margin: 0 0 24px 0;
+	color: #333;
+}
+
+.content {
+	/* Content styles */
+}
+
+.info {
+	display: flex;
+	gap: 48px;
+}
+
+.infoItem {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.label {
+	font-size: 14px;
+	color: #666;
+}
+
+.value {
+	font-size: 16px;
+	font-weight: 600;
+	color: #333;
+}
+
+.contractButton {
+	background: none;
+	border: none;
+	color: #667eea;
+	font-size: 16px;
+	font-weight: 600;
+	cursor: pointer;
+	text-align: left;
+	padding: 0;
+	text-decoration: underline;
+}
+
+.contractButton:hover {
+	opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+	.info {
+		flex-direction: column;
+		gap: 24px;
+	}
+}
