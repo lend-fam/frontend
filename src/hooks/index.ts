@@ -1,18 +1,14 @@
 export * from './use-collateral-status.hook';
-
 export * from './use-market-events.hook';
 export * from './use-market-wallet-balances.hook';
 export * from './use-markets.hook';
-
 export * from './use-market-core.hook';
 export * from './use-user-positions.hook';
 export * from './use-market-data.hook';
+export * from './use-market-totals.hook';
 export * from './use-account-liquidity.hook';
-
 export * from './use-portfolio-metrics.hook';
-
 export * from './use-transaction-context.hook';
 export * from './use-transaction-tracker.hook';
-
 export * from './use-underlying-tokens.hook';
 export * from './use-usd-balances.hook';

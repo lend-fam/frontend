@@ -8,6 +8,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - DO NOT edit more code than you have to.
 - DO NOT WASTE TOKENS, be succinct and concise.
 
+## Memories
+- Always use contect7 mcp for getting docs
+- NEVER hardcode dynamic values
+- Do not use run dev directly it is infinit command
+- Use websocket for live interactions with chain node
 
 ## Development Commands
 
@@ -37,6 +42,11 @@ npm run prettier
 # Format code
 npm run prettier:fix
 ```
+
+### TypeScript Configuration
+- Uses TypeScript with project references via `tsconfig.app.json` and `tsconfig.node.json`
+- Strict type checking enabled with CSS Modules type generation
+- Vite configured with `vite-css-modules` plugin for automatic `.d.ts` generation
 
 ## Architecture Overview
 
@@ -105,6 +115,9 @@ This is a React + TypeScript frontend application built with Vite for the lend.f
 - **Approval pattern**: ERC20 approval followed by contract interaction with auto-progression
 - **User preferences**: Unlimited vs exact approval amounts stored in localStorage
 - **State tracking**: Comprehensive loading/success/error states for all transactions
+- **Compact notation parsing**: Supports `1k`, `1m`, `1b` input formats with automatic conversion
+- **Auto-progression**: Successful approvals automatically trigger main transactions
+- **Balance calculations**: Context-aware max amounts based on wallet balance, liquidity, and market constraints
 
 ## Environment Configuration
 
@@ -138,10 +151,13 @@ VITE_APECHAIN_CURTIS_RPC_WS=wss://curtis.rpc.caldera.xyz/ws
 - **Viem Address types**: Use `Address` type from viem for all blockchain addresses
 
 ### Web3 Integration Patterns
-- **Service layer abstraction**: Use service classes for business logic (MarketService, TokenService)
+- **Service layer abstraction**: Use service classes for business logic (MarketService, TokenService, PriceService)
 - **Batched contract reads**: Use `useReadContracts` for multiple contract calls
 - **Caching strategy**: Configure appropriate stale times for different data types in React Query
 - **Error handling**: Implement consistent transaction state management with retries
+- **APY calculations**: Annual Percentage Yield computed from block rates using `BLOCKS_PER_YEAR` constant
+- **Balance formatting**: Context-aware token display with compact notation for large amounts
+- **Contract interactions**: Standardized patterns for mint/redeem/borrow/repay operations
 
 ### Component Architecture
 - **UI Kit separation**: Reusable components in `src/ui-kit/`, feature-specific in `src/ui/`
@@ -149,8 +165,28 @@ VITE_APECHAIN_CURTIS_RPC_WS=wss://curtis.rpc.caldera.xyz/ws
 - **Co-location**: Keep component, styles, and types together
 - **Automatic types**: CSS Modules generate TypeScript definitions via `vite-css-modules`
 
-## Memories
-- Always use contect7 mcp for getting docs
-- NEVER hardcode dynamic values
-- Do not use run dev directly it is infinit command
-- Use websocket for live interactions with chain node
+## Key Architectural Patterns
+
+### Custom Hooks Architecture
+- **Market data management**: Dedicated hooks for market data, user positions, liquidity calculations
+- **Transaction state**: `useTransactionFlow` hook manages approval/execution lifecycle
+- **Account queries**: Specialized hooks for balance tracking, collateral status, portfolio metrics
+- **Query optimization**: Consistent use of `enabled` conditions to prevent unnecessary calls
+
+### Service Layer Design
+- **MarketService**: APY calculations, balance formatting, collateral eligibility checks
+- **TokenService**: Token metadata management and balance conversions
+- **PriceService**: USD value calculations and price formatting
+- **Pure functions**: All service methods are static for predictable behavior
+
+### Component Composition Patterns
+- **Generic Table**: Type-safe column definitions with custom cell/header renderers
+- **Modal system**: Base transaction modal extended by specific operation modals
+- **Action buttons**: Reusable button groups with state-aware rendering
+- **Theme composition**: CSS Modules with runtime theme override capability
+
+## Development Notes
+- **WalletConnect**: Uses RainbowKit's default project ID - update for production
+- **Curtis RPC Priority**: Curtis endpoints prioritized over ApeChain native RPC for reliability
+- **Transaction tolerance**: 0.1% buffer applied to max available amounts for edge cases
+- **Auto-close behavior**: Successful transactions auto-close modals and reset state
