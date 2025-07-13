@@ -2,9 +2,6 @@ import { formatUnits, type Address } from 'viem';
 import { useReadContract, useReadContracts, useChainId } from 'wagmi';
 import { COMPTROLLER_ABI, PRICE_ORACLE_ABI, getComptrollerAddress } from '../contracts';
 
-/**
- * Hook to get the price oracle address from Comptroller
- */
 export function usePriceOracle() {
 	const chainId = useChainId();
 
@@ -13,14 +10,11 @@ export function usePriceOracle() {
 		abi: COMPTROLLER_ABI,
 		functionName: 'oracle',
 		query: {
-			staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+			staleTime: 5 * 60 * 1000,
 		},
 	});
 }
 
-/**
- * Hook to fetch token prices from Compound's price oracle
- */
 export function useTokenPrices(marketAddresses: Address[]) {
 	const { data: oracleAddress } = usePriceOracle();
 
@@ -35,20 +29,16 @@ export function useTokenPrices(marketAddresses: Address[]) {
 		contracts: priceContracts,
 		query: {
 			enabled: !!oracleAddress && marketAddresses.length > 0,
-			staleTime: 30000, // Cache for 30 seconds (prices change frequently)
+			staleTime: 30000,
 			refetchInterval: 30000,
 		},
 	});
 }
 
 export class PriceService {
-	/**
-	 * Get fallback price for a token symbol (in USD)
-	 */
 	static getFallbackPrice(symbol: string): number {
 		const normalizedSymbol = symbol.toUpperCase();
 
-		// Fallback prices for common tokens
 		const fallbackPrices: Record<string, number> = {
 			MDAI: 1.0, // Assume $1 for DAI derivative
 			MUSDC: 1.0, // Assume $1 for USDC derivative
@@ -60,12 +50,9 @@ export class PriceService {
 			WETH: 3000,
 		};
 
-		return fallbackPrices[normalizedSymbol] || 1.0; // Default to $1
+		return fallbackPrices[normalizedSymbol] || 1.0;
 	}
 
-	/**
-	 * Calculate USD value using fallback price
-	 */
 	static calculateUSDValueWithFallback(balance: bigint, decimals: number, fallbackPrice: number): string {
 		try {
 			const tokenAmount = formatUnits(balance, decimals);
@@ -81,12 +68,6 @@ export class PriceService {
 		}
 	}
 
-	/**
-	 * Convert a token balance to USD value using oracle price
-	 * @param balance - Token balance in wei
-	 * @param decimals - Token decimals
-	 * @param oraclePrice - Price from oracle (scaled by 1e18)
-	 */
 	static calculateUSDValue(balance: bigint, decimals: number, oraclePrice: bigint): string {
 		try {
 			const tokenAmount = formatUnits(balance, decimals);
@@ -102,5 +83,19 @@ export class PriceService {
 		} catch {
 			return '0';
 		}
+	}
+
+	static formatUSDValue(value: string): string {
+		const number = parseFloat(value);
+
+		if (number === 0) return '$0.00';
+		if (number < 0.01) return '<$0.01';
+
+		return new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'USD',
+			minimumFractionDigits: 2,
+			maximumFractionDigits: 2,
+		}).format(number);
 	}
 }

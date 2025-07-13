@@ -118,6 +118,32 @@ export const CTOKEN_ABI = [
 	},
 	{
 		inputs: [],
+		name: 'reserveFactorMantissa',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
+		inputs: [],
+		name: 'interestRateModel',
+		outputs: [
+			{
+				internalType: 'address',
+				name: '',
+				type: 'address',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
+	},
+	{
+		inputs: [],
 		name: 'exchangeRateStored',
 		outputs: [
 			{

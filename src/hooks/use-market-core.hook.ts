@@ -8,13 +8,16 @@ import { MARKET_QUERY_CONFIG } from './market-query.constants';
  */
 export function useAllMarkets() {
 	const chainId = useChainId();
+	const comptrollerAddress = getComptrollerAddress(chainId);
 
-	return useReadContract({
-		address: getComptrollerAddress(chainId),
+	const result = useReadContract({
+		address: comptrollerAddress,
 		abi: COMPTROLLER_ABI,
 		functionName: 'getAllMarkets',
 		query: MARKET_QUERY_CONFIG.MARKET_INFO,
 	});
+
+	return result;
 }
 
 /**
@@ -106,10 +109,7 @@ export function useUserMarkets(userAddress?: Address) {
 		},
 	});
 
-	return {
-		...result,
-		queryKey: result.queryKey,
-	};
+	return result;
 }
 
 /**

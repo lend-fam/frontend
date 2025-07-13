@@ -3,9 +3,6 @@ import type { Market, UserMarketPosition } from '../types/market.types';
 import { BLOCKS_PER_YEAR } from '../contracts';
 
 export class MarketService {
-	/**
-	 * Convert supply rate per block to APY percentage
-	 */
 	static calculateSupplyAPY(supplyRatePerBlock: bigint): string {
 		if (supplyRatePerBlock === 0n) return '0.00';
 
@@ -15,9 +12,6 @@ export class MarketService {
 		return apy.toFixed(2);
 	}
 
-	/**
-	 * Convert borrow rate per block to APY percentage
-	 */
 	static calculateBorrowAPY(borrowRatePerBlock: bigint): string {
 		if (borrowRatePerBlock === 0n) return '0.00';
 
@@ -27,9 +21,6 @@ export class MarketService {
 		return apy.toFixed(2);
 	}
 
-	/**
-	 * Format token balance for display
-	 */
 	static formatTokenBalance(balance: bigint, decimals: number = 18, symbol: string = ''): string {
 		const formatted = formatUnits(balance, decimals);
 		const number = parseFloat(formatted);
@@ -39,7 +30,6 @@ export class MarketService {
 		if (number < 1) return `${number.toFixed(4)} ${symbol}`.trim();
 		if (number < 1000) return `${number.toFixed(2)} ${symbol}`.trim();
 
-		// For larger numbers, use compact notation
 		const formatter = new Intl.NumberFormat('en-US', {
 			notation: 'compact',
 			maximumFractionDigits: 2,
@@ -48,9 +38,6 @@ export class MarketService {
 		return `${formatter.format(number)} ${symbol}`.trim();
 	}
 
-	/**
-	 * Format USD value for display
-	 */
 	static formatUSDValue(value: string): string {
 		const number = parseFloat(value);
 
@@ -65,39 +52,43 @@ export class MarketService {
 		}).format(number);
 	}
 
-	/**
-	 * Convert collateral factor mantissa to percentage
-	 */
 	static formatCollateralFactor(collateralFactorMantissa: bigint): string {
 		const factor = Number(formatUnits(collateralFactorMantissa, 18)) * 100;
 		return `${factor.toFixed(0)}%`;
 	}
 
-	/**
-	 * Check if user has supplied to a market
-	 */
 	static hasSupplied(userPosition: UserMarketPosition): boolean {
 		return userPosition.suppliedBalance > 0n;
 	}
 
-	/**
-	 * Check if user has borrowed from a market
-	 */
 	static hasBorrowed(userPosition: UserMarketPosition): boolean {
 		return userPosition.borrowedBalance > 0n;
 	}
 
-	/**
-	 * Check if market is available for borrowing
-	 */
 	static isBorrowable(market: Market): boolean {
 		return market.isListed;
 	}
 
-	/**
-	 * Check if market can be used as collateral
-	 */
 	static isCollateralEligible(market: Market): boolean {
 		return market.isListed && market.collateralFactorMantissa > 0n;
+	}
+
+	/**
+	 * Calculate utilization rate for a market
+	 * @param totalSupply - Total cTokens in circulation
+	 * @param totalBorrows - Total borrowed amount in underlying tokens
+	 * @param exchangeRate - Exchange rate from cTokens to underlying
+	 * @returns Utilization rate as a percentage
+	 */
+	static calculateUtilizationRate(totalSupply: bigint, totalBorrows: bigint, exchangeRate: bigint): number {
+		if (totalSupply === 0n || exchangeRate === 0n) return 0;
+
+		const totalSuppliedUnderlying = (totalSupply * exchangeRate) / 10n ** 18n;
+
+		if (totalSuppliedUnderlying === 0n) return 0;
+
+		const utilizationRate = Number((totalBorrows * 100n) / totalSuppliedUnderlying);
+
+		return Math.max(0, Math.min(100, utilizationRate));
 	}
 }
