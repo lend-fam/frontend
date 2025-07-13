@@ -127,7 +127,7 @@ const availableAssetsColumns: TableColumnProps<MarketsSupplyTableData, MarketsSu
 					padding: '0 12px',
 				}}>
 				<div style={{ textAlign: 'right', fontFamily: 'Inter', fontSize: '14px', fontWeight: '500' }}>
-					{data.tokenAmount === '0' ? '0' : data.tokenAmount} {data.symbol}
+					{MarketService.formatTokenBalance(data.walletBalance, 18)} {data.symbol}
 				</div>
 			</div>
 		),
