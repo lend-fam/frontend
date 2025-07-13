@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useAccount, useChainId } from 'wagmi';
 import type {
 	ActionButtonGroupProps,
@@ -16,6 +16,10 @@ export interface UseActionButtonsReturn {
 		setPrimaryModalOpen: (open: boolean) => void;
 		setSecondaryModalOpen: (open: boolean) => void;
 	};
+	callbacks: {
+		onPrimarySuccess: () => void;
+		onSecondarySuccess: () => void;
+	};
 }
 
 export const useActionButtons = (props: ActionButtonGroupProps): UseActionButtonsReturn => {
@@ -23,6 +27,9 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 	const [isSecondaryModalOpen, setSecondaryModalOpen] = useState(false);
 	const { isConnected } = useAccount();
 	const chainId = useChainId();
+	const lastPrimaryClickRef = useRef<number>(0);
+	const lastSecondaryClickRef = useRef<number>(0);
+	const lastPrimarySuccessRef = useRef<number>(0);
 
 	// ApeChain network IDs
 	const APECHAIN_MAINNET = 33139;
@@ -43,6 +50,17 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 	};
 
 	const handlePrimaryAction = () => {
+		const now = Date.now();
+		const timeSinceLastClick = now - lastPrimaryClickRef.current;
+		const timeSinceLastSuccess = now - lastPrimarySuccessRef.current;
+
+		// Allow immediate reopening after successful transaction (within 2 seconds)
+		// Otherwise prevent rapid successive clicks (debounce with 500ms)
+		if (timeSinceLastClick < 500 && timeSinceLastSuccess > 2000) {
+			return;
+		}
+
+		lastPrimaryClickRef.current = now;
 		setPrimaryModalOpen(true);
 		if (props.onAction) {
 			props.onAction(props.marketAddress);
@@ -50,6 +68,15 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 	};
 
 	const handleSecondaryAction = () => {
+		const now = Date.now();
+		const timeSinceLastClick = now - lastSecondaryClickRef.current;
+
+		// Prevent rapid successive clicks (debounce with 500ms)
+		if (timeSinceLastClick < 500) {
+			return;
+		}
+
+		lastSecondaryClickRef.current = now;
 		setSecondaryModalOpen(true);
 		if (props.onSecondaryAction) {
 			props.onSecondaryAction(props.marketAddress);
@@ -151,6 +178,14 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 			? getSupplyConfig(props as SupplyActionButtonProps)
 			: getBorrowConfig(props as BorrowActionButtonProps);
 
+	const onPrimarySuccess = () => {
+		lastPrimarySuccessRef.current = Date.now();
+	};
+
+	const onSecondarySuccess = () => {
+		lastSecondaryClickRef.current = Date.now();
+	};
+
 	return {
 		config,
 		modals: {
@@ -158,6 +193,10 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 			isSecondaryModalOpen,
 			setPrimaryModalOpen,
 			setSecondaryModalOpen,
+		},
+		callbacks: {
+			onPrimarySuccess,
+			onSecondarySuccess,
 		},
 	};
 };

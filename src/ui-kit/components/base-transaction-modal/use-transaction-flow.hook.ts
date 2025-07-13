@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import type { Address } from 'viem';
 import { useAccount, useBalance, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseUnits, formatUnits, maxUint256 } from 'viem';
@@ -19,6 +19,7 @@ interface UseTransactionFlowParams {
 	isOpen: boolean;
 	onClose: () => void;
 	availableLiquidity?: bigint;
+	onSuccess?: () => void;
 }
 
 export const useTransactionFlow = ({
@@ -27,6 +28,7 @@ export const useTransactionFlow = ({
 	isOpen,
 	onClose,
 	availableLiquidity,
+	onSuccess,
 }: UseTransactionFlowParams) => {
 	const [amount, setAmount] = useState('');
 	const [useMaxApproval, setUseMaxApproval] = useState(() => {
@@ -34,7 +36,9 @@ export const useTransactionFlow = ({
 		return saved !== null ? JSON.parse(saved) : true;
 	});
 	const [hasAutoProceeded, setHasAutoProceeded] = useState(false);
+	const [transactionStarted, setTransactionStarted] = useState(false);
 	const { address } = useAccount();
+	const lastSuccessTimeRef = useRef<number>(0);
 
 	// Token data
 	const { data: underlyingTokenAddress } = useReadContract({
@@ -168,6 +172,7 @@ export const useTransactionFlow = ({
 
 	// Define the main transaction execution function
 	const executeMainTransaction = useCallback(() => {
+		setTransactionStarted(true);
 		switch (config.type) {
 			case 'supply': {
 				executeTransaction({
@@ -220,6 +225,7 @@ export const useTransactionFlow = ({
 			isTransactionConfirming,
 			isValidAmount,
 			hasAutoProceeded,
+			transactionStarted,
 		});
 
 		if (
@@ -229,7 +235,8 @@ export const useTransactionFlow = ({
 			!isTransactionConfirming &&
 			isValidAmount &&
 			!hasAutoProceeded &&
-			config.requiresApproval
+			config.requiresApproval &&
+			transactionStarted
 		) {
 			console.log(`${config.type}: Auto-proceeding with transaction after approval success`);
 			setHasAutoProceeded(true);
@@ -244,22 +251,31 @@ export const useTransactionFlow = ({
 		hasAutoProceeded,
 		config.requiresApproval,
 		config.type,
+		transactionStarted,
 		executeMainTransaction,
 	]);
 
 	// Close modal on success
 	useEffect(() => {
-		if (isTransactionSuccess) {
+		if (isTransactionSuccess && isOpen && transactionStarted) {
 			console.log(`${config.type}: Transaction successful, closing modal`);
+			lastSuccessTimeRef.current = Date.now();
 			setHasAutoProceeded(false);
+			setTransactionStarted(false);
+			if (onSuccess) {
+				onSuccess();
+			}
 			onClose();
 		}
-	}, [isTransactionSuccess, onClose, config.type]);
+	}, [isTransactionSuccess, isOpen, transactionStarted, onClose, onSuccess, config.type]);
 
-	// Reset auto-proceed flag on modal open
+	// Reset state when modal opens
 	useEffect(() => {
 		if (isOpen) {
 			setHasAutoProceeded(false);
+			setTransactionStarted(false);
+			// Reset amount on new modal open to avoid stale state
+			setAmount('');
 		}
 	}, [isOpen]);
 
@@ -311,6 +327,7 @@ export const useTransactionFlow = ({
 
 		const approvalAmount = useMaxApproval ? maxUint256 : amountInWei;
 		console.log(`${config.type}: Calling approve transaction with amount:`, approvalAmount.toString());
+		setTransactionStarted(true);
 		approve({
 			address: underlyingTokenAddress,
 			abi: ERC20_ABI,
@@ -397,6 +414,7 @@ export const useTransactionFlow = ({
 		amountInWei,
 		maxAvailable,
 		isValidAmount,
+		lastSuccessTime: lastSuccessTimeRef.current,
 
 		// Handlers
 		handleMaxClick,

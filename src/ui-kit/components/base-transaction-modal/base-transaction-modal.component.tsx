@@ -20,6 +20,7 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 	borrowAPY,
 	isCollateralEnabled,
 	availableLiquidity,
+	onSuccess,
 	theme,
 }) => {
 	const styles = useTheme(css, theme);
@@ -40,6 +41,7 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 		isOpen,
 		onClose,
 		availableLiquidity,
+		onSuccess,
 	});
 
 	const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
