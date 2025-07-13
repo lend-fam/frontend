@@ -12,6 +12,7 @@ interface BorrowActionButtonsProps {
 	tokenSymbol: string;
 	borrowAPY: string;
 	availableLiquidity: bigint;
+	userBorrowCapacity?: bigint;
 	onBorrow?: (marketAddress: Address) => void;
 	onRepay?: (marketAddress: Address) => void;
 	onDetails?: (marketAddress: Address) => void;
@@ -23,6 +24,7 @@ export const BorrowActionButtons: FC<BorrowActionButtonsProps> = ({
 	tokenSymbol,
 	borrowAPY,
 	availableLiquidity,
+	userBorrowCapacity,
 	onBorrow,
 	onRepay,
 	onDetails,
@@ -50,7 +52,8 @@ export const BorrowActionButtons: FC<BorrowActionButtonsProps> = ({
 		}
 	};
 
-	const isBorrowDisabled = availableLiquidity === 0n;
+	const isBorrowDisabled =
+		availableLiquidity === 0n || (userBorrowCapacity !== undefined && userBorrowCapacity === 0n);
 
 	return (
 		<>

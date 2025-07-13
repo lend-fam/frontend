@@ -1,14 +1,13 @@
 import { type FC, useCallback, useEffect, useState, useMemo } from 'react';
 import type { Address } from 'viem';
-import { useWriteContract, useWaitForTransactionReceipt, useAccount, useReadContract } from 'wagmi';
+import { useWriteContract, useWaitForTransactionReceipt, useAccount, useReadContract, useChainId } from 'wagmi';
 import { useQueryClient } from '@tanstack/react-query';
+import { formatUnits } from 'viem';
 import { COMPTROLLER_ABI, getComptrollerAddress } from '../../../../../contracts';
-import { useChainId } from 'wagmi';
 import { useIsCollateralEnabled } from '../../../../../hooks/use-collateral-status.hook';
 import { useUserMarkets } from '../../../../../hooks/use-market-core.hook';
 import { useUserMarketPosition } from '../../../../../hooks/use-user-positions.hook';
 import { Tooltip } from '../../../tooltip/tooltip.component';
-import { formatUnits } from 'viem';
 
 import css from './collateral-toggle.module.css';
 
@@ -118,8 +117,9 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 
 			manualRefetch().then((freshResult) => {
 				const stillInArray = freshResult.data?.includes(marketAddress);
+				const wasDisabling = isPendingToggle === false;
 
-				if (stillInArray) {
+				if (wasDisabling && stillInArray) {
 					alert(
 						'Cannot disable collateral: You may have outstanding borrows in this market. Please repay your borrows first.',
 					);
@@ -132,7 +132,16 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 		} else if (isToggleError) {
 			setIsPendingToggle(null);
 		}
-	}, [isToggleSuccess, toggleHash, isToggleError, manualRefetch, marketAddress, queryClient, userMarketsQueryKey]);
+	}, [
+		isToggleSuccess,
+		toggleHash,
+		isToggleError,
+		manualRefetch,
+		marketAddress,
+		queryClient,
+		userMarketsQueryKey,
+		isPendingToggle,
+	]);
 
 	useEffect(() => {
 		if (isToggleError) {

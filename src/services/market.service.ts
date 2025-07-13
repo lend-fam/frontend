@@ -34,7 +34,7 @@ export class MarketService {
 		const formatted = formatUnits(balance, decimals);
 		const number = parseFloat(formatted);
 
-		if (number === 0) return `0 ${symbol}`.trim();
+		if (number === 0 || number < 0.000001) return `0 ${symbol}`.trim();
 		if (number < 0.01) return `<0.01 ${symbol}`.trim();
 		if (number < 1) return `${number.toFixed(4)} ${symbol}`.trim();
 		if (number < 1000) return `${number.toFixed(2)} ${symbol}`.trim();

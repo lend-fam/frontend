@@ -63,9 +63,13 @@ export function useUserSupplyPositions(userAddress?: Address) {
 			const balanceResult = contractResults[index];
 			const balance = balanceResult?.result ? (balanceResult.result as bigint) : 0n;
 
+			// Consider amounts less than 1000 wei as dust (effectively zero)
+			const dustThreshold = 1000n;
+			const hasSupplied = balance > dustThreshold;
+
 			positionData[address] = {
 				balance,
-				hasSupplied: balance > 0n,
+				hasSupplied,
 			};
 		});
 
@@ -110,9 +114,13 @@ export function useUserBorrowPositions(userAddress?: Address) {
 			const balanceResult = contractResults[index];
 			const balance = balanceResult?.result ? (balanceResult.result as bigint) : 0n;
 
+			// Consider amounts less than 1000 wei as dust (effectively zero)
+			const dustThreshold = 1000n;
+			const hasBorrowed = balance > dustThreshold;
+
 			positionData[address] = {
 				balance,
-				hasBorrowed: balance > 0n,
+				hasBorrowed,
 			};
 		});
 
