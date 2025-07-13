@@ -1,0 +1,13 @@
+.container {
+	padding-left: 18px;
+	padding-right: 18px;
+	width: 100%;
+}
+
+.header {
+	height: 48px;
+}
+
+.row {
+	min-height: 72px;
+}
