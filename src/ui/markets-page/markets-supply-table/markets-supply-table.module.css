@@ -55,6 +55,11 @@
     justify-content: space-between;
     align-items: center;
     margin-right: 42px;
+    margin-top: 16px;
+}
+
+.assetsToSupplyHeader .sectionHeader {
+    margin-top: 0;
 }
 
 .filterCheckbox {
@@ -62,7 +67,6 @@
     align-items: center;
     gap: 8px;
     cursor: pointer;
-    margin-top: 16px;
 }
 
 .checkbox {
@@ -79,4 +83,13 @@
     font-weight: 500;
     cursor: pointer;
     user-select: none;
+}
+
+.emptyState {
+    font-family: "Inter";
+    color: #6B7280;
+    font-size: 14px;
+    font-weight: 500;
+    margin-left: 42px;
+    margin-bottom: 16px;
 }
