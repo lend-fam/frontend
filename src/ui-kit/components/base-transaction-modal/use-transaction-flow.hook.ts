@@ -56,6 +56,7 @@ export const useTransactionFlow = ({
 	});
 	const [hasAutoProceeded, setHasAutoProceeded] = useState(false);
 	const [transactionStarted, setTransactionStarted] = useState(false);
+	const [isMaxButtonClicked, setIsMaxButtonClicked] = useState(false);
 	const { address } = useAccount();
 	const lastSuccessTimeRef = useRef<number>(0);
 	const queryClient = useQueryClient();
@@ -222,17 +223,38 @@ export const useTransactionFlow = ({
 		borrowBalance,
 	]);
 
+	const isDustAmount = useMemo(() => {
+		if (!borrowBalance) return false;
+		// Consider amounts below 0.000000001 tokens (1e9 wei) as dust
+		const dustThreshold = 1000000000n; // 1e9 wei  
+		return borrowBalance <= dustThreshold;
+	}, [borrowBalance]);
+
+	const isMaxRepayAttempt = useMemo(() => {
+		if (config.type !== 'repay' || !borrowBalance || !amountInWei) return false;
+		
+		// Always use max if the user clicked the "Max" button
+		if (isMaxButtonClicked) return true;
+		
+		// Always use max for dust amounts to ensure complete cleanup
+		if (isDustAmount) return true;
+		
+		// Consider it a max repay if amount is >= 99% of borrow balance (handles dust/precision issues)
+		const dustThreshold = borrowBalance / 100n; // 1% threshold
+		return amountInWei >= (borrowBalance - dustThreshold);
+	}, [config.type, borrowBalance, amountInWei, isMaxButtonClicked, isDustAmount]);
+
 	const needsApproval = useMemo(() => {
 		if (!config.requiresApproval || !amountInWei || amountInWei === 0n) return false;
 		if (isNativeToken) return false;
 		const allowance = currentAllowance ?? 0n;
 
-		if (config.type === 'repay' && borrowBalance && amountInWei >= borrowBalance) {
+		if (isMaxRepayAttempt) {
 			return allowance < maxUint256;
 		}
 
 		return allowance < amountInWei;
-	}, [config.requiresApproval, currentAllowance, amountInWei, config.type, borrowBalance, isNativeToken]);
+	}, [config.requiresApproval, currentAllowance, amountInWei, isMaxRepayAttempt, isNativeToken]);
 
 	const isValidAmount = useMemo(() => {
 		if (!debouncedAmount) return false;
@@ -243,8 +265,6 @@ export const useTransactionFlow = ({
 			if (!balance || !borrowBalance) return false;
 
 			const hasWalletBalance = balance.value >= amountInWei;
-
-			const isMaxRepayAttempt = amountInWei >= borrowBalance;
 			const isValidPartialRepay = amountInWei <= borrowBalance;
 
 			const isValid = hasWalletBalance && (isMaxRepayAttempt || isValidPartialRepay);
@@ -325,8 +345,6 @@ export const useTransactionFlow = ({
 				break;
 			}
 			case 'repay': {
-				const isMaxRepay = borrowBalance && amountInWei >= borrowBalance;
-
 				if (isNativeToken) {
 					executeTransaction({
 						address: marketAddress,
@@ -344,7 +362,7 @@ export const useTransactionFlow = ({
 						value: amountInWei,
 					});
 				} else {
-					const repayAmount = isMaxRepay ? maxUint256 : amountInWei;
+					const repayAmount = isMaxRepayAttempt ? maxUint256 : amountInWei;
 					executeTransaction({
 						address: marketAddress,
 						abi: CTOKEN_ABI,
@@ -355,7 +373,7 @@ export const useTransactionFlow = ({
 				break;
 			}
 		}
-	}, [config.type, executeTransaction, marketAddress, amountInWei, exchangeRate, borrowBalance, cTokenBalance, isNativeToken]);
+	}, [config.type, executeTransaction, marketAddress, amountInWei, exchangeRate, borrowBalance, cTokenBalance, isNativeToken, isMaxRepayAttempt]);
 
 	useEffect(() => {
 		if (
@@ -480,6 +498,7 @@ export const useTransactionFlow = ({
 			setHasAutoProceeded(false);
 			setTransactionStarted(false);
 			setAmount('');
+			setIsMaxButtonClicked(false);
 		}
 	}, [isOpen]);
 
@@ -487,7 +506,11 @@ export const useTransactionFlow = ({
 		if (config.type === 'repay') {
 			setHasAutoProceeded(false);
 		}
-	}, [debouncedAmount, config.type]);
+		// Reset max button flag when user manually changes amount
+		if (debouncedAmount !== amount) {
+			setIsMaxButtonClicked(false);
+		}
+	}, [debouncedAmount, config.type, amount]);
 
 	useEffect(() => {
 		if (isApproveError) {
@@ -517,6 +540,16 @@ export const useTransactionFlow = ({
 			}
 
 			setAmount(finalAmount);
+			setIsMaxButtonClicked(true);
+		}
+	};
+
+	const handleCleanDust = () => {
+		if (config.type === 'repay' && isDustAmount && borrowBalance) {
+			const decimals = isNativeToken ? 18 : tokenDecimals || 18;
+			const formatted = formatUnits(borrowBalance, decimals);
+			setAmount(formatted);
+			setIsMaxButtonClicked(true);
 		}
 	};
 
@@ -525,8 +558,7 @@ export const useTransactionFlow = ({
 			return;
 		}
 
-		const isMaxRepay = config.type === 'repay' && borrowBalance && amountInWei >= borrowBalance;
-		const approvalAmount = useMaxApproval || isMaxRepay ? maxUint256 : amountInWei;
+		const approvalAmount = useMaxApproval || isMaxRepayAttempt ? maxUint256 : amountInWei;
 		setTransactionStarted(true);
 		approve({
 			address: underlyingTokenAddress,
@@ -605,5 +637,7 @@ export const useTransactionFlow = ({
 		handleMaxClick,
 		handleSubmit,
 		handleApprovalSettingChange,
+		handleCleanDust,
+		isDustAmount,
 	};
 };

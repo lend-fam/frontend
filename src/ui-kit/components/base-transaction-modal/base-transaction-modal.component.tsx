@@ -41,6 +41,8 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 		handleMaxClick,
 		handleSubmit,
 		handleApprovalSettingChange,
+		handleCleanDust,
+		isDustAmount,
 	} = useTransactionFlow({
 		marketAddress,
 		config,
@@ -649,9 +651,16 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 							<span>
 								{balanceInfo.label} {balanceInfo.value}
 							</span>
-							<button type="button" onClick={handleMaxClick} className={styles.maxButton}>
-								MAX
-							</button>
+							<div className={styles.buttonGroup}>
+								<button type="button" onClick={handleMaxClick} className={styles.maxButton}>
+									MAX
+								</button>
+								{config.type === 'repay' && isDustAmount && (
+									<button type="button" onClick={handleCleanDust} className={styles.cleanDustButton}>
+										CLEAN DUST
+									</button>
+								)}
+							</div>
 						</div>
 					</div>
 				</div>

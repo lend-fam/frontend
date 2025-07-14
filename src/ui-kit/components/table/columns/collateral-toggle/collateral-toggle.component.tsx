@@ -7,7 +7,6 @@ import { COMPTROLLER_ABI, getComptrollerAddress } from '../../../../../contracts
 import { useIsCollateralEnabled } from '../../../../../hooks/use-collateral-status.hook';
 import { useUserMarkets } from '../../../../../hooks/use-market-core.hook';
 import { useUserMarketPosition } from '../../../../../hooks/use-user-positions.hook';
-import { invalidateBorrowEligibilityQueries } from '../../../../../hooks/use-borrow-eligibility.hook';
 import { Tooltip } from '../../../tooltip/tooltip.component';
 
 import css from './collateral-toggle.module.css';
@@ -51,7 +50,9 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 		return userPosition[1].result as bigint;
 	}, [userPosition]);
 
-	const hasOutstandingBorrows = borrowBalance > 0n;
+	// Allow disabling collateral if debt is below dust threshold (0.000000001 tokens)
+	const dustThreshold = 1000000000n; // 1e9 wei
+	const hasOutstandingBorrows = borrowBalance > dustThreshold;
 
 	const shouldDisableToggle = useMemo(() => {
 		if (actualIsEnabled && hasOutstandingBorrows) {
@@ -67,7 +68,7 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 			const newPendingState = !isEnabled;
 			setIsPendingToggle(newPendingState);
 
-			if (isEnabled && hasOutstandingBorrows) {
+			if (isEnabled && borrowBalance > dustThreshold) {
 				alert(
 					`Cannot disable collateral: You have ${formatUnits(borrowBalance, 18)} tokens borrowed in this market. Please repay your borrows first.`,
 				);
@@ -115,7 +116,6 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 	useEffect(() => {
 		if (isToggleSuccess && userMarketsQueryKey) {
 			queryClient.invalidateQueries({ queryKey: userMarketsQueryKey });
-			invalidateBorrowEligibilityQueries(queryClient, userAddress);
 
 			manualRefetch().then((freshResult) => {
 				const stillInArray = freshResult.data?.includes(marketAddress);
@@ -161,7 +161,7 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 			return 'This market is not eligible for collateral';
 		}
 
-		if (actualIsEnabled && hasOutstandingBorrows) {
+		if (actualIsEnabled && borrowBalance > dustThreshold) {
 			return 'Cannot disable collateral: You have outstanding borrows. Repay borrows first.';
 		}
 
@@ -177,12 +177,12 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 			<Tooltip content={getTooltipContent()} position="top">
 				<button
 					type="button"
-					className={`${css.toggle} ${isEnabled ? css.enabled : css.disabled} ${isPendingToggle !== null ? css.pending : ''} ${hasOutstandingBorrows && actualIsEnabled ? css.blocked : ''}`}
+					className={`${css.toggle} ${isEnabled ? css.enabled : css.disabled} ${isPendingToggle !== null ? css.pending : ''} ${borrowBalance > dustThreshold && actualIsEnabled ? css.blocked : ''}`}
 					onClick={handleToggle}
 					disabled={shouldDisableToggle || isTogglePending || isToggleConfirming || isPendingToggle !== null}
 					aria-label={`${isEnabled ? 'Disable' : 'Enable'} collateral`}>
 					<div className={`${css.slider} ${isEnabled ? css.sliderEnabled : css.sliderDisabled}`} />
-					{hasOutstandingBorrows && actualIsEnabled && <div className={css.blockIcon}>⚠️</div>}
+					{borrowBalance > dustThreshold && actualIsEnabled && <div className={css.blockIcon}>⚠️</div>}
 				</button>
 			</Tooltip>
 		</div>
