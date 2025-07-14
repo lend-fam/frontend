@@ -6,6 +6,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { hashFn } from '@wagmi/core/query';
 import { Header } from '../header/header.component';
+import { LandingPage } from '../landing-page';
 import { MarketsPage } from '../markets-page/markets-page/markets-page.component';
 import { MarketsOverviewPage } from '../markets-overview-page';
 import { MarketDetailPage } from '../market-detail-page';
@@ -35,7 +36,7 @@ export const App: FC = () => {
 							<div className={css.container}>
 								<Header />
 								<Routes>
-									<Route path="/" element={<MarketsPage />} />
+									<Route path="/" element={<LandingPage />} />
 									<Route path="/dashboard" element={<MarketsPage />} />
 									<Route path="/markets" element={<MarketsOverviewPage />} />
 									<Route path="/markets/:marketAddress" element={<MarketDetailPage />} />

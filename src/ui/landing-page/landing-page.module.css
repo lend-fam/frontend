@@ -1,0 +1,846 @@
+/* Tilda Landing Page Recreation - Pixel Perfect */
+.container {
+	width: 100%;
+	background: #ffffff;
+	margin: 0;
+	padding: 0;
+}
+
+/* Navigation Header */
+.navigation {
+	background: #5877fe;
+	position: relative;
+	padding: 30px 0;
+}
+
+.navContainer {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 20px;
+}
+
+.navContent {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background: #ffffff;
+	border-radius: 3000px;
+	padding: 8px 58px;
+	min-height: 65px;
+}
+
+.logoSection {
+	flex-shrink: 0;
+}
+
+.navLogo {
+	height: 32px;
+	width: auto;
+}
+
+.navMenu {
+	display: flex;
+	align-items: center;
+	gap: 32px;
+}
+
+.navLink {
+	font-family: 'Inter', Arial, sans-serif;
+	font-size: 20px;
+	font-weight: 600;
+	color: #18171e;
+	text-decoration: none;
+	transition: all 0.3s ease;
+}
+
+.navLink:hover {
+	color: #5877fe;
+}
+
+.socialIcons {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.socialIcon {
+	width: 44px;
+	height: 44px;
+	transition: transform 0.3s ease;
+}
+
+.socialIcon:hover {
+	transform: scale(1.05);
+}
+
+.toAppContainer {
+	display: flex;
+	align-items: center;
+}
+
+.toAppButton {
+	background: #FE8258;
+	color: #ffffff;
+	padding: 12px 24px;
+	border-radius: 50px;
+	text-decoration: none;
+	font-family: 'Inter', Arial, sans-serif;
+	font-size: 16px;
+	font-weight: 600;
+	transition: all 0.3s ease;
+	border: none;
+	cursor: pointer;
+}
+
+.toAppButton:hover {
+	background: #e5744f;
+	transform: translateY(-1px);
+}
+
+/* Hero Section */
+.hero {
+	background: #5877fe;
+	height: 600px;
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.heroBackground {
+	max-width: 1200px;
+	width: 100%;
+	padding: 0 20px;
+	position: relative;
+}
+
+.heroBackgroundImage {
+	display: none;
+}
+
+.heroCard {
+	background: #ffffff;
+	border: 4px solid #18171e;
+	margin: 62px auto;
+	padding: 80px 40px;
+	max-width: 845px;
+	height: 450px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	z-index: 2;
+}
+
+.heroContent {
+	text-align: center;
+}
+
+.heroLogo {
+	width: 728px;
+	height: auto;
+	margin-bottom: 40px;
+	max-width: 100%;
+}
+
+.heroTitle {
+	font-family: 'Inter', Arial, sans-serif;
+	font-size: 28px;
+	font-weight: 800;
+	color: #18171e;
+	margin: 0 0 20px 0;
+	line-height: 1.2;
+}
+
+.heroSubtitle {
+	font-family: 'Inter', Arial, sans-serif;
+	font-size: 20px;
+	font-weight: 500;
+	color: #18171e;
+	line-height: 1.45;
+	margin: 0 0 40px 0;
+}
+
+.heroSlogan {
+	margin-top: 20px;
+}
+
+.sloganImage {
+	width: 236px;
+	height: auto;
+}
+
+/* Section Container */
+.sectionContainer {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 20px;
+}
+
+.sectionTitle {
+	font-family: 'Inter', Arial, sans-serif;
+	font-size: 36px;
+	font-weight: 800;
+	text-align: center;
+	color: #ffffff;
+	margin: 0 0 80px 0;
+	letter-spacing: -0.02em;
+}
+
+/* Most content sections have blue background */
+.about,
+.when,
+.who {
+	background: #5877fe;
+	padding: 120px 0;
+}
+
+/* About section with grid background */
+.about {
+	position: relative;
+}
+
+.about::before {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-image: url('../../assets/svg/grid-pattern.svg');
+	background-repeat: repeat;
+	background-position: center center;
+	background-size: auto 100%;
+	opacity: 0.6;
+	pointer-events: none;
+	z-index: 1;
+}
+
+.about > * {
+	position: relative;
+	z-index: 2;
+}
+
+/* HOW section has light background with decorative elements */
+.how {
+	background: #5877fe;
+	padding: 120px 0;
+	position: relative;
+	overflow: hidden;
+}
+
+
+/* About Section */
+.aboutContent {
+	display: flex;
+	justify-content: center;
+	gap: 40px;
+	margin-top: 60px;
+	flex-wrap: wrap;
+}
+
+.aboutBox {
+	background: #ffffff;
+	border: 3px solid #18171e;
+	padding: 40px 30px;
+	border-radius: 0;
+	width: 327px;
+	flex-shrink: 0;
+}
+
+.aboutText {
+	font-family: 'Inter', Arial, sans-serif;
+	font-size: 20px;
+	font-weight: 700;
+	line-height: 1.45;
+	color: #18171e;
+	margin: 0;
+}
+
+.aboutLink {
+	color: #5877fe;
+	text-decoration: none;
+}
+
+.aboutLink:hover {
+	text-decoration: underline;
+}
+
+.aboutIllustration {
+	display: flex;
+	justify-content: center;
+	margin-top: 40px;
+}
+
+.aboutIllustration img {
+	width: 100%;
+	max-width: 300px;
+	height: auto;
+}
+
+/* How Diagram */
+.howDiagram {
+	position: relative;
+	z-index: 2;
+	max-width: 1200px;
+	margin: 0 auto;
+	text-align: center;
+	background: #ffffff;
+	border-radius: 20px;
+	padding: 40px;
+}
+
+.howDiagramImage {
+	width: 100%;
+	height: auto;
+	max-width: 1264px;
+}
+
+
+/* When Section */
+.whenContent {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 40px;
+	margin-top: 60px;
+}
+
+.whenBox {
+	background: #ffffff;
+	border: 4px solid #18171e;
+	padding: 40px 30px;
+	text-align: left;
+	min-height: 300px;
+	display: flex;
+	flex-direction: column;
+}
+
+.whenStageHeader {
+	display: flex;
+	gap: 12px;
+	margin-bottom: 30px;
+}
+
+.whenStageOne {
+	background: #ff69b4;
+	color: #ffffff;
+	font-family: 'Inter', Arial, sans-serif;
+	font-size: 16px;
+	font-weight: 700;
+	padding: 8px 16px;
+	border-radius: 20px;
+}
+
+.whenYearOne {
+	background: #ff69b4;
+	color: #ffffff;
+	font-family: 'Inter', Arial, sans-serif;
+	font-size: 16px;
+	font-weight: 700;
+	padding: 8px 16px;
+	border-radius: 20px;
+}
+
+.whenStageTwo {
+	background: #ff8c42;
+	color: #ffffff;
+	font-family: 'Inter', Arial, sans-serif;
+	font-size: 16px;
+	font-weight: 700;
+	padding: 8px 16px;
+	border-radius: 20px;
+}
+
+.whenYearTwo {
+	background: #ff8c42;
+	color: #ffffff;
+	font-family: 'Inter', Arial, sans-serif;
+	font-size: 16px;
+	font-weight: 700;
+	padding: 8px 16px;
+	border-radius: 20px;
+}
+
+.whenFeatures {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
+.whenFeature {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+}
+
+.whenFeatureIcon {
+	font-size: 16px;
+	flex-shrink: 0;
+	margin-top: 2px;
+}
+
+/* Stage One features have pink diamonds */
+.whenBox:first-child .whenFeatureIcon {
+	color: #ff69b4;
+}
+
+/* Stage Two features have orange diamonds */
+.whenBox:last-child .whenFeatureIcon {
+	color: #ff8c42;
+}
+
+.whenFeatureText {
+	font-family: 'Inter', Arial, sans-serif;
+	font-size: 16px;
+	font-weight: 500;
+	color: #18171e;
+	line-height: 1.5;
+}
+
+
+/* Who Section */
+.whoContent {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 40px;
+	margin-top: 60px;
+}
+
+.teamMemberBox {
+	background: #ffffff;
+	border: 4px solid #18171e;
+	padding: 40px 30px;
+	text-align: center;
+	min-height: 350px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 20px;
+}
+
+.memberImageContainer {
+	width: 120px;
+	height: 120px;
+	border-radius: 50%;
+	overflow: hidden;
+	border: 3px solid #18171e;
+	background: #f8f9fa;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.memberImage {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.memberHandle {
+	font-family: 'Inter', Arial, sans-serif;
+	font-size: 24px;
+	font-weight: 700;
+	color: #18171e;
+	margin: 0 0 16px 0;
+}
+
+.memberTitle {
+	font-family: 'Inter', Arial, sans-serif;
+	font-size: 18px;
+	font-weight: 500;
+	color: #666;
+	margin: 0;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 1199px) {
+	.navContent {
+		padding: 8px 40px;
+	}
+	
+	.heroCard {
+		max-width: 90%;
+		height: auto;
+		padding: 60px 30px;
+	}
+	
+	.heroLogo {
+		width: 90%;
+		max-width: 600px;
+	}
+}
+
+@media screen and (max-width: 959px) {
+	.navContent {
+		padding: 8px 30px;
+	}
+	
+	.navMenu {
+		gap: 24px;
+	}
+	
+	.navLink {
+		font-size: 18px;
+	}
+	
+	.sectionTitle {
+		font-size: 36px;
+		margin-bottom: 60px;
+	}
+	
+	.heroTitle {
+		font-size: 28px;
+	}
+	
+	.heroSubtitle {
+		font-size: 20px;
+	}
+	
+	.aboutContent {
+		margin-top: 40px;
+		flex-direction: column;
+		align-items: center;
+	}
+	
+	.aboutBox {
+		width: 100%;
+		max-width: 600px;
+	}
+	
+	.howDiagram {
+		max-width: 90%;
+	}
+	
+	.whenContent,
+	.whoContent {
+		grid-template-columns: 1fr;
+		gap: 30px;
+	}
+	
+	.whenBox {
+		min-height: 250px;
+	}
+}
+
+@media screen and (max-width: 639px) {
+	.navContent {
+		flex-direction: column;
+		gap: 20px;
+		padding: 20px 30px;
+		height: auto;
+	}
+	
+	.navMenu {
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 16px;
+	}
+	
+	.navLink {
+		font-size: 16px;
+	}
+	
+	.socialIcon img {
+		width: 36px;
+		height: 36px;
+	}
+	
+	.hero {
+		height: auto;
+		padding: 40px 0;
+	}
+	
+	.heroCard {
+		margin: 20px auto;
+		padding: 40px 20px;
+		height: auto;
+	}
+	
+	.heroLogo {
+		width: 100%;
+		max-width: 400px;
+		margin-bottom: 30px;
+	}
+	
+	.heroTitle {
+		font-size: 24px;
+	}
+	
+	.heroSubtitle {
+		font-size: 18px;
+	}
+	
+	.sloganImage {
+		width: 180px;
+	}
+	
+	.sectionTitle,
+	.howTitle {
+		font-size: 28px;
+		margin-bottom: 40px;
+	}
+	
+	.about,
+	.how,
+	.when,
+	.who {
+		padding: 80px 0;
+	}
+	
+	.aboutText {
+		font-size: 18px;
+	}
+	
+	.aboutBox,
+	.whenBox,
+	.teamMemberBox {
+		padding: 40px 30px;
+	}
+	
+	.teamMemberBox {
+		min-height: 300px;
+	}
+	
+	.memberImageContainer {
+		width: 100px;
+		height: 100px;
+	}
+	
+	
+	.whenYear {
+		font-size: 36px;
+	}
+	
+	.whenStage {
+		font-size: 20px;
+	}
+	
+	.whenBox {
+		min-height: 200px;
+		padding: 30px 20px;
+	}
+	
+	.whenStageHeader {
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-bottom: 20px;
+	}
+	
+	.whenStageOne,
+	.whenYearOne,
+	.whenStageTwo,
+	.whenYearTwo {
+		font-size: 14px;
+		padding: 6px 12px;
+	}
+	
+	.whenFeatureText {
+		font-size: 14px;
+	}
+	
+	.whenFeature {
+		gap: 8px;
+	}
+	
+	.memberHandle {
+		font-size: 20px;
+	}
+	
+	.memberTitle {
+		font-size: 16px;
+	}
+}
+
+/* Footer Section */
+.footer {
+	background: #5877fe;
+	padding: 80px 0;
+	text-align: center;
+}
+
+.footerContent {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 20px;
+}
+
+.footerMain {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 24px;
+}
+
+.footerTitle {
+	font-family: 'Inter', Arial, sans-serif;
+	font-size: 36px;
+	font-weight: 800;
+	color: #ffffff;
+	margin: 0;
+	letter-spacing: -0.02em;
+}
+
+.footerSubtitle {
+	font-family: 'Inter', Arial, sans-serif;
+	font-size: 20px;
+	font-weight: 500;
+	color: #ffffff;
+	margin: 0;
+	line-height: 1.45;
+}
+
+.footerText {
+	font-family: 'Inter', Arial, sans-serif;
+	font-size: 18px;
+	font-weight: 400;
+	color: #ffffff;
+	margin: 0;
+	line-height: 1.45;
+}
+
+.footerSocialIcons {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+	margin-top: 20px;
+}
+
+.footerSocialLink {
+	display: block;
+	text-decoration: none;
+	transition: transform 0.3s ease;
+}
+
+.footerSocialLink:hover {
+	transform: scale(1.05);
+}
+
+.footerSocialIcon {
+	width: 60px;
+	height: 60px;
+	background: #90ee90;
+	border-radius: 50%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background-color 0.3s ease;
+}
+
+.footerSocialIcon:hover {
+	background: #7de67d;
+}
+
+.footerIcon {
+	width: 24px;
+	height: 24px;
+}
+
+/* Footer Responsive */
+@media screen and (max-width: 959px) {
+	.footerTitle {
+		font-size: 36px;
+	}
+	
+	.footerSubtitle {
+		font-size: 20px;
+	}
+	
+	.footerText {
+		font-size: 16px;
+	}
+	
+	.footerSocialIcon {
+		width: 50px;
+		height: 50px;
+	}
+	
+	.footerIcon {
+		width: 20px;
+		height: 20px;
+	}
+}
+
+@media screen and (max-width: 639px) {
+	.footer {
+		padding: 60px 0;
+	}
+	
+	.footerMain {
+		gap: 20px;
+	}
+	
+	.footerTitle {
+		font-size: 28px;
+	}
+	
+	.footerSubtitle {
+		font-size: 18px;
+	}
+	
+	.footerText {
+		font-size: 14px;
+	}
+	
+	.footerSocialIcon {
+		width: 44px;
+		height: 44px;
+	}
+	
+	.footerIcon {
+		width: 18px;
+		height: 18px;
+	}
+}
+
+@media screen and (max-width: 479px) {
+	.navContent {
+		padding: 15px 20px;
+	}
+	
+	.heroCard {
+		padding: 30px 15px;
+	}
+	
+	.heroLogo {
+		max-width: 300px;
+		margin-bottom: 20px;
+	}
+	
+	.heroTitle {
+		font-size: 20px;
+	}
+	
+	.heroSubtitle {
+		font-size: 16px;
+	}
+	
+	.sloganImage {
+		width: 150px;
+	}
+	
+	.sectionTitle,
+	.howTitle {
+		font-size: 24px;
+	}
+	
+	.aboutText {
+		font-size: 16px;
+	}
+	
+	.aboutBox,
+	.whenBox,
+	.teamMemberBox {
+		padding: 30px 20px;
+	}
+	
+	.teamMemberBox {
+		min-height: 250px;
+	}
+	
+	.memberImageContainer {
+		width: 80px;
+		height: 80px;
+	}
+	
+}

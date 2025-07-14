@@ -1,0 +1,29 @@
+.container {
+	display: flex;
+	align-items: center;
+}
+
+.list {
+	display: flex;
+	align-items: center;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.link {
+	margin-right: 35px;
+}
+
+.link a {
+	color: white;
+	text-decoration: none;
+	font-weight: 600;
+	font-size: 20px;
+	transition: opacity 0.2s ease;
+}
+
+.link a:hover {
+	opacity: 0.8;
+	cursor: pointer;
+}
