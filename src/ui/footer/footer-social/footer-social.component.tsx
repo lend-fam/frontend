@@ -15,7 +15,7 @@ export const FooterSocial: FC = () => {
 			<div className={css.content}>
 				<div className={css.text}>Feel free to slide into our DMs or send a letter</div>
 				<ul className={css.social}>
-					<Social icon={emailIcon} path="mailto:contact@lend.fam" />
+					<Social icon={emailIcon} path="mailto:hi@lend.family" />
 					<Social icon={discordIcon} path="https://discord.gg/lendfam" />
 					<Social icon={xIcon} path="https://x.com/lend_fam" />
 				</ul>
