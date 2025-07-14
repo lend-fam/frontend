@@ -19,6 +19,7 @@ import {
 	useUSDBalances,
 	useMarketWalletBalances,
 } from '../../../hooks';
+import { useTokenMetadata, type TokenMetadata } from '../../../hooks/use-token-metadata.hook';
 import { MarketService, TokenService } from '../../../services';
 
 import css from './markets-supply-table.module.css';
@@ -130,6 +131,7 @@ const createSuppliedAssetsColumns = (
 
 const createAvailableAssetsColumns = (
 	navigate: (path: string) => void,
+	tokenMetadata?: Record<Address, TokenMetadata>,
 ): TableColumnProps<MarketsSupplyTableData, MarketsSupplyTableColumn>[] => [
 	{
 		key: 'assets',
@@ -159,7 +161,7 @@ const createAvailableAssetsColumns = (
 					padding: '0 12px',
 				}}>
 				<div style={{ textAlign: 'right', fontFamily: 'Inter', fontSize: '14px', fontWeight: '500' }}>
-					{MarketService.formatTokenBalance(data.walletBalance, 18)} {data.symbol}
+					{MarketService.formatTokenBalance(data.walletBalance, tokenMetadata?.[data.marketAddress]?.underlyingDecimals ?? 18)} {data.symbol}
 				</div>
 			</div>
 		),
@@ -232,26 +234,33 @@ export const MarketsSupplyTable: FC = () => {
 		(allMarkets as Address[]) || [],
 	);
 
+	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata(
+		(allMarkets as Address[]) || [],
+	);
+
 	const marketBalances = useMemo(() => {
 		if (!allMarkets || !userSupplyPositions) return {};
 
-		const balances: Record<string, { underlyingBalance: bigint; symbol: string }> = {};
+		const balances: Record<string, { underlyingBalance: bigint; symbol: string; decimals: number }> = {};
 
 		allMarkets.forEach((marketAddress) => {
 			const userPosition = userSupplyPositions[marketAddress];
 			const underlyingBalance = userPosition?.balance || 0n;
 
-			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
-			const symbol = displayName.replace('Market ', '').split(' ')[0];
+			const metadata = tokenMetadata?.[marketAddress];
+			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
+			const symbol = metadata?.underlyingSymbol || displayName.replace('Market ', '').split(' ')[0];
+			const decimals = metadata?.underlyingDecimals ?? 18;
 
 			balances[marketAddress] = {
 				underlyingBalance,
 				symbol,
+				decimals,
 			};
 		});
 
 		return balances;
-	}, [allMarkets, userSupplyPositions]);
+	}, [allMarkets, userSupplyPositions, tokenMetadata]);
 
 	const balanceData = useMemo(() => {
 		return Object.entries(marketBalances)
@@ -260,14 +269,14 @@ export const MarketsSupplyTable: FC = () => {
 				marketAddress: marketAddress as Address,
 				balance: data.underlyingBalance,
 				symbol: data.symbol,
-				decimals: 18,
+				decimals: data.decimals,
 			}));
 	}, [marketBalances]);
 
 	const { data: usdBalances, isLoading: usdLoading } = useUSDBalances(balanceData);
 
 	const suppliedAssetsColumns = useMemo(() => createSuppliedAssetsColumns(navigate), [navigate]);
-	const availableAssetsColumns = useMemo(() => createAvailableAssetsColumns(navigate), [navigate]);
+	const availableAssetsColumns = useMemo(() => createAvailableAssetsColumns(navigate, tokenMetadata), [navigate, tokenMetadata]);
 
 	const { suppliedMarketsData, availableMarketsData } = useMemo(() => {
 		if (!allMarkets || marketsLoading || apyLoading) {
@@ -279,7 +288,8 @@ export const MarketsSupplyTable: FC = () => {
 
 		for (let i = 0; i < allMarkets.length; i++) {
 			const marketAddress = allMarkets[i];
-			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
+			const metadata = tokenMetadata?.[marketAddress];
+			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
 			const apyData = marketsAPY?.[marketAddress];
 			const apy = apyData?.supplyAPY || '0.00';
 			const userPosition = userSupplyPositions?.[marketAddress];
@@ -288,12 +298,13 @@ export const MarketsSupplyTable: FC = () => {
 			const marketBalance = marketBalances[marketAddress];
 			const underlyingBalance = marketBalance?.underlyingBalance || 0n;
 
-			const tokenAmount = hasSupplied ? MarketService.formatTokenBalance(underlyingBalance, 18) : '0';
+			const decimals = metadata?.underlyingDecimals ?? 18;
+			const tokenAmount = hasSupplied ? MarketService.formatTokenBalance(underlyingBalance, decimals) : '0';
 
 			const isCollateralEnabled = userMarkets?.includes(marketAddress) || false;
 			const isCollateralEligible = true;
 
-			const symbol = marketBalance?.symbol || displayName.replace('Market ', '').split(' ')[0];
+			const symbol = metadata?.underlyingSymbol || marketBalance?.symbol || displayName.replace('Market ', '').split(' ')[0];
 
 			const walletBalance = walletBalances?.[marketAddress] || 0n;
 
@@ -335,6 +346,7 @@ export const MarketsSupplyTable: FC = () => {
 		marketBalances,
 		usdBalances,
 		walletBalances,
+		tokenMetadata,
 	]);
 
 	const filteredAvailableMarketsData = useMemo(() => {
@@ -350,7 +362,7 @@ export const MarketsSupplyTable: FC = () => {
 		}, 0);
 	}, [suppliedMarketsData]);
 
-	if (marketsLoading || apyLoading || positionsLoading || usdLoading || walletBalancesLoading || !allMarkets) {
+	if (marketsLoading || apyLoading || positionsLoading || usdLoading || walletBalancesLoading || tokenMetadataLoading || !allMarkets) {
 		return (
 			<div className={css.container}>
 				<p className={css.label}>Supply Markets</p>
@@ -368,7 +380,7 @@ export const MarketsSupplyTable: FC = () => {
 				)}
 			</div>
 
-			{suppliedMarketsData.length > 0 && (
+			{suppliedMarketsData.length > 0 ? (
 				<>
 					<p className={css.sectionHeader}>Your Supplies</p>
 					<Table
@@ -379,9 +391,14 @@ export const MarketsSupplyTable: FC = () => {
 						theme={tableCss}
 					/>
 				</>
+			) : (
+				<>
+					<p className={css.sectionHeader}>Your Supplies</p>
+					<div className={css.emptyState}>Nothing supplied yet</div>
+				</>
 			)}
 
-			{suppliedMarketsData.length > 0 && availableMarketsData.length > 0 && <div className={css.delimiter} />}
+			{availableMarketsData.length > 0 && <div className={css.delimiter} />}
 
 			{availableMarketsData.length > 0 && (
 				<>

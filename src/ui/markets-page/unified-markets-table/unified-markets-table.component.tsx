@@ -6,6 +6,7 @@ import { AssetsColumn } from '../../../ui-kit/components/table/columns/assets-co
 import { BalanceColumn } from '../../../ui-kit/components/table/columns/balance-column/balance-column.component';
 import { Button } from '../../../ui-kit/components/button/button.component';
 import { useAllMarkets, useMarketsAPY, useMarketTotals, useUSDBalances } from '../../../hooks';
+import { useTokenMetadata } from '../../../hooks/use-token-metadata.hook';
 import { TokenService, MarketService } from '../../../services';
 
 import css from './unified-markets-table.module.css';
@@ -131,13 +132,19 @@ export const UnifiedMarketsTable: FC = () => {
 	const { data: marketsAPY, isLoading: apyLoading } = useMarketsAPY();
 	const { data: marketTotals, isLoading: totalsLoading } = useMarketTotals();
 
+	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata(
+		(allMarkets as Address[]) || [],
+	);
+
 	const totalSuppliedBalanceData = useMemo(() => {
 		if (!allMarkets || !marketTotals) return [];
 
 		return allMarkets.map((marketAddress) => {
 			const marketTotalsData = marketTotals[marketAddress];
-			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
-			const symbol = displayName.replace('Market ', '').split(' ')[0];
+			const metadata = tokenMetadata?.[marketAddress];
+			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
+			const symbol = metadata?.underlyingSymbol || displayName.replace('Market ', '').split(' ')[0];
+			const decimals = metadata?.underlyingDecimals ?? 18;
 
 			const totalSupplyCTokens = marketTotalsData?.totalSupply || 0n;
 			const exchangeRate = marketTotalsData?.exchangeRate || 0n;
@@ -148,18 +155,19 @@ export const UnifiedMarketsTable: FC = () => {
 				marketAddress: marketAddress as Address,
 				balance: totalSuppliedUnderlying,
 				symbol,
-				decimals: 18,
+				decimals,
 			};
 		});
-	}, [allMarkets, marketTotals]);
+	}, [allMarkets, marketTotals, tokenMetadata]);
 
 	const totalBorrowedBalanceData = useMemo(() => {
 		if (!allMarkets || !marketTotals) return [];
 
 		return allMarkets.map((marketAddress) => {
 			const marketTotalsData = marketTotals[marketAddress];
-			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
-			const symbol = displayName.replace('Market ', '').split(' ')[0];
+			const metadata = tokenMetadata?.[marketAddress];
+			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
+			const symbol = metadata?.underlyingSymbol || displayName.replace('Market ', '').split(' ')[0];
 
 			const totalBorrowed = marketTotalsData?.totalBorrows || 0n;
 
@@ -170,7 +178,7 @@ export const UnifiedMarketsTable: FC = () => {
 				decimals: 18,
 			};
 		});
-	}, [allMarkets, marketTotals]);
+	}, [allMarkets, marketTotals, tokenMetadata]);
 
 	const { data: suppliedUSDBalances, isLoading: suppliedUSDLoading } = useUSDBalances(totalSuppliedBalanceData);
 	const { data: borrowedUSDBalances, isLoading: borrowedUSDLoading } = useUSDBalances(totalBorrowedBalanceData);
@@ -186,8 +194,9 @@ export const UnifiedMarketsTable: FC = () => {
 
 		for (let i = 0; i < allMarkets.length; i++) {
 			const marketAddress = allMarkets[i];
-			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
-			const symbol = displayName.replace('Market ', '').split(' ')[0];
+			const metadata = tokenMetadata?.[marketAddress];
+			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
+			const symbol = metadata?.underlyingSymbol || displayName.replace('Market ', '').split(' ')[0];
 
 			const apyData = marketsAPY?.[marketAddress];
 			const supplyAPY = apyData?.supplyAPY || '0.00';
@@ -197,12 +206,13 @@ export const UnifiedMarketsTable: FC = () => {
 
 			const totalSupplyCTokens = marketTotalsData?.totalSupply || 0n;
 			const exchangeRate = marketTotalsData?.exchangeRate || 0n;
+			const decimals = metadata?.underlyingDecimals ?? 18;
 			const totalSuppliedBalance = exchangeRate > 0n ? (totalSupplyCTokens * exchangeRate) / 10n ** 18n : 0n;
-			const totalSuppliedAmount = MarketService.formatTokenBalance(totalSuppliedBalance, 18);
+			const totalSuppliedAmount = MarketService.formatTokenBalance(totalSuppliedBalance, decimals);
 			const totalSuppliedUSD = suppliedUSDBalances?.[marketAddress] || '0';
 
 			const totalBorrowedBalance = marketTotalsData?.totalBorrows || 0n;
-			const totalBorrowedAmount = MarketService.formatTokenBalance(totalBorrowedBalance, 18);
+			const totalBorrowedAmount = MarketService.formatTokenBalance(totalBorrowedBalance, decimals);
 			const totalBorrowedUSD = borrowedUSDBalances?.[marketAddress] || '0';
 
 			const marketData: UnifiedMarketsTableData = {
@@ -237,9 +247,10 @@ export const UnifiedMarketsTable: FC = () => {
 		borrowedUSDBalances,
 		suppliedUSDLoading,
 		borrowedUSDLoading,
+		tokenMetadata,
 	]);
 
-	if (marketsLoading || apyLoading || totalsLoading || suppliedUSDLoading || borrowedUSDLoading || !allMarkets) {
+	if (marketsLoading || apyLoading || totalsLoading || suppliedUSDLoading || borrowedUSDLoading || tokenMetadataLoading || !allMarkets) {
 		return (
 			<div className={css.container}>
 				<div>Fetching markets from blockchain...</div>

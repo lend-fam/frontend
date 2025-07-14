@@ -1,4 +1,5 @@
 import type { Address } from 'viem';
+import type { TokenMetadata } from '../hooks/use-token-metadata.hook';
 
 const TOKEN_SYMBOL_MAP: Record<string, string> = {
 	cMDAI: 'MDAI',
@@ -46,9 +47,26 @@ export class TokenService {
 	}
 
 	/**
-	 * Format a display name for a market
+	 * Format a display name for a market using dynamic token metadata
 	 */
-	static formatMarketName(symbol?: string, name?: string, address?: Address): string {
+	static formatMarketName(symbol?: string, name?: string, address?: Address, tokenMetadata?: TokenMetadata): string {
+		// Use dynamic token metadata if available
+		if (tokenMetadata) {
+			// Prefer underlying token symbol for display
+			if (tokenMetadata.underlyingSymbol) {
+				return tokenMetadata.underlyingSymbol;
+			}
+			// Fall back to underlying token name
+			if (tokenMetadata.underlyingName) {
+				return tokenMetadata.underlyingName;
+			}
+			// Fall back to cToken symbol
+			if (tokenMetadata.symbol) {
+				return this.getTokenName(tokenMetadata.symbol);
+			}
+		}
+
+		// Fall back to static mapping logic
 		if (address) {
 			const addressName = this.getTokenNameByAddress(address);
 			if (addressName) {

@@ -19,6 +19,7 @@ import {
 	useUSDBalances,
 	useAccountLiquidity,
 } from '../../../hooks';
+import { useTokenMetadata } from '../../../hooks/use-token-metadata.hook';
 import { TokenService, MarketService } from '../../../services';
 
 import css from './markets-borrow-table.module.css';
@@ -179,14 +180,20 @@ export const MarketsBorrowTable: FC = () => {
 	const { data: availableLiquidity, isLoading: liquidityLoading } = useMarketsAvailableLiquidity();
 	const { data: accountLiquidity } = useAccountLiquidity(userAddress);
 
+	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata(
+		(allMarkets as Address[]) || [],
+	);
+
 	const balanceData = useMemo(() => {
 		if (!allMarkets || !userBorrowPositions || !availableLiquidity) return [];
 
 		const balances: Array<{ marketAddress: Address; balance: bigint; symbol: string; decimals: number }> = [];
 
 		allMarkets.forEach((marketAddress) => {
-			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
-			const symbol = displayName.replace('Market ', '').split(' ')[0];
+			const metadata = tokenMetadata?.[marketAddress];
+			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
+			const symbol = metadata?.underlyingSymbol || displayName.replace('Market ', '').split(' ')[0];
+			const decimals = metadata?.underlyingDecimals ?? 18;
 			const userPosition = userBorrowPositions[marketAddress];
 			const hasBorrowed = userPosition?.hasBorrowed || false;
 
@@ -195,7 +202,7 @@ export const MarketsBorrowTable: FC = () => {
 					marketAddress,
 					balance: userPosition.balance,
 					symbol,
-					decimals: 18,
+					decimals,
 				});
 			} else {
 				const availableCash = availableLiquidity[marketAddress] || 0n;
@@ -211,10 +218,10 @@ export const MarketsBorrowTable: FC = () => {
 						marketAddress,
 						balance: displayAmount,
 						symbol,
-						decimals: 18,
+						decimals,
 					});
 				} else {
-					const maxDisplayAmount = 1000n * 10n ** 18n;
+					const maxDisplayAmount = 1000n * 10n ** BigInt(decimals);
 					const displayAmount = availableCash < maxDisplayAmount ? availableCash : maxDisplayAmount;
 
 					if (displayAmount > 0n) {
@@ -222,7 +229,7 @@ export const MarketsBorrowTable: FC = () => {
 							marketAddress,
 							balance: displayAmount,
 							symbol,
-							decimals: 18,
+							decimals,
 						});
 					}
 				}
@@ -230,7 +237,7 @@ export const MarketsBorrowTable: FC = () => {
 		});
 
 		return balances;
-	}, [allMarkets, userBorrowPositions, availableLiquidity, accountLiquidity, userAddress]);
+	}, [allMarkets, userBorrowPositions, availableLiquidity, accountLiquidity, userAddress, tokenMetadata]);
 
 	const { data: usdBalances, isLoading: usdLoading } = useUSDBalances(balanceData);
 
@@ -247,7 +254,8 @@ export const MarketsBorrowTable: FC = () => {
 
 		for (let i = 0; i < allMarkets.length; i++) {
 			const marketAddress = allMarkets[i];
-			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
+			const metadata = tokenMetadata?.[marketAddress];
+			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
 			const apyData = marketsAPY?.[marketAddress];
 			const apy = apyData?.borrowAPY || '0.00';
 			const userPosition = userBorrowPositions?.[marketAddress];
@@ -255,24 +263,25 @@ export const MarketsBorrowTable: FC = () => {
 
 			const availableCash = availableLiquidity?.[marketAddress] || 0n;
 
+			const decimals = metadata?.underlyingDecimals ?? 18;
 			let availableAmount: string;
 			if (hasBorrowed) {
-				availableAmount = MarketService.formatTokenBalance(userPosition?.balance || 0n, 18);
+				availableAmount = MarketService.formatTokenBalance(userPosition?.balance || 0n, decimals);
 			} else {
 				if (accountLiquidity && userAddress) {
 					const [, liquidity] = accountLiquidity as [bigint, bigint, bigint];
 					const userBorrowCapacity = liquidity && liquidity > 0n ? liquidity : 0n;
 					const actualAvailable = userBorrowCapacity < availableCash ? userBorrowCapacity : availableCash;
-					availableAmount = MarketService.formatTokenBalance(actualAvailable, 18);
+					availableAmount = MarketService.formatTokenBalance(actualAvailable, decimals);
 				} else {
-					const maxDisplayAmount = 1000n * 10n ** 18n;
+					const maxDisplayAmount = 1000n * 10n ** BigInt(decimals);
 					const displayAmount = availableCash < maxDisplayAmount ? availableCash : maxDisplayAmount;
-					availableAmount = MarketService.formatTokenBalance(displayAmount, 18);
+					availableAmount = MarketService.formatTokenBalance(displayAmount, decimals);
 				}
 			}
 			const usdValue = usdBalances?.[marketAddress] || '0';
 
-			const symbol = displayName.replace('Market ', '').split(' ')[0];
+			const symbol = metadata?.underlyingSymbol || displayName.replace('Market ', '').split(' ')[0];
 
 			let userBorrowCapacity: bigint = 0n;
 			if (accountLiquidity && userAddress) {
@@ -318,6 +327,7 @@ export const MarketsBorrowTable: FC = () => {
 		usdBalances,
 		accountLiquidity,
 		userAddress,
+		tokenMetadata,
 	]);
 
 	const totalBorrowedUSD = useMemo(() => {
@@ -326,7 +336,7 @@ export const MarketsBorrowTable: FC = () => {
 		}, 0);
 	}, [borrowedMarketsData]);
 
-	if (marketsLoading || apyLoading || positionsLoading || liquidityLoading || usdLoading || !allMarkets) {
+	if (marketsLoading || apyLoading || positionsLoading || liquidityLoading || usdLoading || tokenMetadataLoading || !allMarkets) {
 		return (
 			<div className={css.container}>
 				<p className={css.label}>Borrow Markets</p>
@@ -362,7 +372,7 @@ export const MarketsBorrowTable: FC = () => {
 				</>
 			)}
 
-			{borrowedMarketsData.length > 0 && availableMarketsData.length > 0 && <div className={css.delimiter} />}
+			{availableMarketsData.length > 0 && <div className={css.delimiter} />}
 
 			{availableMarketsData.length > 0 && (
 				<>
