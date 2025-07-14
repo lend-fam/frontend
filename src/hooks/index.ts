@@ -12,3 +12,4 @@ export * from './use-transaction-context.hook';
 export * from './use-transaction-tracker.hook';
 export * from './use-underlying-tokens.hook';
 export * from './use-usd-balances.hook';
+export * from './use-native-yield.hook';

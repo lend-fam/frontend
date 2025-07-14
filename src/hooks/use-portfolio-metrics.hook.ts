@@ -7,6 +7,9 @@ import { useUserSupplyPositions, useUserBorrowPositions } from './use-user-posit
 import { useMarketsAPY, useMarketsCollateralFactors } from './use-market-data.hook';
 import { useTokenPrices, PriceService } from '../services/price.service';
 import { HealthFactorService, type PositionData } from '../services/health-factor.service';
+import { useNativeYield } from './use-native-yield.hook';
+import { NativeYieldService } from '../services/native-yield.service';
+import { useTokenMetadata } from './use-token-metadata.hook';
 
 export interface PortfolioMetrics {
 	netAPY: string;
@@ -16,11 +19,20 @@ export interface PortfolioMetrics {
 	totalSuppliedUSD: number;
 	totalBorrowedUSD: number;
 	availableBorrowUSD: number;
+	nativeYield: {
+		apy: string;
+		yieldMode: string;
+		isEnabled: boolean;
+		apeBalance: string;
+		estimatedDailyYield: string;
+		estimatedMonthlyYield: string;
+		comparison: {
+			better: 'native' | 'lending' | 'equal';
+			difference: string;
+		} | null;
+	};
 }
 
-/**
- * Hook to calculate portfolio metrics including Net APY, Health Factor, and Borrow Usage
- */
 export function usePortfolioMetrics(): {
 	data: PortfolioMetrics | null;
 	isLoading: boolean;
@@ -32,6 +44,7 @@ export function usePortfolioMetrics(): {
 	const { data: accountLiquidity, isLoading: liquidityLoading } = useAccountLiquidity(address);
 	const { data: marketsAPY, isLoading: apyLoading } = useMarketsAPY();
 	const { data: collateralFactors, isLoading: collateralLoading } = useMarketsCollateralFactors();
+	const { data: nativeYieldData, isLoading: nativeYieldLoading } = useNativeYield();
 
 	const allMarketAddresses = useMemo(() => {
 		if (!supplyPositions && !borrowPositions) return [];
@@ -46,9 +59,17 @@ export function usePortfolioMetrics(): {
 	}, [supplyPositions, borrowPositions]);
 
 	const { data: priceResults, isLoading: pricesLoading } = useTokenPrices(allMarketAddresses);
+	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata(allMarketAddresses);
 
 	const isLoading =
-		supplyLoading || borrowLoading || liquidityLoading || apyLoading || collateralLoading || pricesLoading;
+		supplyLoading ||
+		borrowLoading ||
+		liquidityLoading ||
+		apyLoading ||
+		collateralLoading ||
+		pricesLoading ||
+		nativeYieldLoading ||
+		tokenMetadataLoading;
 
 	const metrics = useMemo(() => {
 		if (
@@ -58,7 +79,8 @@ export function usePortfolioMetrics(): {
 			!accountLiquidity ||
 			!marketsAPY ||
 			!collateralFactors ||
-			!priceResults
+			!priceResults ||
+			!tokenMetadata
 		) {
 			return null;
 		}
@@ -76,18 +98,32 @@ export function usePortfolioMetrics(): {
 			}
 		});
 
-		let supplyPositionsCount = 0;
-		let borrowPositionsCount = 0;
-		let totalSupplyAPY = 0;
-		let totalBorrowAPY = 0;
+		let totalSupplyValue = 0;
+		let totalBorrowValue = 0;
+		let weightedSupplyAPY = 0;
+		let weightedBorrowAPY = 0;
 
 		Object.entries(supplyPositions).forEach(([marketAddress, position]) => {
 			if (position.balance > 0n) {
 				const marketData = marketsAPY[marketAddress as Address];
+				const priceUSD = priceMap.get(marketAddress as Address) || 1;
+
 				if (marketData) {
-					const apy = parseFloat(marketData.supplyAPY || '0');
-					totalSupplyAPY += apy;
-					supplyPositionsCount++;
+					const positionValue = parseFloat(formatUnits(position.balance, 18)) * priceUSD;
+					let apy = parseFloat(marketData.supplyAPY || '0');
+
+					if (nativeYieldData?.apy && parseFloat(nativeYieldData.apy) > 0) {
+						const metadata = tokenMetadata[marketAddress as Address];
+						const symbol = metadata?.underlyingSymbol || '';
+						const isAPEToken = symbol.toUpperCase() === 'APE';
+
+						if (isAPEToken) {
+							apy += parseFloat(nativeYieldData.apy);
+						}
+					}
+
+					weightedSupplyAPY += positionValue * apy;
+					totalSupplyValue += positionValue;
 				}
 			}
 		});
@@ -95,16 +131,20 @@ export function usePortfolioMetrics(): {
 		Object.entries(borrowPositions).forEach(([marketAddress, position]) => {
 			if (position.balance > 0n) {
 				const marketData = marketsAPY[marketAddress as Address];
+				const priceUSD = priceMap.get(marketAddress as Address) || 1;
+
 				if (marketData) {
+					const positionValue = parseFloat(formatUnits(position.balance, 18)) * priceUSD;
 					const apy = parseFloat(marketData.borrowAPY || '0');
-					totalBorrowAPY += apy;
-					borrowPositionsCount++;
+
+					weightedBorrowAPY += positionValue * apy;
+					totalBorrowValue += positionValue;
 				}
 			}
 		});
 
-		const avgSupplyAPY = supplyPositionsCount > 0 ? totalSupplyAPY / supplyPositionsCount : 0;
-		const avgBorrowAPY = borrowPositionsCount > 0 ? totalBorrowAPY / borrowPositionsCount : 0;
+		const avgSupplyAPY = totalSupplyValue > 0 ? weightedSupplyAPY / totalSupplyValue : 0;
+		const avgBorrowAPY = totalBorrowValue > 0 ? weightedBorrowAPY / totalBorrowValue : 0;
 		const netAPY = avgSupplyAPY - avgBorrowAPY;
 
 		const positions: PositionData[] = [];
@@ -163,6 +203,31 @@ export function usePortfolioMetrics(): {
 
 		const cumulativeLTV = healthFactorData.liquidationThreshold * 100;
 
+		const nativeYieldInfo = {
+			apy: nativeYieldData?.apy || '0.00',
+			yieldMode: nativeYieldData ? NativeYieldService.getYieldModeDisplay(nativeYieldData.yieldMode) : 'Disabled',
+			isEnabled: nativeYieldData ? NativeYieldService.isNativeYieldEnabled(nativeYieldData.yieldMode) : false,
+			apeBalance: nativeYieldData
+				? NativeYieldService.formatYieldAmount(nativeYieldData.balanceValues.shares)
+				: '0 APE',
+			estimatedDailyYield: '0 APE',
+			estimatedMonthlyYield: '0 APE',
+			comparison: null as { better: 'native' | 'lending' | 'equal'; difference: string } | null,
+		};
+
+		if (nativeYieldData && nativeYieldData.balanceValues.shares > 0n) {
+			const dailyYield = NativeYieldService.calculateDailyYield(
+				nativeYieldData.apy,
+				nativeYieldData.balanceValues.shares,
+			);
+			const monthlyYield = dailyYield * 30n;
+
+			nativeYieldInfo.estimatedDailyYield = NativeYieldService.formatYieldAmount(dailyYield);
+			nativeYieldInfo.estimatedMonthlyYield = NativeYieldService.formatYieldAmount(monthlyYield);
+
+			nativeYieldInfo.comparison = NativeYieldService.compareYields(nativeYieldData.apy, netAPY.toFixed(2));
+		}
+
 		return {
 			netAPY: netAPY.toFixed(2),
 			healthFactor,
@@ -171,6 +236,7 @@ export function usePortfolioMetrics(): {
 			totalSuppliedUSD: Math.round(totalCollateralUSD),
 			totalBorrowedUSD: Math.round(totalBorrowedUSD),
 			availableBorrowUSD: Math.round(availableBorrowUSD),
+			nativeYield: nativeYieldInfo,
 		};
 	}, [
 		address,
@@ -181,6 +247,8 @@ export function usePortfolioMetrics(): {
 		collateralFactors,
 		priceResults,
 		allMarketAddresses,
+		nativeYieldData,
+		tokenMetadata,
 	]);
 
 	return {

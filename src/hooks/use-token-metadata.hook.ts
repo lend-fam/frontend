@@ -32,7 +32,11 @@ export function useTokenMetadata(marketAddresses: Address[]) {
 		},
 	]);
 
-	const { data: ctokenData, isLoading: ctokenLoading, error: ctokenError } = useReadContracts({
+	const {
+		data: ctokenData,
+		isLoading: ctokenLoading,
+		error: ctokenError,
+	} = useReadContracts({
 		contracts: ctokenContracts,
 		query: {
 			enabled: marketAddresses.length > 0,
@@ -69,7 +73,11 @@ export function useTokenMetadata(marketAddresses: Address[]) {
 		},
 	]);
 
-	const { data: underlyingData, isLoading: underlyingLoading, error: underlyingError } = useReadContracts({
+	const {
+		data: underlyingData,
+		isLoading: underlyingLoading,
+		error: underlyingError,
+	} = useReadContracts({
 		contracts: underlyingContracts,
 		query: {
 			enabled: underlyingAddresses.length > 0,
@@ -87,7 +95,8 @@ export function useTokenMetadata(marketAddresses: Address[]) {
 
 			const name = nameResult.status === 'success' ? (nameResult.result as string) : 'Unknown';
 			const symbol = symbolResult.status === 'success' ? (symbolResult.result as string) : 'Unknown';
-			const underlyingAddress = underlyingResult.status === 'success' ? (underlyingResult.result as Address) : undefined;
+			const underlyingAddress =
+				underlyingResult.status === 'success' ? (underlyingResult.result as Address) : undefined;
 
 			let underlyingName: string | undefined;
 			let underlyingSymbol: string | undefined;
@@ -100,9 +109,16 @@ export function useTokenMetadata(marketAddresses: Address[]) {
 					const underlyingSymbolResult = underlyingData[underlyingIndex * 3 + 1];
 					const underlyingDecimalsResult = underlyingData[underlyingIndex * 3 + 2];
 
-					underlyingName = underlyingNameResult.status === 'success' ? (underlyingNameResult.result as string) : undefined;
-					underlyingSymbol = underlyingSymbolResult.status === 'success' ? (underlyingSymbolResult.result as string) : undefined;
-					underlyingDecimals = underlyingDecimalsResult.status === 'success' ? Number(underlyingDecimalsResult.result) : undefined;
+					underlyingName =
+						underlyingNameResult.status === 'success' ? (underlyingNameResult.result as string) : undefined;
+					underlyingSymbol =
+						underlyingSymbolResult.status === 'success'
+							? (underlyingSymbolResult.result as string)
+							: undefined;
+					underlyingDecimals =
+						underlyingDecimalsResult.status === 'success'
+							? Number(underlyingDecimalsResult.result)
+							: undefined;
 				}
 			}
 

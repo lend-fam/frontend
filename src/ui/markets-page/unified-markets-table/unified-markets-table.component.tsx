@@ -132,9 +132,7 @@ export const UnifiedMarketsTable: FC = () => {
 	const { data: marketsAPY, isLoading: apyLoading } = useMarketsAPY();
 	const { data: marketTotals, isLoading: totalsLoading } = useMarketTotals();
 
-	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata(
-		(allMarkets as Address[]) || [],
-	);
+	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata((allMarkets as Address[]) || []);
 
 	const totalSuppliedBalanceData = useMemo(() => {
 		if (!allMarkets || !marketTotals) return [];
@@ -250,7 +248,15 @@ export const UnifiedMarketsTable: FC = () => {
 		tokenMetadata,
 	]);
 
-	if (marketsLoading || apyLoading || totalsLoading || suppliedUSDLoading || borrowedUSDLoading || tokenMetadataLoading || !allMarkets) {
+	if (
+		marketsLoading ||
+		apyLoading ||
+		totalsLoading ||
+		suppliedUSDLoading ||
+		borrowedUSDLoading ||
+		tokenMetadataLoading ||
+		!allMarkets
+	) {
 		return (
 			<div className={css.container}>
 				<div>Fetching markets from blockchain...</div>
