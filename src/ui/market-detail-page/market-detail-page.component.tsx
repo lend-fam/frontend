@@ -13,24 +13,20 @@ import {
 	useMarketTotals,
 	useMarketsAvailableLiquidity,
 	useMarketsCollateralFactors,
-	useUserSupplyPositions,
-	useAllMarkets,
+	useTokenMetadata,
 } from '../../hooks';
-import { useAccount } from 'wagmi';
 import { TokenService } from '../../services';
 
 import css from './market-detail-page.module.css';
 
 export const MarketDetailPage: FC = () => {
 	const { marketAddress } = useParams<{ marketAddress: string }>();
-	const { address: userAddress } = useAccount();
 
-	const { data: allMarkets, isLoading: marketsLoading, error: marketsError } = useAllMarkets();
 	const { data: marketsAPY } = useMarketsAPY();
 	const { data: marketTotals } = useMarketTotals();
 	const { data: availableLiquidity } = useMarketsAvailableLiquidity();
 	const { data: collateralFactors } = useMarketsCollateralFactors();
-	const { data: userPositions } = useUserSupplyPositions(userAddress);
+	const { data: tokenMetadata } = useTokenMetadata(marketAddress ? [marketAddress as Address] : []);
 
 	if (!marketAddress) {
 		return (
@@ -45,26 +41,9 @@ export const MarketDetailPage: FC = () => {
 	const apyData = marketsAPY?.[address];
 	const liquidityData = availableLiquidity?.[address];
 	const collateralFactor = collateralFactors?.[address];
-	const userPosition = userPositions?.[address];
 
-	// Debug logging to understand the data flow
-	console.log('=== Market Detail Debug Info ===');
-	console.log('Market Address:', address);
-	console.log('All Markets from getAllMarkets:', allMarkets);
-	console.log('Markets Loading:', marketsLoading);
-	console.log('Markets Error:', marketsError);
-	console.log('All Market Totals:', marketTotals);
-	console.log('Market Data for this address:', marketData);
-	console.log('All APY Data:', marketsAPY);
-	console.log('APY Data for this address:', apyData);
-	console.log('All Liquidity Data:', availableLiquidity);
-	console.log('Liquidity Data for this address:', liquidityData);
-	console.log('All Collateral Factors:', collateralFactors);
-	console.log('Collateral Factor for this address:', collateralFactor);
-	console.log('================================');
-
-	const displayName = TokenService.formatMarketName(undefined, undefined, address);
-	const symbol = displayName.replace('Market ', '').split(' ')[0];
+	const metadata = tokenMetadata?.[address as Address];
+	const symbol = TokenService.formatMarketName(undefined, undefined, address, metadata);
 
 	if (!marketData || !apyData) {
 		return (
@@ -113,7 +92,6 @@ export const MarketDetailPage: FC = () => {
 							symbol={symbol}
 							marketAddress={address}
 							marketData={marketData}
-							userPosition={userPosition}
 							liquidityData={liquidityData}
 							supplyAPY={apyData?.supplyAPY || '0'}
 							borrowAPY={apyData?.borrowAPY || '0'}

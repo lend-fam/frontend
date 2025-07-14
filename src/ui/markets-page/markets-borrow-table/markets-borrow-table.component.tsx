@@ -1,4 +1,4 @@
-import { type FC, useMemo } from 'react';
+import { type FC, useMemo, memo } from 'react';
 import { useAccount } from 'wagmi';
 import { useNavigate } from 'react-router-dom';
 import type { Address } from 'viem';
@@ -98,7 +98,6 @@ const createBorrowedAssetsColumns = (
 					tokenSymbol={data.symbol}
 					borrowAPY={data.borrowAPY}
 					availableLiquidity={data.availableLiquidity}
-					userBorrowCapacity={data.userBorrowCapacity}
 				/>
 			</div>
 		),
@@ -161,7 +160,6 @@ const createAvailableAssetsColumns = (
 					tokenSymbol={data.symbol}
 					borrowAPY={data.borrowAPY}
 					availableLiquidity={data.availableLiquidity}
-					userBorrowCapacity={data.userBorrowCapacity}
 				/>
 			</div>
 		),
@@ -171,7 +169,7 @@ const createAvailableAssetsColumns = (
 const COLUMN_HEIGHT = '64px';
 const COLUMN_WIDTH = '120px';
 
-export const MarketsBorrowTable: FC = () => {
+const MarketsBorrowTableComponent: FC = () => {
 	const navigate = useNavigate();
 	const { address: userAddress } = useAccount();
 	const { data: allMarkets, isLoading: marketsLoading } = useAllMarkets();
@@ -180,9 +178,7 @@ export const MarketsBorrowTable: FC = () => {
 	const { data: availableLiquidity, isLoading: liquidityLoading } = useMarketsAvailableLiquidity();
 	const { data: accountLiquidity } = useAccountLiquidity(userAddress);
 
-	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata(
-		(allMarkets as Address[]) || [],
-	);
+	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata((allMarkets as Address[]) || []);
 
 	const balanceData = useMemo(() => {
 		if (!allMarkets || !userBorrowPositions || !availableLiquidity) return [];
@@ -191,8 +187,7 @@ export const MarketsBorrowTable: FC = () => {
 
 		allMarkets.forEach((marketAddress) => {
 			const metadata = tokenMetadata?.[marketAddress];
-			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
-			const symbol = metadata?.underlyingSymbol || displayName.replace('Market ', '').split(' ')[0];
+			const symbol = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
 			const decimals = metadata?.underlyingDecimals ?? 18;
 			const userPosition = userBorrowPositions[marketAddress];
 			const hasBorrowed = userPosition?.hasBorrowed || false;
@@ -244,6 +239,8 @@ export const MarketsBorrowTable: FC = () => {
 	const borrowedAssetsColumns = useMemo(() => createBorrowedAssetsColumns(navigate), [navigate]);
 	const availableAssetsColumns = useMemo(() => createAvailableAssetsColumns(navigate), [navigate]);
 
+	const userBorrowCapacity = accountLiquidity?.[1] || 0n;
+
 	const { borrowedMarketsData, availableMarketsData } = useMemo(() => {
 		if (!allMarkets || marketsLoading || apyLoading || liquidityLoading || usdLoading) {
 			return { borrowedMarketsData: [], availableMarketsData: [] };
@@ -256,6 +253,7 @@ export const MarketsBorrowTable: FC = () => {
 			const marketAddress = allMarkets[i];
 			const metadata = tokenMetadata?.[marketAddress];
 			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
+			const symbol = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
 			const apyData = marketsAPY?.[marketAddress];
 			const apy = apyData?.borrowAPY || '0.00';
 			const userPosition = userBorrowPositions?.[marketAddress];
@@ -280,14 +278,6 @@ export const MarketsBorrowTable: FC = () => {
 				}
 			}
 			const usdValue = usdBalances?.[marketAddress] || '0';
-
-			const symbol = metadata?.underlyingSymbol || displayName.replace('Market ', '').split(' ')[0];
-
-			let userBorrowCapacity: bigint = 0n;
-			if (accountLiquidity && userAddress) {
-				const [, liquidity] = accountLiquidity as [bigint, bigint, bigint];
-				userBorrowCapacity = liquidity && liquidity > 0n ? liquidity : 0n;
-			}
 
 			const marketData: MarketsBorrowTableData = {
 				assets: displayName,
@@ -328,6 +318,7 @@ export const MarketsBorrowTable: FC = () => {
 		accountLiquidity,
 		userAddress,
 		tokenMetadata,
+		userBorrowCapacity,
 	]);
 
 	const totalBorrowedUSD = useMemo(() => {
@@ -336,7 +327,15 @@ export const MarketsBorrowTable: FC = () => {
 		}, 0);
 	}, [borrowedMarketsData]);
 
-	if (marketsLoading || apyLoading || positionsLoading || liquidityLoading || usdLoading || tokenMetadataLoading || !allMarkets) {
+	if (
+		marketsLoading ||
+		apyLoading ||
+		positionsLoading ||
+		liquidityLoading ||
+		usdLoading ||
+		tokenMetadataLoading ||
+		!allMarkets
+	) {
 		return (
 			<div className={css.container}>
 				<p className={css.label}>Borrow Markets</p>
@@ -389,3 +388,5 @@ export const MarketsBorrowTable: FC = () => {
 		</div>
 	);
 };
+
+export const MarketsBorrowTable = memo(MarketsBorrowTableComponent);

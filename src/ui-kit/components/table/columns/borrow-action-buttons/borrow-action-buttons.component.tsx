@@ -3,6 +3,7 @@ import type { Address } from 'viem';
 
 import { BorrowModal } from '../../../borrow-modal/borrow-modal.component';
 import { RepayModal } from '../../../repay-modal/repay-modal.component';
+import { useBorrowEligibility } from '../../../../../hooks/use-borrow-eligibility.hook';
 
 import css from './borrow-action-buttons.module.css';
 
@@ -12,7 +13,7 @@ interface BorrowActionButtonsProps {
 	tokenSymbol: string;
 	borrowAPY: string;
 	availableLiquidity: bigint;
-	userBorrowCapacity?: bigint;
+	tokenDecimals?: number;
 	onBorrow?: (marketAddress: Address) => void;
 	onRepay?: (marketAddress: Address) => void;
 	onDetails?: (marketAddress: Address) => void;
@@ -24,7 +25,7 @@ export const BorrowActionButtons: FC<BorrowActionButtonsProps> = ({
 	tokenSymbol,
 	borrowAPY,
 	availableLiquidity,
-	userBorrowCapacity,
+	tokenDecimals = 18,
 	onBorrow,
 	onRepay,
 	onDetails,
@@ -32,10 +33,18 @@ export const BorrowActionButtons: FC<BorrowActionButtonsProps> = ({
 	const [isBorrowModalOpen, setIsBorrowModalOpen] = useState(false);
 	const [isRepayModalOpen, setIsRepayModalOpen] = useState(false);
 
+	const borrowEligibility = useBorrowEligibility({
+		marketAddress,
+		tokenDecimals,
+		tokenSymbol,
+	});
+
 	const handleBorrow = () => {
-		setIsBorrowModalOpen(true);
-		if (onBorrow) {
-			onBorrow(marketAddress);
+		if (borrowEligibility.canBorrow) {
+			setIsBorrowModalOpen(true);
+			if (onBorrow) {
+				onBorrow(marketAddress);
+			}
 		}
 	};
 
@@ -52,9 +61,6 @@ export const BorrowActionButtons: FC<BorrowActionButtonsProps> = ({
 		}
 	};
 
-	const isBorrowDisabled =
-		availableLiquidity === 0n || (userBorrowCapacity !== undefined && userBorrowCapacity === 0n);
-
 	return (
 		<>
 			<div className={css.container}>
@@ -67,8 +73,11 @@ export const BorrowActionButtons: FC<BorrowActionButtonsProps> = ({
 							type="button"
 							className={css.borrowButton}
 							onClick={handleBorrow}
-							disabled={isBorrowDisabled}>
-							Borrow
+							disabled={!borrowEligibility.canBorrow}
+							title={
+								borrowEligibility.canBorrow ? undefined : `Cannot borrow: ${borrowEligibility.reason}`
+							}>
+							{borrowEligibility.buttonText}
 						</button>
 					</>
 				) : (
@@ -77,8 +86,11 @@ export const BorrowActionButtons: FC<BorrowActionButtonsProps> = ({
 							type="button"
 							className={css.borrowButton}
 							onClick={handleBorrow}
-							disabled={isBorrowDisabled}>
-							Borrow
+							disabled={!borrowEligibility.canBorrow}
+							title={
+								borrowEligibility.canBorrow ? undefined : `Cannot borrow: ${borrowEligibility.reason}`
+							}>
+							{borrowEligibility.buttonText}
 						</button>
 						<button type="button" className={css.detailsButton} onClick={handleDetails}>
 							Details
@@ -93,7 +105,7 @@ export const BorrowActionButtons: FC<BorrowActionButtonsProps> = ({
 				marketAddress={marketAddress}
 				tokenSymbol={tokenSymbol}
 				borrowAPY={borrowAPY}
-				availableLiquidity={availableLiquidity}
+				availableLiquidity={borrowEligibility.details.maxBorrowAmount || availableLiquidity}
 			/>
 
 			<RepayModal

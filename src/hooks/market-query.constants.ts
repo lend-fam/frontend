@@ -16,7 +16,8 @@ export const MARKET_QUERY_CONFIG = {
 
 	ACCOUNT_LIQUIDITY: {
 		staleTime: 5000,
-		refetchInterval: false,
+		refetchInterval: 10000,
+		refetchOnWindowFocus: true,
 		retry: 3,
 		retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 3000),
 	},

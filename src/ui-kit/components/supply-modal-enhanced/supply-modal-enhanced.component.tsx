@@ -7,7 +7,7 @@ import { parseUnits, formatUnits, maxUint256 } from 'viem';
 import { Modal } from '../modal/modal.component';
 import { CTOKEN_ABI, ERC20_ABI } from '../../../contracts';
 import { TokenService, MarketService } from '../../../services';
-import { useApprovalTransaction, useTransactionContext } from '../../../hooks';
+import { useApprovalTransaction, useTransactionContext, useTokenMetadata } from '../../../hooks';
 
 import css from './supply-modal-enhanced.module.css';
 
@@ -34,6 +34,7 @@ export const SupplyModalEnhanced: FC<SupplyModalEnhancedProps> = ({
 	const { address } = useAccount();
 	const queryClient = useQueryClient();
 	const { addTransaction } = useTransactionContext();
+	const { data: tokenMetadata } = useTokenMetadata([marketAddress]);
 
 	const { data: underlyingTokenAddress } = useReadContract({
 		address: marketAddress,
@@ -117,11 +118,9 @@ export const SupplyModalEnhanced: FC<SupplyModalEnhancedProps> = ({
 	const handleSupply = () => {
 		if (!isValidAmount || !underlyingTokenAddress) return;
 
-		// Initialize transaction steps
 		tracker.initializeSteps(needsApproval, 'Supply');
 
 		if (needsApproval) {
-			// Start with approval transaction
 			const approvalAmount = useMaxApproval ? maxUint256 : amountInWei;
 			tracker.executeTransaction({
 				address: underlyingTokenAddress,
@@ -183,8 +182,8 @@ export const SupplyModalEnhanced: FC<SupplyModalEnhancedProps> = ({
 		}
 	}, [tracker, amountInWei, marketAddress, underlyingTokenAddress, amount, addTransaction]);
 
-	const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
-	const cleanSymbol = displayName.replace('Market ', '').split(' ')[0];
+	const metadata = tokenMetadata?.[marketAddress];
+	const cleanSymbol = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
 
 	const getButtonText = () => {
 		if (!amount) return 'Enter an amount';

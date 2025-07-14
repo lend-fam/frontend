@@ -24,6 +24,7 @@ export interface BorrowActionButtonProps extends BaseActionButtonProps {
 	hasBorrowed: boolean;
 	borrowAPY: string;
 	availableLiquidity: bigint;
+	tokenDecimals?: number;
 }
 
 export type ActionButtonGroupProps = SupplyActionButtonProps | BorrowActionButtonProps;

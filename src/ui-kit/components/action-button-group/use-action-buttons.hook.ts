@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { useAccount, useChainId } from 'wagmi';
+import { useBorrowEligibility } from '../../../hooks/use-borrow-eligibility.hook';
 import type {
 	ActionButtonGroupProps,
 	ButtonState,
@@ -34,6 +35,12 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 	const APECHAIN_MAINNET = 33139;
 	const APECHAIN_TESTNET = 33111;
 	const isValidNetwork = chainId === APECHAIN_MAINNET || chainId === APECHAIN_TESTNET;
+
+	const borrowEligibility = useBorrowEligibility({
+		marketAddress: props.variant === 'borrow' ? props.marketAddress : undefined,
+		tokenSymbol: props.variant === 'borrow' ? props.tokenSymbol : undefined,
+		tokenDecimals: props.variant === 'borrow' ? (props as BorrowActionButtonProps).tokenDecimals : undefined,
+	});
 
 	const getWalletConnectionState = (additionalCheck?: () => boolean): ButtonState => {
 		if (!isConnected) {
@@ -131,17 +138,14 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 	};
 
 	const getBorrowConfig = (borrowProps: BorrowActionButtonProps): ActionButtonConfig => {
-		const isBorrowDisabled = borrowProps.availableLiquidity === BigInt(0);
-		const primaryButtonState = getWalletConnectionState();
-
 		if (borrowProps.hasBorrowed) {
 			return {
 				primary: {
 					className: 'borrowButton',
 					handler: handlePrimaryAction,
-					state: isBorrowDisabled
-						? { disabled: true, text: 'No Liquidity' }
-						: { disabled: false, text: 'Borrow' },
+					state: borrowEligibility.canBorrow
+						? { disabled: false, text: 'Borrow' }
+						: { disabled: true, text: borrowEligibility.buttonText },
 				},
 				secondary: {
 					className: 'repayButton',
@@ -155,11 +159,9 @@ export const useActionButtons = (props: ActionButtonGroupProps): UseActionButton
 			primary: {
 				className: 'borrowButton',
 				handler: handlePrimaryAction,
-				state: isBorrowDisabled
-					? { disabled: true, text: 'No Liquidity' }
-					: primaryButtonState.disabled
-						? primaryButtonState
-						: { disabled: false, text: 'Borrow' },
+				state: borrowEligibility.canBorrow
+					? { disabled: false, text: 'Borrow' }
+					: { disabled: true, text: borrowEligibility.buttonText },
 			},
 			secondary: {
 				className: 'detailsButton',

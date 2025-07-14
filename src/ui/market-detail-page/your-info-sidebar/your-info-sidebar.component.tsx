@@ -4,10 +4,11 @@ import { useAccount } from 'wagmi';
 import { Button } from '../../../ui-kit/components/button/button.component';
 import { SupplyModal } from '../../../ui-kit/components/supply-modal/supply-modal.component';
 import { BorrowModal } from '../../../ui-kit/components/borrow-modal/borrow-modal.component';
+import { Tooltip } from '../../../ui-kit/components/tooltip/tooltip.component';
 import { MarketService, PriceService } from '../../../services';
 import { useTokenPrices } from '../../../services/price.service';
 import { useMarketWalletBalances, useAccountLiquidity } from '../../../hooks';
-// import type { UserMarketPosition } from '../../../types/market.types';
+import { useUserSupplyPositions } from '../../../hooks/use-user-positions.hook';
 
 import css from './your-info-sidebar.module.css';
 
@@ -19,10 +20,6 @@ interface YourInfoSidebarProps {
 		totalBorrows: bigint;
 		exchangeRate: bigint;
 	};
-	userPosition?: {
-		balance: bigint;
-		hasSupplied: boolean;
-	};
 	liquidityData?: bigint;
 	supplyAPY: string;
 	borrowAPY: string;
@@ -31,7 +28,6 @@ interface YourInfoSidebarProps {
 export const YourInfoSidebar: FC<YourInfoSidebarProps> = ({
 	symbol,
 	marketAddress,
-	userPosition: _, // eslint-disable-line @typescript-eslint/no-unused-vars
 	liquidityData,
 	supplyAPY,
 	borrowAPY,
@@ -40,23 +36,25 @@ export const YourInfoSidebar: FC<YourInfoSidebarProps> = ({
 	const [isBorrowModalOpen, setIsBorrowModalOpen] = useState(false);
 	const { address: userAddress } = useAccount();
 
-	// Fetch user's wallet balance for this market's underlying token
 	const { data: walletBalances } = useMarketWalletBalances([marketAddress]);
 	const userWalletBalance = walletBalances?.[marketAddress] || 0n;
 
-	// Fetch user's account liquidity for borrowing capacity
 	const { data: accountLiquidity } = useAccountLiquidity(userAddress);
-	const borrowingCapacity = accountLiquidity?.[1] || 0n; // [error, liquidity, shortfall]
+	const borrowingCapacity = accountLiquidity?.[1] || 0n;
 
-	// Fetch token prices
+	const { data: userSupplyPositions, isLoading: supplyLoading } = useUserSupplyPositions(userAddress);
+
+	const hasAnySuppliedPositions =
+		userSupplyPositions && Object.values(userSupplyPositions).some((pos) => pos.hasSupplied);
+	const hasZeroBorrowCapacity = borrowingCapacity === 0n;
+
+	const shouldShowTooltip = !supplyLoading && hasAnySuppliedPositions && hasZeroBorrowCapacity;
+
 	const { data: pricesData } = useTokenPrices([marketAddress]);
 	const tokenPrice = pricesData?.[0]?.result as bigint | undefined;
-
-	// Calculate USD values using real price data
 	const usdValues = useMemo(() => {
 		const fallbackPrice = PriceService.getFallbackPrice(symbol);
 
-		// Calculate USD values using oracle price or fallback
 		const walletUSD = tokenPrice
 			? PriceService.calculateUSDValue(userWalletBalance, 18, tokenPrice)
 			: PriceService.calculateUSDValueWithFallback(userWalletBalance, 18, fallbackPrice);
@@ -65,8 +63,6 @@ export const YourInfoSidebar: FC<YourInfoSidebarProps> = ({
 			? PriceService.calculateUSDValue(userWalletBalance, 18, tokenPrice)
 			: PriceService.calculateUSDValueWithFallback(userWalletBalance, 18, fallbackPrice);
 
-		// Convert borrowing capacity from USD to token amount
-		// borrowingCapacity is in USD with 18 decimals, need to convert to token amount
 		const borrowTokenAmount = tokenPrice ? (borrowingCapacity * 10n ** 18n) / tokenPrice : 0n;
 		const borrowUSD = tokenPrice
 			? PriceService.calculateUSDValue(borrowTokenAmount, 18, tokenPrice)
@@ -81,11 +77,8 @@ export const YourInfoSidebar: FC<YourInfoSidebarProps> = ({
 		};
 	}, [userWalletBalance, borrowingCapacity, tokenPrice, symbol]);
 
-	// Available to supply = user's wallet balance of the underlying token
 	const availableToSupply = userWalletBalance;
 	const availableToSupplyFormatted = MarketService.formatTokenBalance(availableToSupply, 18);
-
-	// Available to borrow = borrowing capacity converted to token amount, limited by market liquidity
 	const maxBorrowFromLiquidity = Math.min(Number(liquidityData || 0n), Number(usdValues.borrowTokenAmount));
 	const availableToBorrow = BigInt(Math.floor(maxBorrowFromLiquidity));
 	const availableToBorrowFormatted = MarketService.formatTokenBalance(availableToBorrow, 18);
@@ -133,11 +126,23 @@ export const YourInfoSidebar: FC<YourInfoSidebarProps> = ({
 						{availableToBorrowFormatted} {symbol}
 					</div>
 					<div className={css.actionUsd}>{usdValues.borrow}</div>
-					<Button
-						className={`${css.actionButton} ${css.secondaryButton}`}
-						onClick={() => setIsBorrowModalOpen(true)}>
-						Borrow
-					</Button>
+					{shouldShowTooltip ? (
+						<Tooltip content="Enable your supplied assets as collateral to start borrowing" position="top">
+							<Button
+								className={`${css.actionButton} ${css.secondaryButton}`}
+								onClick={() => setIsBorrowModalOpen(true)}
+								disabled={borrowingCapacity === 0n}>
+								Borrow
+							</Button>
+						</Tooltip>
+					) : (
+						<Button
+							className={`${css.actionButton} ${css.secondaryButton}`}
+							onClick={() => setIsBorrowModalOpen(true)}
+							disabled={borrowingCapacity === 0n}>
+							Borrow
+						</Button>
+					)}
 				</div>
 			</div>
 

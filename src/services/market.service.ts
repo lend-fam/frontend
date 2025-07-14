@@ -2,23 +2,37 @@ import { formatUnits } from 'viem';
 import type { Market, UserMarketPosition } from '../types/market.types';
 import { BLOCKS_PER_YEAR } from '../contracts';
 
+const apyCache = new Map<string, string>();
+
 export class MarketService {
 	static calculateSupplyAPY(supplyRatePerBlock: bigint): string {
 		if (supplyRatePerBlock === 0n) return '0.00';
 
-		const ratePerBlock = Number(formatUnits(supplyRatePerBlock, 18));
-		const apy = (Math.pow(1 + ratePerBlock * BLOCKS_PER_YEAR, 1) - 1) * 100;
+		const cacheKey = `supply_${supplyRatePerBlock.toString()}`;
+		const cached = apyCache.get(cacheKey);
+		if (cached) return cached;
 
-		return apy.toFixed(2);
+		const ratePerBlock = Number(formatUnits(supplyRatePerBlock, 18));
+		const apy = ratePerBlock * BLOCKS_PER_YEAR * 100;
+		const result = apy.toFixed(2);
+
+		apyCache.set(cacheKey, result);
+		return result;
 	}
 
 	static calculateBorrowAPY(borrowRatePerBlock: bigint): string {
 		if (borrowRatePerBlock === 0n) return '0.00';
 
-		const ratePerBlock = Number(formatUnits(borrowRatePerBlock, 18));
-		const apy = (Math.pow(1 + ratePerBlock * BLOCKS_PER_YEAR, 1) - 1) * 100;
+		const cacheKey = `borrow_${borrowRatePerBlock.toString()}`;
+		const cached = apyCache.get(cacheKey);
+		if (cached) return cached;
 
-		return apy.toFixed(2);
+		const ratePerBlock = Number(formatUnits(borrowRatePerBlock, 18));
+		const apy = ratePerBlock * BLOCKS_PER_YEAR * 100;
+		const result = apy.toFixed(2);
+
+		apyCache.set(cacheKey, result);
+		return result;
 	}
 
 	static formatTokenBalance(balance: bigint, decimals: number = 18, symbol: string = ''): string {
@@ -71,6 +85,91 @@ export class MarketService {
 
 	static isCollateralEligible(market: Market): boolean {
 		return market.isListed && market.collateralFactorMantissa > 0n;
+	}
+
+	/**
+	 * Calculate the maximum amount a user can borrow based on their account liquidity
+	 * @param accountLiquidity - User's account liquidity in USD (from getAccountLiquidity)
+	 * @param marketLiquidity - Available cash in the market
+	 * @param borrowCap - Market's borrow cap (0 means no cap)
+	 * @param totalBorrows - Total borrowed amount in the market
+	 * @returns Maximum borrowable amount
+	 */
+	static calculateMaxBorrowAmount(
+		accountLiquidity: bigint,
+		marketLiquidity: bigint,
+		borrowCap: bigint = 0n,
+		totalBorrows: bigint = 0n,
+	): bigint {
+		// Start with the minimum of account liquidity and market liquidity
+		let maxBorrow = accountLiquidity < marketLiquidity ? accountLiquidity : marketLiquidity;
+
+		// Apply borrow cap if set
+		if (borrowCap > 0n && totalBorrows < borrowCap) {
+			const remainingCap = borrowCap - totalBorrows;
+			maxBorrow = maxBorrow < remainingCap ? maxBorrow : remainingCap;
+		}
+
+		return maxBorrow;
+	}
+
+	/**
+	 * Check if a borrow amount would put the user at risk of liquidation
+	 * @param accountLiquidity - User's current account liquidity
+	 * @param borrowAmountUSD - Borrow amount in USD
+	 * @param safetyThreshold - Safety threshold (default 1.1 = 110%)
+	 * @returns true if the borrow is safe
+	 */
+	static isBorrowSafe(accountLiquidity: bigint, borrowAmountUSD: bigint, safetyThreshold: number = 1.1): boolean {
+		if (accountLiquidity === 0n || borrowAmountUSD === 0n) return false;
+
+		const remainingLiquidity = accountLiquidity - borrowAmountUSD;
+		if (remainingLiquidity <= 0n) return false;
+
+		const healthFactor = Number(formatUnits(remainingLiquidity, 18)) / Number(formatUnits(borrowAmountUSD, 18));
+		return healthFactor >= safetyThreshold;
+	}
+
+	/**
+	 * Get minimum borrow amount for a token (typically 0.001 tokens)
+	 * @param tokenDecimals - Token decimals
+	 * @returns Minimum borrow amount in wei
+	 */
+	static getMinBorrowAmount(tokenDecimals: number): bigint {
+		return BigInt(10 ** Math.max(0, tokenDecimals - 3));
+	}
+
+	/**
+	 * Process account liquidity result from Comptroller.getAccountLiquidity
+	 * @param accountLiquidityResult - Result from getAccountLiquidity call
+	 * @returns Object with processed liquidity data
+	 */
+	static processAccountLiquidity(accountLiquidityResult: [bigint, bigint, bigint] | undefined): {
+		error: boolean;
+		liquidity: bigint;
+		shortfall: bigint;
+		canBorrow: boolean;
+		hasNegativeLiquidity: boolean;
+	} {
+		if (!accountLiquidityResult) {
+			return {
+				error: true,
+				liquidity: 0n,
+				shortfall: 0n,
+				canBorrow: false,
+				hasNegativeLiquidity: false,
+			};
+		}
+
+		const [error, liquidity, shortfall] = accountLiquidityResult;
+
+		return {
+			error: error !== 0n,
+			liquidity,
+			shortfall,
+			canBorrow: error === 0n && liquidity > 0n && shortfall === 0n,
+			hasNegativeLiquidity: shortfall > 0n,
+		};
 	}
 
 	/**

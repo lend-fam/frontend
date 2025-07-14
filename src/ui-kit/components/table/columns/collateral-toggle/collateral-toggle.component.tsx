@@ -7,6 +7,7 @@ import { COMPTROLLER_ABI, getComptrollerAddress } from '../../../../../contracts
 import { useIsCollateralEnabled } from '../../../../../hooks/use-collateral-status.hook';
 import { useUserMarkets } from '../../../../../hooks/use-market-core.hook';
 import { useUserMarketPosition } from '../../../../../hooks/use-user-positions.hook';
+import { invalidateBorrowEligibilityQueries } from '../../../../../hooks/use-borrow-eligibility.hook';
 import { Tooltip } from '../../../tooltip/tooltip.component';
 
 import css from './collateral-toggle.module.css';
@@ -114,6 +115,7 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 	useEffect(() => {
 		if (isToggleSuccess && userMarketsQueryKey) {
 			queryClient.invalidateQueries({ queryKey: userMarketsQueryKey });
+			invalidateBorrowEligibilityQueries(queryClient, userAddress);
 
 			manualRefetch().then((freshResult) => {
 				const stillInArray = freshResult.data?.includes(marketAddress);
@@ -141,6 +143,7 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 		queryClient,
 		userMarketsQueryKey,
 		isPendingToggle,
+		userAddress,
 	]);
 
 	useEffect(() => {

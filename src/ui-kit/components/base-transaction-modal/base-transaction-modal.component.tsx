@@ -11,6 +11,7 @@ import { useTheme } from '../../hooks/use-theme.hook';
 import { useTransactionFlow } from './use-transaction-flow.hook';
 import { useUserSupplyPositions, useUserBorrowPositions } from '../../../hooks/use-user-positions.hook';
 import { useMarketsCollateralFactors } from '../../../hooks/use-market-data.hook';
+import { useTokenMetadata } from '../../../hooks/use-token-metadata.hook';
 import { useAccount } from 'wagmi';
 import type { BaseTransactionModalProps, TransactionOverviewRow } from './transaction.types';
 
@@ -54,9 +55,10 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 	const { data: borrowPositions } = useUserBorrowPositions(address);
 	const { data: collateralFactors } = useMarketsCollateralFactors();
 	const { data: priceResults } = useTokenPrices([marketAddress]);
+	const { data: tokenMetadata } = useTokenMetadata([marketAddress]);
 
-	const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress);
-	const cleanSymbol = displayName.replace('Market ', '').split(' ')[0];
+	const metadata = tokenMetadata?.[marketAddress];
+	const cleanSymbol = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
 
 	const sliderRef = useRef<HTMLInputElement>(null);
 	const isDraggingRef = useRef(false);

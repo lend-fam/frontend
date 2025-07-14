@@ -21,9 +21,6 @@ const TOKEN_ADDRESS_MAP: Record<Address, string> = {
 };
 
 export class TokenService {
-	/**
-	 * Get a user-friendly token name from a Compound token symbol
-	 */
 	static getTokenName(symbol: string): string {
 		if (symbol.startsWith('c') && symbol.length > 1) {
 			const underlying = TOKEN_SYMBOL_MAP[symbol];
@@ -38,35 +35,24 @@ export class TokenService {
 		return symbol;
 	}
 
-	/**
-	 * Get token name from address if known
-	 */
 	static getTokenNameByAddress(address: Address): string | null {
 		const normalizedAddress = address.toLowerCase() as Address;
 		return TOKEN_ADDRESS_MAP[normalizedAddress] || null;
 	}
 
-	/**
-	 * Format a display name for a market using dynamic token metadata
-	 */
 	static formatMarketName(symbol?: string, name?: string, address?: Address, tokenMetadata?: TokenMetadata): string {
-		// Use dynamic token metadata if available
-		if (tokenMetadata) {
-			// Prefer underlying token symbol for display
-			if (tokenMetadata.underlyingSymbol) {
-				return tokenMetadata.underlyingSymbol;
-			}
-			// Fall back to underlying token name
-			if (tokenMetadata.underlyingName) {
-				return tokenMetadata.underlyingName;
-			}
-			// Fall back to cToken symbol
-			if (tokenMetadata.symbol) {
-				return this.getTokenName(tokenMetadata.symbol);
-			}
+		if (tokenMetadata?.underlyingSymbol) {
+			return tokenMetadata.underlyingSymbol;
 		}
 
-		// Fall back to static mapping logic
+		if (tokenMetadata?.symbol) {
+			return this.getTokenName(tokenMetadata.symbol);
+		}
+
+		if (symbol) {
+			return this.getTokenName(symbol);
+		}
+
 		if (address) {
 			const addressName = this.getTokenNameByAddress(address);
 			if (addressName) {
@@ -74,19 +60,8 @@ export class TokenService {
 			}
 		}
 
-		if (symbol) {
-			const tokenName = this.getTokenName(symbol);
-			if (tokenName !== symbol) {
-				return tokenName;
-			}
-		}
-
 		if (name && name !== symbol) {
 			return name;
-		}
-
-		if (symbol) {
-			return symbol;
 		}
 
 		if (address) {
@@ -96,16 +71,10 @@ export class TokenService {
 		return 'Unknown Token';
 	}
 
-	/**
-	 * Check if a symbol represents a Compound token
-	 */
 	static isCompoundToken(symbol: string): boolean {
 		return symbol.startsWith('c') && symbol.length > 1;
 	}
 
-	/**
-	 * Get the underlying token symbol from a Compound token
-	 */
 	static getUnderlyingSymbol(compoundSymbol: string): string {
 		if (this.isCompoundToken(compoundSymbol)) {
 			return TOKEN_SYMBOL_MAP[compoundSymbol] || compoundSymbol.slice(1);

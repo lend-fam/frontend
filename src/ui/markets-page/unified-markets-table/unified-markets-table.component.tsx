@@ -1,4 +1,4 @@
-import { type FC, useMemo } from 'react';
+import { type FC, useMemo, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Address } from 'viem';
 import { Table, type TableColumnProps, type TableData } from '../../../ui-kit/components/table/table.component';
@@ -126,15 +126,13 @@ const createUnifiedMarketsColumns = (
 	},
 ];
 
-export const UnifiedMarketsTable: FC = () => {
+const UnifiedMarketsTableComponent: FC = () => {
 	const navigate = useNavigate();
 	const { data: allMarkets, isLoading: marketsLoading } = useAllMarkets();
 	const { data: marketsAPY, isLoading: apyLoading } = useMarketsAPY();
 	const { data: marketTotals, isLoading: totalsLoading } = useMarketTotals();
 
-	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata(
-		(allMarkets as Address[]) || [],
-	);
+	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata((allMarkets as Address[]) || []);
 
 	const totalSuppliedBalanceData = useMemo(() => {
 		if (!allMarkets || !marketTotals) return [];
@@ -142,8 +140,7 @@ export const UnifiedMarketsTable: FC = () => {
 		return allMarkets.map((marketAddress) => {
 			const marketTotalsData = marketTotals[marketAddress];
 			const metadata = tokenMetadata?.[marketAddress];
-			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
-			const symbol = metadata?.underlyingSymbol || displayName.replace('Market ', '').split(' ')[0];
+			const symbol = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
 			const decimals = metadata?.underlyingDecimals ?? 18;
 
 			const totalSupplyCTokens = marketTotalsData?.totalSupply || 0n;
@@ -166,8 +163,7 @@ export const UnifiedMarketsTable: FC = () => {
 		return allMarkets.map((marketAddress) => {
 			const marketTotalsData = marketTotals[marketAddress];
 			const metadata = tokenMetadata?.[marketAddress];
-			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
-			const symbol = metadata?.underlyingSymbol || displayName.replace('Market ', '').split(' ')[0];
+			const symbol = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
 
 			const totalBorrowed = marketTotalsData?.totalBorrows || 0n;
 
@@ -186,7 +182,15 @@ export const UnifiedMarketsTable: FC = () => {
 	const unifiedMarketsColumns = useMemo(() => createUnifiedMarketsColumns(navigate), [navigate]);
 
 	const marketsData = useMemo(() => {
-		if (!allMarkets || marketsLoading || apyLoading || totalsLoading || suppliedUSDLoading || borrowedUSDLoading) {
+		if (
+			!allMarkets ||
+			marketsLoading ||
+			apyLoading ||
+			totalsLoading ||
+			suppliedUSDLoading ||
+			borrowedUSDLoading ||
+			!tokenMetadata
+		) {
 			return [];
 		}
 
@@ -196,7 +200,7 @@ export const UnifiedMarketsTable: FC = () => {
 			const marketAddress = allMarkets[i];
 			const metadata = tokenMetadata?.[marketAddress];
 			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
-			const symbol = metadata?.underlyingSymbol || displayName.replace('Market ', '').split(' ')[0];
+			const symbol = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
 
 			const apyData = marketsAPY?.[marketAddress];
 			const supplyAPY = apyData?.supplyAPY || '0.00';
@@ -241,16 +245,24 @@ export const UnifiedMarketsTable: FC = () => {
 		marketsLoading,
 		apyLoading,
 		totalsLoading,
+		suppliedUSDLoading,
+		borrowedUSDLoading,
 		marketsAPY,
 		marketTotals,
 		suppliedUSDBalances,
 		borrowedUSDBalances,
-		suppliedUSDLoading,
-		borrowedUSDLoading,
 		tokenMetadata,
 	]);
 
-	if (marketsLoading || apyLoading || totalsLoading || suppliedUSDLoading || borrowedUSDLoading || tokenMetadataLoading || !allMarkets) {
+	if (
+		marketsLoading ||
+		apyLoading ||
+		totalsLoading ||
+		suppliedUSDLoading ||
+		borrowedUSDLoading ||
+		tokenMetadataLoading ||
+		!allMarkets
+	) {
 		return (
 			<div className={css.container}>
 				<div>Fetching markets from blockchain...</div>
@@ -271,3 +283,5 @@ export const UnifiedMarketsTable: FC = () => {
 		</div>
 	);
 };
+
+export const UnifiedMarketsTable = memo(UnifiedMarketsTableComponent);

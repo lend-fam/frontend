@@ -1,4 +1,4 @@
-import { type FC, useMemo, useState } from 'react';
+import { type FC, useMemo, useState, memo } from 'react';
 import { useAccount } from 'wagmi';
 import { useNavigate } from 'react-router-dom';
 import type { Address } from 'viem';
@@ -161,7 +161,11 @@ const createAvailableAssetsColumns = (
 					padding: '0 12px',
 				}}>
 				<div style={{ textAlign: 'right', fontFamily: 'Inter', fontSize: '14px', fontWeight: '500' }}>
-					{MarketService.formatTokenBalance(data.walletBalance, tokenMetadata?.[data.marketAddress]?.underlyingDecimals ?? 18)} {data.symbol}
+					{MarketService.formatTokenBalance(
+						data.walletBalance,
+						tokenMetadata?.[data.marketAddress]?.underlyingDecimals ?? 18,
+					)}{' '}
+					{data.symbol}
 				</div>
 			</div>
 		),
@@ -221,7 +225,7 @@ const createAvailableAssetsColumns = (
 const COLUMN_HEIGHT = '72px';
 const COLUMN_WIDTH = '120px';
 
-export const MarketsSupplyTable: FC = () => {
+const MarketsSupplyTableComponent: FC = () => {
 	const navigate = useNavigate();
 	const { address: userAddress } = useAccount();
 	const { data: allMarkets, isLoading: marketsLoading } = useAllMarkets();
@@ -234,9 +238,7 @@ export const MarketsSupplyTable: FC = () => {
 		(allMarkets as Address[]) || [],
 	);
 
-	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata(
-		(allMarkets as Address[]) || [],
-	);
+	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata((allMarkets as Address[]) || []);
 
 	const marketBalances = useMemo(() => {
 		if (!allMarkets || !userSupplyPositions) return {};
@@ -248,8 +250,7 @@ export const MarketsSupplyTable: FC = () => {
 			const underlyingBalance = userPosition?.balance || 0n;
 
 			const metadata = tokenMetadata?.[marketAddress];
-			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
-			const symbol = metadata?.underlyingSymbol || displayName.replace('Market ', '').split(' ')[0];
+			const symbol = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
 			const decimals = metadata?.underlyingDecimals ?? 18;
 
 			balances[marketAddress] = {
@@ -276,7 +277,10 @@ export const MarketsSupplyTable: FC = () => {
 	const { data: usdBalances, isLoading: usdLoading } = useUSDBalances(balanceData);
 
 	const suppliedAssetsColumns = useMemo(() => createSuppliedAssetsColumns(navigate), [navigate]);
-	const availableAssetsColumns = useMemo(() => createAvailableAssetsColumns(navigate, tokenMetadata), [navigate, tokenMetadata]);
+	const availableAssetsColumns = useMemo(
+		() => createAvailableAssetsColumns(navigate, tokenMetadata),
+		[navigate, tokenMetadata],
+	);
 
 	const { suppliedMarketsData, availableMarketsData } = useMemo(() => {
 		if (!allMarkets || marketsLoading || apyLoading) {
@@ -290,6 +294,7 @@ export const MarketsSupplyTable: FC = () => {
 			const marketAddress = allMarkets[i];
 			const metadata = tokenMetadata?.[marketAddress];
 			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
+			const symbol = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
 			const apyData = marketsAPY?.[marketAddress];
 			const apy = apyData?.supplyAPY || '0.00';
 			const userPosition = userSupplyPositions?.[marketAddress];
@@ -303,8 +308,6 @@ export const MarketsSupplyTable: FC = () => {
 
 			const isCollateralEnabled = userMarkets?.includes(marketAddress) || false;
 			const isCollateralEligible = true;
-
-			const symbol = metadata?.underlyingSymbol || marketBalance?.symbol || displayName.replace('Market ', '').split(' ')[0];
 
 			const walletBalance = walletBalances?.[marketAddress] || 0n;
 
@@ -362,7 +365,15 @@ export const MarketsSupplyTable: FC = () => {
 		}, 0);
 	}, [suppliedMarketsData]);
 
-	if (marketsLoading || apyLoading || positionsLoading || usdLoading || walletBalancesLoading || tokenMetadataLoading || !allMarkets) {
+	if (
+		marketsLoading ||
+		apyLoading ||
+		positionsLoading ||
+		usdLoading ||
+		walletBalancesLoading ||
+		tokenMetadataLoading ||
+		!allMarkets
+	) {
 		return (
 			<div className={css.container}>
 				<p className={css.label}>Supply Markets</p>
@@ -426,3 +437,5 @@ export const MarketsSupplyTable: FC = () => {
 		</div>
 	);
 };
+
+export const MarketsSupplyTable = memo(MarketsSupplyTableComponent);

@@ -13,6 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - NEVER hardcode dynamic values
 - Do not use run dev directly it is infinit command
 - Use websocket for live interactions with chain node
+- Use cast to interact with blockchain
 
 ## Development Commands
 

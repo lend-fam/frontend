@@ -1,11 +1,12 @@
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import type { Address } from 'viem';
-import { useAccount, useBalance, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
 import { parseUnits, formatUnits, maxUint256 } from 'viem';
 import { useQueryClient } from '@tanstack/react-query';
 
 import { CTOKEN_ABI, ERC20_ABI } from '../../../contracts';
 import { useAccountLiquidity } from '../../../hooks/use-account-liquidity.hook';
+import { useMarketWalletBalances } from '../../../hooks/use-market-wallet-balances.hook';
 import type {
 	TransactionConfig,
 	TransactionState,
@@ -13,6 +14,22 @@ import type {
 	BalanceData,
 	ApprovalSettings,
 } from './transaction.types';
+
+function useDebounce<T>(value: T, delay: number): T {
+	const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+	useEffect(() => {
+		const handler = setTimeout(() => {
+			setDebouncedValue(value);
+		}, delay);
+
+		return () => {
+			clearTimeout(handler);
+		};
+	}, [value, delay]);
+
+	return debouncedValue;
+}
 
 interface UseTransactionFlowParams {
 	marketAddress: Address;
@@ -32,6 +49,7 @@ export const useTransactionFlow = ({
 	onSuccess,
 }: UseTransactionFlowParams) => {
 	const [amount, setAmount] = useState('');
+	const debouncedAmount = useDebounce(amount, 300);
 	const [useMaxApproval, setUseMaxApproval] = useState(() => {
 		const saved = localStorage.getItem('useMaxApproval');
 		return saved !== null ? JSON.parse(saved) : true;
@@ -42,24 +60,34 @@ export const useTransactionFlow = ({
 	const lastSuccessTimeRef = useRef<number>(0);
 	const queryClient = useQueryClient();
 
-	const { data: underlyingTokenAddress } = useReadContract({
-		address: marketAddress,
-		abi: CTOKEN_ABI,
-		functionName: 'underlying',
-	});
+	const {
+		data: marketBalances,
+		underlyingTokens,
+		isLoading: balancesLoading,
+	} = useMarketWalletBalances([marketAddress]);
+	const walletBalance = marketBalances?.[marketAddress] || 0n;
+
+	const underlyingToken = underlyingTokens?.[marketAddress];
+	const isNativeToken = underlyingToken === 'native';
+	const underlyingTokenAddress = isNativeToken ? undefined : (underlyingToken as Address);
 
 	const { data: tokenDecimals } = useReadContract({
 		address: underlyingTokenAddress,
 		abi: ERC20_ABI,
 		functionName: 'decimals',
-		query: { enabled: !!underlyingTokenAddress },
+		query: { enabled: !!underlyingTokenAddress && !isNativeToken },
 	});
 
-	const { data: balance } = useBalance({
-		address,
-		token: underlyingTokenAddress,
-		query: { enabled: !!underlyingTokenAddress && (config.type === 'supply' || config.type === 'repay') },
-	});
+	const balance = useMemo(() => {
+		if (balancesLoading) return undefined;
+
+		return {
+			decimals: isNativeToken ? 18 : tokenDecimals || 18,
+			formatted: formatUnits(walletBalance, isNativeToken ? 18 : tokenDecimals || 18),
+			symbol: isNativeToken ? 'APE' : undefined,
+			value: walletBalance,
+		};
+	}, [walletBalance, isNativeToken, tokenDecimals, balancesLoading]);
 
 	const { data: cTokenBalance } = useReadContract({
 		address: marketAddress,
@@ -91,7 +119,7 @@ export const useTransactionFlow = ({
 		abi: ERC20_ABI,
 		functionName: 'allowance',
 		args: address && underlyingTokenAddress ? [address, marketAddress] : undefined,
-		query: { enabled: !!address && !!underlyingTokenAddress && config.requiresApproval },
+		query: { enabled: !!address && !!underlyingTokenAddress && !isNativeToken && config.requiresApproval },
 	});
 
 	const { writeContract: approve, data: approveHash, isPending: isApprovePending } = useWriteContract();
@@ -140,26 +168,27 @@ export const useTransactionFlow = ({
 	}, []);
 
 	const amountInWei = useMemo(() => {
-		if (!amount || !tokenDecimals) return 0n;
+		const decimals = isNativeToken ? 18 : tokenDecimals || 18;
+		if (!debouncedAmount) return 0n;
 		try {
 			let actualAmount: number;
-			const pureNumber = parseFloat(amount.replace(/,/g, ''));
+			const pureNumber = parseFloat(debouncedAmount.replace(/,/g, ''));
 			if (!isNaN(pureNumber) && isFinite(pureNumber)) {
 				actualAmount = pureNumber;
 			} else {
-				actualAmount = parseCompactNotation(amount);
+				actualAmount = parseCompactNotation(debouncedAmount);
 			}
 
 			if (actualAmount === 0 || !isFinite(actualAmount)) return 0n;
 
-			const decimalString = actualAmount.toFixed(tokenDecimals);
-			const result = parseUnits(decimalString, tokenDecimals);
+			const decimalString = actualAmount.toFixed(decimals);
+			const result = parseUnits(decimalString, decimals);
 
 			return result;
 		} catch {
 			return 0n;
 		}
-	}, [amount, tokenDecimals, parseCompactNotation]);
+	}, [debouncedAmount, isNativeToken, tokenDecimals, parseCompactNotation]);
 
 	const maxAvailable = useMemo(() => {
 		switch (config.type) {
@@ -172,7 +201,7 @@ export const useTransactionFlow = ({
 				return liquidity && liquidity > 0n && liquidity < availableLiquidity ? liquidity : availableLiquidity;
 			}
 			case 'withdraw': {
-				if (!cTokenBalance || !exchangeRate || !tokenDecimals) return 0n;
+				if (!cTokenBalance || !exchangeRate) return 0n;
 				return (cTokenBalance * exchangeRate) / parseUnits('1', 18);
 			}
 			case 'repay': {
@@ -190,12 +219,12 @@ export const useTransactionFlow = ({
 		availableLiquidity,
 		cTokenBalance,
 		exchangeRate,
-		tokenDecimals,
 		borrowBalance,
 	]);
 
 	const needsApproval = useMemo(() => {
 		if (!config.requiresApproval || !amountInWei || amountInWei === 0n) return false;
+		if (isNativeToken) return false;
 		const allowance = currentAllowance ?? 0n;
 
 		if (config.type === 'repay' && borrowBalance && amountInWei >= borrowBalance) {
@@ -203,10 +232,10 @@ export const useTransactionFlow = ({
 		}
 
 		return allowance < amountInWei;
-	}, [config.requiresApproval, currentAllowance, amountInWei, config.type, borrowBalance]);
+	}, [config.requiresApproval, currentAllowance, amountInWei, config.type, borrowBalance, isNativeToken]);
 
 	const isValidAmount = useMemo(() => {
-		if (!amount) return false;
+		if (!debouncedAmount) return false;
 
 		if (amountInWei <= 0n) return false;
 
@@ -226,8 +255,9 @@ export const useTransactionFlow = ({
 		const tolerance = maxAvailable > 1000n ? maxAvailable / 1000n : 1n;
 		const maxWithTolerance = maxAvailable + tolerance;
 
-		return amountInWei <= maxWithTolerance;
-	}, [amount, amountInWei, maxAvailable, config.type, balance, borrowBalance]);
+		const isValid = amountInWei <= maxWithTolerance;
+		return isValid;
+	}, [debouncedAmount, amountInWei, maxAvailable, config.type, balance, borrowBalance]);
 
 	const isProcessing = isApprovePending || isApproveConfirming || isTransactionPending || isTransactionConfirming;
 
@@ -235,12 +265,30 @@ export const useTransactionFlow = ({
 		setTransactionStarted(true);
 		switch (config.type) {
 			case 'supply': {
-				executeTransaction({
-					address: marketAddress,
-					abi: CTOKEN_ABI,
-					functionName: 'mint',
-					args: [amountInWei],
-				});
+				if (isNativeToken) {
+					executeTransaction({
+						address: marketAddress,
+						abi: [
+							...CTOKEN_ABI,
+							{
+								inputs: [],
+								name: 'mint',
+								outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+								stateMutability: 'payable',
+								type: 'function',
+							},
+						],
+						functionName: 'mint',
+						value: amountInWei,
+					});
+				} else {
+					executeTransaction({
+						address: marketAddress,
+						abi: CTOKEN_ABI,
+						functionName: 'mint',
+						args: [amountInWei],
+					});
+				}
 				break;
 			}
 			case 'borrow': {
@@ -253,7 +301,7 @@ export const useTransactionFlow = ({
 				break;
 			}
 			case 'withdraw': {
-				if (exchangeRate && tokenDecimals) {
+				if (exchangeRate) {
 					const maxWithdrawable = (cTokenBalance! * exchangeRate) / parseUnits('1', 18);
 					const isMaxWithdraw = amountInWei >= maxWithdrawable;
 
@@ -278,27 +326,36 @@ export const useTransactionFlow = ({
 			}
 			case 'repay': {
 				const isMaxRepay = borrowBalance && amountInWei >= borrowBalance;
-				const repayAmount = isMaxRepay ? maxUint256 : amountInWei;
 
-				executeTransaction({
-					address: marketAddress,
-					abi: CTOKEN_ABI,
-					functionName: 'repayBorrow',
-					args: [repayAmount],
-				});
+				if (isNativeToken) {
+					executeTransaction({
+						address: marketAddress,
+						abi: [
+							...CTOKEN_ABI,
+							{
+								inputs: [],
+								name: 'repayBorrow',
+								outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+								stateMutability: 'payable',
+								type: 'function',
+							},
+						],
+						functionName: 'repayBorrow',
+						value: amountInWei,
+					});
+				} else {
+					const repayAmount = isMaxRepay ? maxUint256 : amountInWei;
+					executeTransaction({
+						address: marketAddress,
+						abi: CTOKEN_ABI,
+						functionName: 'repayBorrow',
+						args: [repayAmount],
+					});
+				}
 				break;
 			}
 		}
-	}, [
-		config.type,
-		executeTransaction,
-		marketAddress,
-		amountInWei,
-		exchangeRate,
-		tokenDecimals,
-		borrowBalance,
-		cTokenBalance,
-	]);
+	}, [config.type, executeTransaction, marketAddress, amountInWei, exchangeRate, borrowBalance, cTokenBalance, isNativeToken]);
 
 	useEffect(() => {
 		if (
@@ -366,7 +423,7 @@ export const useTransactionFlow = ({
 							}
 
 							if (queryKey[0] === 'balance' && keyString.includes(address?.toLowerCase() || '')) {
-								return true;
+								return false;
 							}
 
 							return (
@@ -399,7 +456,7 @@ export const useTransactionFlow = ({
 						},
 					}),
 				]);
-			}, 50); // Reduced delay for faster response
+			}, 50);
 
 			if (onSuccess) {
 				onSuccess();
@@ -430,7 +487,7 @@ export const useTransactionFlow = ({
 		if (config.type === 'repay') {
 			setHasAutoProceeded(false);
 		}
-	}, [amount, config.type]);
+	}, [debouncedAmount, config.type]);
 
 	useEffect(() => {
 		if (isApproveError) {
@@ -447,15 +504,16 @@ export const useTransactionFlow = ({
 	}, [isTransactionError, config.type]);
 
 	const handleMaxClick = () => {
-		if (maxAvailable > 0n && tokenDecimals) {
-			const formatted = formatUnits(maxAvailable, tokenDecimals);
+		const decimals = isNativeToken ? 18 : tokenDecimals || 18;
+		if (maxAvailable > 0n) {
+			const formatted = formatUnits(maxAvailable, decimals);
 
 			let finalAmount: string;
 			if (config.type === 'repay' || config.type === 'withdraw') {
 				finalAmount = formatted;
 			} else {
 				const number = parseFloat(formatted);
-				finalAmount = number.toFixed(Math.min(8, tokenDecimals));
+				finalAmount = number.toFixed(Math.min(8, decimals));
 			}
 
 			setAmount(finalAmount);
@@ -511,7 +569,7 @@ export const useTransactionFlow = ({
 
 	const tokenData: TokenData = {
 		underlyingTokenAddress,
-		tokenDecimals,
+		tokenDecimals: isNativeToken ? 18 : tokenDecimals,
 		cleanSymbol: '',
 	};
 
