@@ -42,10 +42,11 @@ interface MarketsMetricProps {
 	label: string;
 	value: string;
 	dimension?: 'percent';
+	subtitle?: string;
 }
 
 const MarketsMetric = memo<MarketsMetricProps>((props) => {
-	const { label, value, dimension } = props;
+	const { label, value, dimension, subtitle } = props;
 
 	return (
 		<li className={css.metric}>
@@ -54,6 +55,7 @@ const MarketsMetric = memo<MarketsMetricProps>((props) => {
 				{value}
 				{dimension && <span className={css.dimension}>{dimension === 'percent' ? '%' : ''}</span>}
 			</span>
+			{subtitle && <p className={css.subtitle}>{subtitle}</p>}
 		</li>
 	);
 });

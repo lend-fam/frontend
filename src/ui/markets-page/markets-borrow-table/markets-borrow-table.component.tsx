@@ -1,4 +1,4 @@
-import { type FC, useMemo, memo } from 'react';
+import { type FC, useMemo } from 'react';
 import { useAccount } from 'wagmi';
 import { useNavigate } from 'react-router-dom';
 import type { Address } from 'viem';
@@ -10,6 +10,7 @@ import {
 	AssetsColumn,
 	BalanceColumn,
 	BorrowActionButtons,
+	Tooltip,
 } from '../../../ui-kit';
 import {
 	useAllMarkets,
@@ -18,6 +19,7 @@ import {
 	useMarketsAvailableLiquidity,
 	useUSDBalances,
 	useAccountLiquidity,
+	useNativeYield,
 } from '../../../hooks';
 import { useTokenMetadata } from '../../../hooks/use-token-metadata.hook';
 import { TokenService, MarketService } from '../../../services';
@@ -38,6 +40,8 @@ type MarketsBorrowTableData = {
 	borrowAPY: string;
 	availableLiquidity: bigint;
 	userBorrowCapacity: bigint;
+	nativeYieldAPY?: string;
+	hasNativeYield?: boolean;
 };
 
 type MarketsBorrowTableColumn = 'assets' | 'available' | 'apy' | 'actions';
@@ -76,7 +80,69 @@ const createBorrowedAssetsColumns = (
 			</div>
 		),
 	},
-	{ key: 'apy', label: 'APY', align: 'right', width: '30%' },
+	{
+		key: 'apy',
+		label: 'APY',
+		align: 'right',
+		width: '30%',
+		cellRenderer: ({ data, style }) => (
+			<div
+				style={{
+					...style,
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'flex-end',
+					justifyContent: 'center',
+					padding: '0 12px',
+					gap: '2px',
+				}}>
+				<div style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: '500', color: '#18171E' }}>
+					{data.apy}
+				</div>
+				{data.hasNativeYield && data.nativeYieldAPY && (
+					<Tooltip
+						content={
+							<div>
+								<div style={{ marginBottom: '8px' }}>
+									<strong>🦍 Native Yield</strong>
+								</div>
+								<div style={{ marginBottom: '8px' }}>
+									ApeChain&apos;s built-in yield feature that automatically earns you additional APY
+									on your APE token holdings.
+								</div>
+								<a
+									href="https://docs.apechain.com/apecoin-staking/native-yield/Overview"
+									target="_blank"
+									rel="noopener noreferrer"
+									style={{ color: '#007AFF', textDecoration: 'none', fontWeight: '500' }}>
+									Learn more about Native Yield →
+								</a>
+							</div>
+						}
+						position="bottom">
+						<div
+							style={{
+								fontFamily: 'Inter',
+								fontSize: '11px',
+								fontWeight: '400',
+								color: '#007AFF',
+								display: 'flex',
+								alignItems: 'center',
+								gap: '4px',
+								marginTop: '2px',
+								padding: '2px 6px',
+								border: '1px solid #007AFF',
+								borderRadius: '12px',
+								width: 'fit-content',
+								cursor: 'help',
+							}}>
+							{data.nativeYieldAPY} 🦍
+						</div>
+					</Tooltip>
+				)}
+			</div>
+		),
+	},
 	{
 		key: 'actions',
 		label: 'Actions',
@@ -138,7 +204,69 @@ const createAvailableAssetsColumns = (
 			</div>
 		),
 	},
-	{ key: 'apy', label: 'APY, variable', align: 'right', width: '30%' },
+	{
+		key: 'apy',
+		label: 'APY, variable',
+		align: 'right',
+		width: '30%',
+		cellRenderer: ({ data, style }) => (
+			<div
+				style={{
+					...style,
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'flex-end',
+					justifyContent: 'center',
+					padding: '0 12px',
+					gap: '2px',
+				}}>
+				<div style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: '500', color: '#18171E' }}>
+					{data.apy}
+				</div>
+				{data.hasNativeYield && data.nativeYieldAPY && (
+					<Tooltip
+						content={
+							<div>
+								<div style={{ marginBottom: '8px' }}>
+									<strong>🦍 Native Yield</strong>
+								</div>
+								<div style={{ marginBottom: '8px' }}>
+									ApeChain&apos;s built-in yield feature that automatically earns you additional APY
+									on your APE token holdings.
+								</div>
+								<a
+									href="https://docs.apechain.com/apecoin-staking/native-yield/Overview"
+									target="_blank"
+									rel="noopener noreferrer"
+									style={{ color: '#007AFF', textDecoration: 'none', fontWeight: '500' }}>
+									Learn more about Native Yield →
+								</a>
+							</div>
+						}
+						position="bottom">
+						<div
+							style={{
+								fontFamily: 'Inter',
+								fontSize: '11px',
+								fontWeight: '400',
+								color: '#007AFF',
+								display: 'flex',
+								alignItems: 'center',
+								gap: '4px',
+								marginTop: '2px',
+								padding: '2px 6px',
+								border: '1px solid #007AFF',
+								borderRadius: '12px',
+								width: 'fit-content',
+								cursor: 'help',
+							}}>
+							{data.nativeYieldAPY} 🦍
+						</div>
+					</Tooltip>
+				)}
+			</div>
+		),
+	},
 	{
 		key: 'actions',
 		label: 'Actions',
@@ -166,10 +294,7 @@ const createAvailableAssetsColumns = (
 	},
 ];
 
-const COLUMN_HEIGHT = '64px';
-const COLUMN_WIDTH = '120px';
-
-const MarketsBorrowTableComponent: FC = () => {
+export const MarketsBorrowTable: FC = () => {
 	const navigate = useNavigate();
 	const { address: userAddress } = useAccount();
 	const { data: allMarkets, isLoading: marketsLoading } = useAllMarkets();
@@ -177,6 +302,7 @@ const MarketsBorrowTableComponent: FC = () => {
 	const { data: userBorrowPositions, isLoading: positionsLoading } = useUserBorrowPositions(userAddress);
 	const { data: availableLiquidity, isLoading: liquidityLoading } = useMarketsAvailableLiquidity();
 	const { data: accountLiquidity } = useAccountLiquidity(userAddress);
+	const { data: nativeYieldData } = useNativeYield();
 
 	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata((allMarkets as Address[]) || []);
 
@@ -253,9 +379,8 @@ const MarketsBorrowTableComponent: FC = () => {
 			const marketAddress = allMarkets[i];
 			const metadata = tokenMetadata?.[marketAddress];
 			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
-			const symbol = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
 			const apyData = marketsAPY?.[marketAddress];
-			const apy = apyData?.borrowAPY || '0.00';
+			const baseAPY = parseFloat(apyData?.borrowAPY || '0.00');
 			const userPosition = userBorrowPositions?.[marketAddress];
 			const hasBorrowed = userPosition?.hasBorrowed || false;
 
@@ -279,19 +404,33 @@ const MarketsBorrowTableComponent: FC = () => {
 			}
 			const usdValue = usdBalances?.[marketAddress] || '0';
 
+			const symbol = metadata?.underlyingSymbol || displayName.replace('Market ', '').split(' ')[0];
+
+			let userBorrowCapacity: bigint = 0n;
+			if (accountLiquidity && userAddress) {
+				const [, liquidity] = accountLiquidity as [bigint, bigint, bigint];
+				userBorrowCapacity = liquidity && liquidity > 0n ? liquidity : 0n;
+			}
+
+			// Check if this is APE token and show native yield APY if available
+			const isAPEToken = symbol.toUpperCase() === 'APE';
+			const hasNativeYield = isAPEToken && nativeYieldData?.apy && parseFloat(nativeYieldData.apy) > 0;
+			const nativeYieldAPY = hasNativeYield ? `${nativeYieldData?.apy}%` : undefined;
 			const marketData: MarketsBorrowTableData = {
 				assets: displayName,
 				available: availableAmount,
-				apy: `${apy}%`,
+				apy: `${baseAPY.toFixed(2)}%`,
 				actions: '',
 				marketAddress,
 				availableAmount,
 				usdValue,
 				symbol,
 				hasBorrowed,
-				borrowAPY: `${apy}%`,
+				borrowAPY: `${baseAPY.toFixed(2)}%`,
 				availableLiquidity: availableCash,
 				userBorrowCapacity,
+				nativeYieldAPY,
+				hasNativeYield: !!hasNativeYield,
 			};
 
 			if (hasBorrowed) {
@@ -319,6 +458,7 @@ const MarketsBorrowTableComponent: FC = () => {
 		userAddress,
 		tokenMetadata,
 		userBorrowCapacity,
+		nativeYieldData,
 	]);
 
 	const totalBorrowedUSD = useMemo(() => {
@@ -359,8 +499,8 @@ const MarketsBorrowTableComponent: FC = () => {
 					<Table
 						data={borrowedMarketsData}
 						columns={borrowedAssetsColumns}
-						columnHeight={COLUMN_HEIGHT}
-						columnWidth={COLUMN_WIDTH}
+						columnHeight="64px"
+						columnWidth="120px"
 						theme={tableCss}
 					/>
 				</>
@@ -379,8 +519,8 @@ const MarketsBorrowTableComponent: FC = () => {
 					<Table
 						data={availableMarketsData}
 						columns={availableAssetsColumns}
-						columnHeight={COLUMN_HEIGHT}
-						columnWidth={COLUMN_WIDTH}
+						columnHeight="64px"
+						columnWidth="120px"
 						theme={tableCss}
 					/>
 				</>
@@ -388,5 +528,3 @@ const MarketsBorrowTableComponent: FC = () => {
 		</div>
 	);
 };
-
-export const MarketsBorrowTable = memo(MarketsBorrowTableComponent);

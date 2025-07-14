@@ -4,6 +4,7 @@ import { formatUnits } from 'viem';
 import { ProgressCircle } from '../reserve-status-section/progress-circle/progress-circle.component';
 import { APYChart } from '../reserve-status-section/apy-chart/apy-chart.component';
 import { MarketService } from '../../../services';
+import { useNativeYield } from '../../../hooks';
 
 import css from './borrow-info-section.module.css';
 
@@ -24,7 +25,8 @@ interface BorrowInfoSectionProps {
 }
 
 export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({ symbol, marketData, apyData, liquidityData }) => {
-	// Calculate real borrow metrics
+	const { data: nativeYield } = useNativeYield();
+
 	const borrowMetrics = useMemo(() => {
 		const totalBorrowedTokens = Number(formatUnits(marketData.totalBorrows, 18));
 		const availableToBorrow = liquidityData ? Number(formatUnits(liquidityData, 18)) : 0;
@@ -33,19 +35,16 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({ symbol, marketDa
 				? Number(formatUnits((marketData.totalSupply * marketData.exchangeRate) / 10n ** 18n, 18))
 				: 0;
 
-		// Use actual contract values only
 		const finalTotalBorrowed = totalBorrowedTokens;
 		const finalAvailableToBorrow = availableToBorrow;
 		const finalTotalSupplied = totalSuppliedUnderlying;
 
-		// Calculate utilization rate using centralized method
 		const utilizationRate = MarketService.calculateUtilizationRate(
 			marketData.totalSupply,
 			marketData.totalBorrows,
 			marketData.exchangeRate,
 		);
 
-		// Borrow capacity is typically 80-90% of total supplied
 		const maxBorrowCapacity = finalTotalSupplied * 0.85;
 		const borrowProgress =
 			maxBorrowCapacity > 0 ? Math.min((finalTotalBorrowed / maxBorrowCapacity) * 100, 100) : 0;
@@ -60,22 +59,18 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({ symbol, marketDa
 		};
 	}, [marketData, liquidityData]);
 
-	// Generate borrow APY trend data - use only real APY values
 	const borrowApyTrendData = useMemo(() => {
 		const currentAPY = parseFloat(apyData.borrowAPY);
 
-		// If no real APY data, return empty chart data
 		if (currentAPY === 0) {
 			return [{ date: 'Today', value: 0 }];
 		}
 
-		// Generate historical data with more volatility than supply APY
 		const data = [];
 		for (let i = 29; i >= 0; i--) {
 			const date = new Date();
 			date.setDate(date.getDate() - i);
 
-			// Borrow rates are more volatile (+/- 30% variation)
 			const variation = (Math.random() - 0.5) * 0.6 * currentAPY;
 			const apy = Math.max(0.1, currentAPY + variation);
 
@@ -90,13 +85,7 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({ symbol, marketDa
 			});
 		}
 
-		return [
-			data[0], // 29 days ago
-			data[7], // 22 days ago
-			data[14], // 15 days ago
-			data[21], // 8 days ago
-			data[29], // Today
-		];
+		return [data[0], data[7], data[14], data[21], data[29]];
 	}, [apyData.borrowAPY]);
 
 	return (
@@ -130,6 +119,12 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({ symbol, marketDa
 					<div className={css.apySection}>
 						<div className={css.apyLabel}>APY, variable</div>
 						<div className={css.apyValue}>{parseFloat(apyData.borrowAPY) || 0}%</div>
+
+						<div className={css.nativeYieldSection}>
+							<div className={css.nativeYieldValue}>{nativeYield?.apy || '0.00'}%</div>
+							<div className={css.nativeYieldIcon}>🦍</div>
+						</div>
+
 						<div className={css.apySubtext}>
 							Available:{' '}
 							{MarketService.formatTokenBalance(

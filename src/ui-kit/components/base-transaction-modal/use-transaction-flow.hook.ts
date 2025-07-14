@@ -213,35 +213,27 @@ export const useTransactionFlow = ({
 				return 0n;
 			}
 		}
-	}, [
-		config.type,
-		balance,
-		accountLiquidity,
-		availableLiquidity,
-		cTokenBalance,
-		exchangeRate,
-		borrowBalance,
-	]);
+	}, [config.type, balance, accountLiquidity, availableLiquidity, cTokenBalance, exchangeRate, borrowBalance]);
 
 	const isDustAmount = useMemo(() => {
 		if (!borrowBalance) return false;
 		// Consider amounts below 0.000000001 tokens (1e9 wei) as dust
-		const dustThreshold = 1000000000n; // 1e9 wei  
+		const dustThreshold = 1000000000n; // 1e9 wei
 		return borrowBalance <= dustThreshold;
 	}, [borrowBalance]);
 
 	const isMaxRepayAttempt = useMemo(() => {
 		if (config.type !== 'repay' || !borrowBalance || !amountInWei) return false;
-		
+
 		// Always use max if the user clicked the "Max" button
 		if (isMaxButtonClicked) return true;
-		
+
 		// Always use max for dust amounts to ensure complete cleanup
 		if (isDustAmount) return true;
-		
+
 		// Consider it a max repay if amount is >= 99% of borrow balance (handles dust/precision issues)
 		const dustThreshold = borrowBalance / 100n; // 1% threshold
-		return amountInWei >= (borrowBalance - dustThreshold);
+		return amountInWei >= borrowBalance - dustThreshold;
 	}, [config.type, borrowBalance, amountInWei, isMaxButtonClicked, isDustAmount]);
 
 	const needsApproval = useMemo(() => {
@@ -373,7 +365,17 @@ export const useTransactionFlow = ({
 				break;
 			}
 		}
-	}, [config.type, executeTransaction, marketAddress, amountInWei, exchangeRate, borrowBalance, cTokenBalance, isNativeToken, isMaxRepayAttempt]);
+	}, [
+		config.type,
+		executeTransaction,
+		marketAddress,
+		amountInWei,
+		exchangeRate,
+		borrowBalance,
+		cTokenBalance,
+		isNativeToken,
+		isMaxRepayAttempt,
+	]);
 
 	useEffect(() => {
 		if (

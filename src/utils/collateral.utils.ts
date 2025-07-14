@@ -52,7 +52,7 @@ export function canExitMarket(
 	if (borrowPosition?.hasBorrowed && borrowPosition.balance > 0n) {
 		// Allow exit if debt is below dust threshold (0.000000001 tokens = 1e9 wei for 18 decimal tokens)
 		const dustThreshold = 1000000000n; // 1e9 wei
-		
+
 		if (borrowPosition.balance <= dustThreshold) {
 			return { canExit: true };
 		}

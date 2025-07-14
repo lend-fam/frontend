@@ -1,5 +1,4 @@
 import { useReadContracts } from 'wagmi';
-import { useMemo } from 'react';
 import type { Address } from 'viem';
 import { CTOKEN_ABI } from '../contracts/ctoken.abi';
 import { ERC20_ABI } from '../contracts/erc20.abi';
@@ -14,60 +13,65 @@ export interface TokenMetadata {
 }
 
 export function useTokenMetadata(marketAddresses: Address[]) {
-	const contracts = useMemo(() => {
-		if (marketAddresses.length === 0) return [];
-
-		const allContracts: Array<{
-			address: Address;
-			abi: typeof CTOKEN_ABI;
-			functionName: 'name' | 'symbol' | 'underlying';
-		}> = [];
-
-		marketAddresses.forEach((address) => {
-			allContracts.push(
-				{ address, abi: CTOKEN_ABI, functionName: 'name' as const },
-				{ address, abi: CTOKEN_ABI, functionName: 'symbol' as const },
-				{ address, abi: CTOKEN_ABI, functionName: 'underlying' as const },
-			);
-		});
-
-		return allContracts;
-	}, [marketAddresses]);
+	// Get cToken metadata (name, symbol, underlying address)
+	const ctokenContracts = marketAddresses.flatMap((address) => [
+		{
+			address,
+			abi: CTOKEN_ABI,
+			functionName: 'name' as const,
+		},
+		{
+			address,
+			abi: CTOKEN_ABI,
+			functionName: 'symbol' as const,
+		},
+		{
+			address,
+			abi: CTOKEN_ABI,
+			functionName: 'underlying' as const,
+		},
+	]);
 
 	const {
 		data: ctokenData,
 		isLoading: ctokenLoading,
 		error: ctokenError,
 	} = useReadContracts({
-		contracts,
+		contracts: ctokenContracts,
 		query: {
-			enabled: contracts.length > 0,
+			enabled: marketAddresses.length > 0,
 		},
 	});
 
-	const underlyingContracts = useMemo(() => {
-		if (!ctokenData) return [];
-
-		const underlyingAddresses: Address[] = [];
-		const addressMap = new Map<Address, number>();
-
+	// Extract underlying token addresses from cToken data
+	const underlyingAddresses: Address[] = [];
+	if (ctokenData) {
 		for (let i = 0; i < marketAddresses.length; i++) {
-			const underlyingResult = ctokenData[i * 3 + 2];
+			const underlyingResult = ctokenData[i * 3 + 2]; // underlying is every 3rd result
 			if (underlyingResult.status === 'success' && underlyingResult.result) {
-				const address = underlyingResult.result as Address;
-				if (!addressMap.has(address)) {
-					addressMap.set(address, underlyingAddresses.length);
-					underlyingAddresses.push(address);
-				}
+				underlyingAddresses.push(underlyingResult.result as Address);
 			}
 		}
+	}
 
-		return underlyingAddresses.flatMap((address) => [
-			{ address, abi: ERC20_ABI, functionName: 'name' as const },
-			{ address, abi: ERC20_ABI, functionName: 'symbol' as const },
-			{ address, abi: ERC20_ABI, functionName: 'decimals' as const },
-		]);
-	}, [ctokenData, marketAddresses]);
+	// Get underlying token metadata (name, symbol, decimals)
+	const underlyingContracts = underlyingAddresses.flatMap((address) => [
+		{
+			address,
+			abi: ERC20_ABI,
+			functionName: 'name' as const,
+		},
+		{
+			address,
+			abi: ERC20_ABI,
+			functionName: 'symbol' as const,
+		},
+		{
+			address,
+			abi: ERC20_ABI,
+			functionName: 'decimals' as const,
+		},
+	]);
 
 	const {
 		data: underlyingData,
@@ -76,29 +80,14 @@ export function useTokenMetadata(marketAddresses: Address[]) {
 	} = useReadContracts({
 		contracts: underlyingContracts,
 		query: {
-			enabled: underlyingContracts.length > 0,
+			enabled: underlyingAddresses.length > 0,
 		},
 	});
 
-	const tokenMetadata = useMemo(() => {
-		if (!ctokenData) return {};
+	// Combine all data into TokenMetadata objects
+	const tokenMetadata: Record<Address, TokenMetadata> = {};
 
-		const result: Record<Address, TokenMetadata> = {};
-
-		const underlyingAddressMap = new Map<Address, number>();
-		let underlyingIndex = 0;
-
-		for (let i = 0; i < marketAddresses.length; i++) {
-			const underlyingResult = ctokenData[i * 3 + 2];
-			if (underlyingResult.status === 'success' && underlyingResult.result) {
-				const address = underlyingResult.result as Address;
-				if (!underlyingAddressMap.has(address)) {
-					underlyingAddressMap.set(address, underlyingIndex);
-					underlyingIndex++;
-				}
-			}
-		}
-
+	if (ctokenData) {
 		marketAddresses.forEach((marketAddress, index) => {
 			const nameResult = ctokenData[index * 3];
 			const symbolResult = ctokenData[index * 3 + 1];
@@ -114,11 +103,11 @@ export function useTokenMetadata(marketAddresses: Address[]) {
 			let underlyingDecimals: number | undefined;
 
 			if (underlyingAddress && underlyingData) {
-				const dataIndex = underlyingAddressMap.get(underlyingAddress);
-				if (dataIndex !== undefined) {
-					const underlyingNameResult = underlyingData[dataIndex * 3];
-					const underlyingSymbolResult = underlyingData[dataIndex * 3 + 1];
-					const underlyingDecimalsResult = underlyingData[dataIndex * 3 + 2];
+				const underlyingIndex = underlyingAddresses.indexOf(underlyingAddress);
+				if (underlyingIndex !== -1) {
+					const underlyingNameResult = underlyingData[underlyingIndex * 3];
+					const underlyingSymbolResult = underlyingData[underlyingIndex * 3 + 1];
+					const underlyingDecimalsResult = underlyingData[underlyingIndex * 3 + 2];
 
 					underlyingName =
 						underlyingNameResult.status === 'success' ? (underlyingNameResult.result as string) : undefined;
@@ -133,7 +122,7 @@ export function useTokenMetadata(marketAddresses: Address[]) {
 				}
 			}
 
-			result[marketAddress] = {
+			tokenMetadata[marketAddress] = {
 				name,
 				symbol,
 				underlyingAddress,
@@ -142,9 +131,7 @@ export function useTokenMetadata(marketAddresses: Address[]) {
 				underlyingDecimals,
 			};
 		});
-
-		return result;
-	}, [ctokenData, underlyingData, marketAddresses]);
+	}
 
 	return {
 		data: tokenMetadata,

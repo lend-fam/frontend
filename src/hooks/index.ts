@@ -14,3 +14,4 @@ export * from './use-underlying-tokens.hook';
 export * from './use-usd-balances.hook';
 export * from './use-token-metadata.hook';
 export * from './use-ctoken-balances.hook';
+export * from './use-native-yield.hook';
