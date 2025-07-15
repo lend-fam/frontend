@@ -5,7 +5,9 @@ import { Table, type TableColumnProps, type TableData } from '../../../ui-kit/co
 import { AssetsColumn } from '../../../ui-kit/components/table/columns/assets-column/assets-column.component';
 import { BalanceColumn } from '../../../ui-kit/components/table/columns/balance-column/balance-column.component';
 import { Button } from '../../../ui-kit/components/button/button.component';
+import { Tooltip } from '../../../ui-kit/components/tooltip/tooltip.component';
 import { useAllMarkets, useMarketsAPY, useMarketTotals, useUSDBalances } from '../../../hooks';
+import { useNativeYield } from '../../../hooks/use-native-yield.hook';
 import { useTokenMetadata } from '../../../hooks/use-token-metadata.hook';
 import { TokenService, MarketService } from '../../../services';
 
@@ -27,6 +29,8 @@ type UnifiedMarketsTableData = {
 	symbol: string;
 	supplyAPYValue: string;
 	borrowAPYValue: string;
+	nativeYieldAPY?: string;
+	hasNativeYield?: boolean;
 };
 
 type UnifiedMarketsTableColumn = 'assets' | 'totalSupplied' | 'supplyAPY' | 'totalBorrowed' | 'borrowAPY' | 'details';
@@ -74,6 +78,64 @@ const createUnifiedMarketsColumns = (
 		label: 'Supply APY',
 		align: 'right',
 		width: '12%',
+		cellRenderer: ({ data, style }) => (
+			<div
+				style={{
+					...style,
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'flex-end',
+					justifyContent: 'center',
+					padding: '0 12px',
+					gap: '2px',
+				}}>
+				<div style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: '500', color: '#18171E' }}>
+					{data.supplyAPY}
+				</div>
+				{data.hasNativeYield && data.nativeYieldAPY && (
+					<Tooltip
+						content={
+							<div>
+								<div style={{ marginBottom: '8px' }}>
+									<strong>🦍</strong>
+								</div>
+								<div style={{ marginBottom: '8px' }}>
+									ApeChain&apos;s built-in yield feature that automatically earns you additional APY
+									on your APE token holdings.
+								</div>
+								<a
+									href="https://docs.apechain.com/apecoin-staking/native-yield/Overview"
+									target="_blank"
+									rel="noopener noreferrer"
+									style={{ color: '#007AFF', textDecoration: 'none', fontWeight: '500' }}>
+									Learn more about Native Yield →
+								</a>
+							</div>
+						}
+						position="top">
+						<div
+							style={{
+								fontFamily: 'Inter',
+								fontSize: '11px',
+								fontWeight: '400',
+								color: '#007AFF',
+								display: 'flex',
+								alignItems: 'center',
+								gap: '4px',
+								marginTop: '2px',
+								padding: '2px 6px',
+								border: '1px solid #007AFF',
+								borderRadius: '12px',
+								width: 'fit-content',
+								cursor: 'help',
+								alignSelf: 'center',
+							}}>
+							{data.nativeYieldAPY} 🦍
+						</div>
+					</Tooltip>
+				)}
+			</div>
+		),
 	},
 	{
 		key: 'totalBorrowed',
@@ -131,6 +193,7 @@ const UnifiedMarketsTableComponent: FC = () => {
 	const { data: allMarkets, isLoading: marketsLoading } = useAllMarkets();
 	const { data: marketsAPY, isLoading: apyLoading } = useMarketsAPY();
 	const { data: marketTotals, isLoading: totalsLoading } = useMarketTotals();
+	const { data: nativeYieldData } = useNativeYield();
 
 	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata((allMarkets as Address[]) || []);
 
@@ -219,6 +282,11 @@ const UnifiedMarketsTableComponent: FC = () => {
 			const totalBorrowedAmount = MarketService.formatTokenBalance(totalBorrowedBalance, decimals);
 			const totalBorrowedUSD = borrowedUSDBalances?.[marketAddress] || '0';
 
+			// Native yield logic for APE tokens
+			const isAPEToken = symbol === 'APE' || symbol === 'Ape';
+			const hasNativeYield = isAPEToken && nativeYieldData?.apy && parseFloat(nativeYieldData.apy) > 0;
+			const nativeYieldAPY = hasNativeYield ? `${nativeYieldData?.apy}%` : undefined;
+
 			const marketData: UnifiedMarketsTableData = {
 				assets: displayName,
 				totalSupplied: `${totalSuppliedAmount} ${symbol}`,
@@ -234,6 +302,8 @@ const UnifiedMarketsTableComponent: FC = () => {
 				symbol,
 				supplyAPYValue: supplyAPY,
 				borrowAPYValue: borrowAPY,
+				nativeYieldAPY,
+				hasNativeYield: !!hasNativeYield,
 			};
 
 			markets.push(marketData);
@@ -252,6 +322,7 @@ const UnifiedMarketsTableComponent: FC = () => {
 		suppliedUSDBalances,
 		borrowedUSDBalances,
 		tokenMetadata,
+		nativeYieldData,
 	]);
 
 	if (

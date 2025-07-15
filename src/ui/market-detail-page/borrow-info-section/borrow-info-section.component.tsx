@@ -4,7 +4,6 @@ import { formatUnits } from 'viem';
 import { ProgressCircle } from '../reserve-status-section/progress-circle/progress-circle.component';
 import { APYChart } from '../reserve-status-section/apy-chart/apy-chart.component';
 import { MarketService } from '../../../services';
-import { useNativeYield } from '../../../hooks';
 
 import css from './borrow-info-section.module.css';
 
@@ -25,7 +24,6 @@ interface BorrowInfoSectionProps {
 }
 
 export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({ symbol, marketData, apyData, liquidityData }) => {
-	const { data: nativeYield } = useNativeYield();
 
 	const borrowMetrics = useMemo(() => {
 		const totalBorrowedTokens = Number(formatUnits(marketData.totalBorrows, 18));
@@ -120,10 +118,6 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({ symbol, marketDa
 						<div className={css.apyLabel}>APY, variable</div>
 						<div className={css.apyValue}>{parseFloat(apyData.borrowAPY) || 0}%</div>
 
-						<div className={css.nativeYieldSection}>
-							<div className={css.nativeYieldValue}>{nativeYield?.apy || '0.00'}%</div>
-							<div className={css.nativeYieldIcon}>🦍</div>
-						</div>
 
 						<div className={css.apySubtext}>
 							Available:{' '}

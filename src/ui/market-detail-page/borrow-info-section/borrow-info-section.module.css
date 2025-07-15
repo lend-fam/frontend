@@ -81,24 +81,6 @@
 	color: #999;
 }
 
-.nativeYieldSection {
-	display: flex;
-	align-items: center;
-	justify-content: flex-end;
-	gap: 6px;
-	margin-top: 4px;
-	margin-bottom: 8px;
-}
-
-.nativeYieldValue {
-	font-size: 14px;
-	font-weight: 600;
-	color: #007AFF;
-}
-
-.nativeYieldIcon {
-	font-size: 12px;
-}
 
 .chartSection {
 	border-top: 1px solid #eee;
@@ -147,7 +129,4 @@
 		min-width: auto;
 	}
 	
-	.nativeYieldSection {
-		justify-content: flex-start;
-	}
 }
