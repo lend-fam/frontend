@@ -1,6 +1,7 @@
 .container {
     display: flex;
     margin-bottom: 46px;
+    padding-left: 42px;
 }
 
 .metric {

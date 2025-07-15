@@ -1,7 +1,7 @@
 .container {
 	background: #FFFFFF;
-	border-radius: 16px;
-	border: 2px solid #18171E;
+    border-radius: 16px;
+    border: 2px solid #18171E;
 	padding: 25px 0;
 	width: 100%;
 	overflow-x: auto;

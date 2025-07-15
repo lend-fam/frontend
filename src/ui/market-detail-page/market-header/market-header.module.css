@@ -9,6 +9,7 @@
 	align-items: center;
 	gap: 16px;
 	margin-bottom: 32px;
+	margin-left: 32px;
 }
 
 .tokenIcon {
@@ -84,6 +85,7 @@
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 	gap: 24px;
+	margin-left: 32px;
 }
 
 .metric {

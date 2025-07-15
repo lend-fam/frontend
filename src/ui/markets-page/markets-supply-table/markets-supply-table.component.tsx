@@ -53,7 +53,7 @@ const createSuppliedAssetsColumns = (
 ): TableColumnProps<MarketsSupplyTableData, MarketsSupplyTableColumn>[] => [
 	{
 		key: 'assets',
-		label: 'Asset',
+		label: 'Assets',
 		width: '20%',
 		cellRenderer: ({ data, ...props }) => (
 			<AssetsColumn
