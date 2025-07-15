@@ -21,5 +21,5 @@ FROM umputun/reproxy
 # Copy built assets from builder stage
 COPY --from=builder /app/dist /srv/site
 
-# Configure reproxy for SPA mode with static file serving
-ENTRYPOINT ["/srv/reproxy", "--assets.location=/srv/site", "--assets.spa"]
+# Configure reproxy for SPA mode with static file serving and HTTPS
+ENTRYPOINT ["/srv/reproxy", "--assets.location=/srv/site", "--assets.spa", "--ssl.type=auto", "--ssl.acme-email=admin@lend.family", "--ssl.fqdn=lend.family", "--ssl.acme-location=/srv/var/ssl"]

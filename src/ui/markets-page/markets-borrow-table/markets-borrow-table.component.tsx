@@ -10,7 +10,6 @@ import {
 	AssetsColumn,
 	BalanceColumn,
 	BorrowActionButtons,
-	Tooltip,
 } from '../../../ui-kit';
 import {
 	useAllMarkets,
@@ -19,7 +18,6 @@ import {
 	useMarketsAvailableLiquidity,
 	useUSDBalances,
 	useAccountLiquidity,
-	useNativeYield,
 } from '../../../hooks';
 import { useTokenMetadata } from '../../../hooks/use-token-metadata.hook';
 import { TokenService, MarketService } from '../../../services';
@@ -40,8 +38,6 @@ type MarketsBorrowTableData = {
 	borrowAPY: string;
 	availableLiquidity: bigint;
 	userBorrowCapacity: bigint;
-	nativeYieldAPY?: string;
-	hasNativeYield?: boolean;
 };
 
 type MarketsBorrowTableColumn = 'assets' | 'available' | 'apy' | 'actions';
@@ -90,56 +86,13 @@ const createBorrowedAssetsColumns = (
 				style={{
 					...style,
 					display: 'flex',
-					flexDirection: 'column',
-					alignItems: 'flex-end',
-					justifyContent: 'center',
+					alignItems: 'center',
+					justifyContent: 'flex-end',
 					padding: '0 12px',
-					gap: '2px',
 				}}>
 				<div style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: '500', color: '#18171E' }}>
 					{data.apy}
 				</div>
-				{data.hasNativeYield && data.nativeYieldAPY && (
-					<Tooltip
-						content={
-							<div>
-								<div style={{ marginBottom: '8px' }}>
-									<strong>🦍 Native Yield</strong>
-								</div>
-								<div style={{ marginBottom: '8px' }}>
-									ApeChain&apos;s built-in yield feature that automatically earns you additional APY
-									on your APE token holdings.
-								</div>
-								<a
-									href="https://docs.apechain.com/apecoin-staking/native-yield/Overview"
-									target="_blank"
-									rel="noopener noreferrer"
-									style={{ color: '#007AFF', textDecoration: 'none', fontWeight: '500' }}>
-									Learn more about Native Yield →
-								</a>
-							</div>
-						}
-						position="bottom">
-						<div
-							style={{
-								fontFamily: 'Inter',
-								fontSize: '11px',
-								fontWeight: '400',
-								color: '#007AFF',
-								display: 'flex',
-								alignItems: 'center',
-								gap: '4px',
-								marginTop: '2px',
-								padding: '2px 6px',
-								border: '1px solid #007AFF',
-								borderRadius: '12px',
-								width: 'fit-content',
-								cursor: 'help',
-							}}>
-							{data.nativeYieldAPY} 🦍
-						</div>
-					</Tooltip>
-				)}
 			</div>
 		),
 	},
@@ -214,56 +167,13 @@ const createAvailableAssetsColumns = (
 				style={{
 					...style,
 					display: 'flex',
-					flexDirection: 'column',
-					alignItems: 'flex-end',
-					justifyContent: 'center',
+					alignItems: 'center',
+					justifyContent: 'flex-end',
 					padding: '0 12px',
-					gap: '2px',
 				}}>
 				<div style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: '500', color: '#18171E' }}>
 					{data.apy}
 				</div>
-				{data.hasNativeYield && data.nativeYieldAPY && (
-					<Tooltip
-						content={
-							<div>
-								<div style={{ marginBottom: '8px' }}>
-									<strong>🦍 Native Yield</strong>
-								</div>
-								<div style={{ marginBottom: '8px' }}>
-									ApeChain&apos;s built-in yield feature that automatically earns you additional APY
-									on your APE token holdings.
-								</div>
-								<a
-									href="https://docs.apechain.com/apecoin-staking/native-yield/Overview"
-									target="_blank"
-									rel="noopener noreferrer"
-									style={{ color: '#007AFF', textDecoration: 'none', fontWeight: '500' }}>
-									Learn more about Native Yield →
-								</a>
-							</div>
-						}
-						position="bottom">
-						<div
-							style={{
-								fontFamily: 'Inter',
-								fontSize: '11px',
-								fontWeight: '400',
-								color: '#007AFF',
-								display: 'flex',
-								alignItems: 'center',
-								gap: '4px',
-								marginTop: '2px',
-								padding: '2px 6px',
-								border: '1px solid #007AFF',
-								borderRadius: '12px',
-								width: 'fit-content',
-								cursor: 'help',
-							}}>
-							{data.nativeYieldAPY} 🦍
-						</div>
-					</Tooltip>
-				)}
 			</div>
 		),
 	},
@@ -302,7 +212,6 @@ export const MarketsBorrowTable: FC = () => {
 	const { data: userBorrowPositions, isLoading: positionsLoading } = useUserBorrowPositions(userAddress);
 	const { data: availableLiquidity, isLoading: liquidityLoading } = useMarketsAvailableLiquidity();
 	const { data: accountLiquidity } = useAccountLiquidity(userAddress);
-	const { data: nativeYieldData } = useNativeYield();
 
 	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata((allMarkets as Address[]) || []);
 
@@ -412,10 +321,6 @@ export const MarketsBorrowTable: FC = () => {
 				userBorrowCapacity = liquidity && liquidity > 0n ? liquidity : 0n;
 			}
 
-			// Check if this is APE token and show native yield APY if available
-			const isAPEToken = symbol.toUpperCase() === 'APE';
-			const hasNativeYield = isAPEToken && nativeYieldData?.apy && parseFloat(nativeYieldData.apy) > 0;
-			const nativeYieldAPY = hasNativeYield ? `${nativeYieldData?.apy}%` : undefined;
 			const marketData: MarketsBorrowTableData = {
 				assets: displayName,
 				available: availableAmount,
@@ -429,8 +334,6 @@ export const MarketsBorrowTable: FC = () => {
 				borrowAPY: `${baseAPY.toFixed(2)}%`,
 				availableLiquidity: availableCash,
 				userBorrowCapacity,
-				nativeYieldAPY,
-				hasNativeYield: !!hasNativeYield,
 			};
 
 			if (hasBorrowed) {
@@ -458,7 +361,6 @@ export const MarketsBorrowTable: FC = () => {
 		userAddress,
 		tokenMetadata,
 		userBorrowCapacity,
-		nativeYieldData,
 	]);
 
 	const totalBorrowedUSD = useMemo(() => {
