@@ -121,7 +121,7 @@ const createSuppliedAssetsColumns = (
 								</a>
 							</div>
 						}
-						position="bottom">
+						position="top">
 						<div
 							style={{
 								fontFamily: 'Inter',
@@ -276,7 +276,7 @@ const createAvailableAssetsColumns = (
 								</a>
 							</div>
 						}
-						position="bottom">
+						position="top">
 						<div
 							style={{
 								fontFamily: 'Inter',
