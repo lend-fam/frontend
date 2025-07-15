@@ -10,6 +10,7 @@ import { LandingPage } from '../landing-page';
 import { MarketsPage } from '../markets-page/markets-page/markets-page.component';
 import { MarketsOverviewPage } from '../markets-overview-page';
 import { MarketDetailPage } from '../market-detail-page';
+import { FaucetPage } from '../faucet-page/faucet-page.component';
 import { Footer } from '../footer/footer.component';
 import { wagmiConfig } from '../../config/wagmi.config';
 import { TransactionProvider } from '../../contexts/transaction.context';
@@ -42,6 +43,7 @@ export const App: FC = () => {
 									<Route path="/markets/:marketAddress" element={<MarketDetailPage />} />
 									<Route path="/collections" element={<MarketsPage />} />
 									<Route path="/profile" element={<MarketsPage />} />
+									<Route path="/faucet" element={<FaucetPage />} />
 								</Routes>
 								<Footer />
 							</div>

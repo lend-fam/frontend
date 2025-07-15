@@ -1,0 +1,308 @@
+.container {
+	display: flex;
+	justify-content: center;
+	padding: 40px 20px;
+	min-height: 80vh;
+}
+
+.card {
+	background: white;
+	border-radius: 16px;
+	box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+	padding: 32px;
+	max-width: 800px;
+	width: 100%;
+}
+
+.errorCard {
+	background: #fef2f2;
+	border: 1px solid #fecaca;
+	border-radius: 16px;
+	padding: 32px;
+	max-width: 500px;
+	width: 100%;
+	text-align: center;
+}
+
+.errorCard h1 {
+	color: #dc2626;
+	margin-bottom: 16px;
+}
+
+.errorCard p {
+	color: #991b1b;
+	margin-bottom: 8px;
+}
+
+.card h1 {
+	color: #1f2937;
+	margin-bottom: 16px;
+	font-size: 32px;
+	font-weight: 600;
+}
+
+.description {
+	color: #6b7280;
+	margin-bottom: 32px;
+	font-size: 16px;
+	line-height: 1.5;
+}
+
+.connectPrompt {
+	text-align: center;
+	padding: 40px;
+	background: #f9fafb;
+	border-radius: 12px;
+	border: 2px dashed #d1d5db;
+}
+
+.connectPrompt p {
+	color: #6b7280;
+	font-size: 16px;
+}
+
+.faucetSection {
+	display: flex;
+	flex-direction: column;
+	gap: 32px;
+}
+
+.addressInfo {
+	background: #f0f9ff;
+	border: 1px solid #bae6fd;
+	border-radius: 8px;
+	padding: 12px 16px;
+}
+
+.addressInfo p {
+	color: #0369a1;
+	font-size: 14px;
+	font-family: 'Monaco', 'Menlo', monospace;
+	margin: 0;
+}
+
+.captchaSection {
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	padding: 24px;
+	margin: 24px 0;
+}
+
+.captchaSection h3 {
+	color: #1f2937;
+	margin-bottom: 8px;
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.captchaSection p {
+	color: #6b7280;
+	margin-bottom: 16px;
+	font-size: 14px;
+}
+
+.captchaContainer {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 16px;
+}
+
+.captchaSuccess {
+	text-align: center;
+	color: #059669;
+	font-weight: 500;
+}
+
+.captchaSuccess p {
+	color: #059669;
+	margin: 0;
+}
+
+.mintSection h3 {
+	color: #1f2937;
+	margin-bottom: 16px;
+	font-size: 20px;
+	font-weight: 600;
+}
+
+.nativeTokenCard {
+	background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+	border: 2px solid #d1d5db;
+	border-radius: 12px;
+	padding: 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 24px;
+}
+
+.tokenGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	gap: 16px;
+	margin-bottom: 24px;
+}
+
+.tokenCard {
+	background: #f9fafb;
+	border: 1px solid #e5e7eb;
+	border-radius: 12px;
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.nftCard {
+	background: #f9fafb;
+	border: 1px solid #e5e7eb;
+	border-radius: 12px;
+	padding: 20px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.tokenInfo h4 {
+	color: #1f2937;
+	margin-bottom: 4px;
+	font-size: 16px;
+	font-weight: 600;
+}
+
+.tokenInfo p {
+	color: #6b7280;
+	font-size: 14px;
+	margin: 0;
+}
+
+.mintButton {
+	background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+	color: white;
+	border: none;
+	border-radius: 8px;
+	padding: 12px 24px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	min-width: 140px;
+}
+
+.mintButton:hover:not(:disabled) {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.mintButton:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+	transform: none;
+}
+
+.externalFaucetButton {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	background: linear-gradient(135deg, #059669 0%, #047857 100%);
+	color: white;
+	text-decoration: none;
+	border-radius: 8px;
+	padding: 12px 24px;
+	font-size: 14px;
+	font-weight: 500;
+	transition: all 0.2s ease;
+	min-width: 180px;
+	justify-content: center;
+}
+
+.externalFaucetButton:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+}
+
+.externalFaucetButton:active {
+	transform: translateY(0);
+}
+
+.externalFaucetButton svg {
+	opacity: 0.9;
+}
+
+.errorMessage {
+	background: #fef2f2;
+	border: 1px solid #fecaca;
+	border-radius: 8px;
+	padding: 16px;
+	margin-top: 24px;
+}
+
+.errorMessage p {
+	color: #dc2626;
+	font-size: 14px;
+	margin: 0;
+}
+
+.successMessage {
+	background: #f0fdf4;
+	border: 1px solid #bbf7d0;
+	border-radius: 8px;
+	padding: 16px;
+	margin-top: 24px;
+}
+
+.successMessage p {
+	color: #166534;
+	font-size: 14px;
+	margin: 0;
+}
+
+.successMessage a {
+	color: #059669;
+	text-decoration: underline;
+}
+
+.successMessage a:hover {
+	color: #047857;
+}
+
+.disclaimer {
+	background: #fffbeb;
+	border: 1px solid #fbbf24;
+	border-radius: 8px;
+	padding: 16px;
+	margin-top: 24px;
+}
+
+.disclaimer p {
+	color: #92400e;
+	font-size: 14px;
+	margin: 0;
+}
+
+@media (max-width: 768px) {
+	.container {
+		padding: 20px 16px;
+	}
+
+	.card {
+		padding: 24px;
+	}
+
+	.tokenGrid {
+		grid-template-columns: 1fr;
+	}
+
+	.nftCard {
+		flex-direction: column;
+		gap: 16px;
+		align-items: stretch;
+	}
+
+	.nativeTokenCard {
+		flex-direction: column;
+		gap: 16px;
+		align-items: stretch;
+	}
+}

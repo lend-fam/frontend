@@ -1,0 +1,27 @@
+.faucetButton {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 16px;
+	background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+	color: white;
+	border-radius: 8px;
+	text-decoration: none;
+	font-size: 14px;
+	font-weight: 500;
+	transition: all 0.2s ease;
+	white-space: nowrap;
+}
+
+.faucetButton:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.faucetButton:active {
+	transform: translateY(0);
+}
+
+.faucetButton svg {
+	opacity: 0.9;
+}

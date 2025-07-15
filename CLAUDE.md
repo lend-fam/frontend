@@ -135,6 +135,9 @@ VITE_APECHAIN_MAINNET_RPC_HTTP=https://rpc.apechain.com/http
 VITE_APECHAIN_MAINNET_RPC_WS=wss://rpc.apechain.com/ws
 VITE_APECHAIN_CURTIS_RPC_HTTP=https://curtis.rpc.caldera.xyz/http
 VITE_APECHAIN_CURTIS_RPC_WS=wss://curtis.rpc.caldera.xyz/ws
+
+# Cloudflare Turnstile (for testnet faucet)
+VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key_here
 ```
 
 ### Chain Configuration
@@ -191,3 +194,33 @@ VITE_APECHAIN_CURTIS_RPC_WS=wss://curtis.rpc.caldera.xyz/ws
 - **Curtis RPC Priority**: Curtis endpoints prioritized over ApeChain native RPC for reliability
 - **Transaction tolerance**: 0.1% buffer applied to max available amounts for edge cases
 - **Auto-close behavior**: Successful transactions auto-close modals and reset state
+
+## Testnet Faucet with CAPTCHA Protection
+
+### Overview
+The testnet faucet (`/faucet` route) provides test tokens and NFTs for protocol testing on ApeChain Testnet. It includes Cloudflare Turnstile CAPTCHA protection to prevent abuse.
+
+### Features
+- **Native APE Faucet**: Direct link to official Caldera testnet faucet
+- **Test ERC20 Tokens**: USDC, WETH for contract testing
+- **Test NFTs**: Collection NFTs for testing collection-backed lending
+- **CAPTCHA Protection**: Cloudflare Turnstile integration prevents bot abuse
+- **Responsive Design**: Works on all screen sizes
+
+### CAPTCHA Integration
+- **Provider**: Cloudflare Turnstile (privacy-focused CAPTCHA alternative)
+- **Configuration**: Requires `VITE_TURNSTILE_SITE_KEY` environment variable
+- **Development Mode**: Auto-bypasses CAPTCHA when no key is configured
+- **User Flow**: Users must complete CAPTCHA before accessing mint functions
+
+### Setup Instructions
+1. Create Cloudflare Turnstile site at https://dash.cloudflare.com/turnstile
+2. Add your domain(s) to the site configuration
+3. Copy the Site Key to `VITE_TURNSTILE_SITE_KEY` environment variable
+4. See `TURNSTILE_SETUP.md` for detailed setup instructions
+
+### Security Features
+- **Testnet Only**: Faucet only appears on ApeChain Testnet (Chain ID 33111)
+- **CAPTCHA Verification**: Required before any mint operations
+- **Rate Limiting**: Inherent protection through CAPTCHA challenges
+- **Smart Contract Interaction**: Uses wagmi for secure blockchain transactions

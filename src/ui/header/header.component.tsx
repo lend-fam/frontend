@@ -4,6 +4,7 @@ import { NavigationPanel } from './navigation-panel/navigation-panel.component';
 import { Logo } from './logo/logo.component';
 import { SocialNetwork } from './social-network/social-network.component';
 import { SignIn } from './sign-in/sign-in.component';
+import { FaucetButton } from './faucet-button/faucet-button.component';
 
 import css from './header.module.css';
 
@@ -25,6 +26,7 @@ export const Header: FC = () => {
 			</div>
 			<div className={css.controls}>
 				<SocialNetwork />
+				<FaucetButton />
 				<SignIn />
 			</div>
 		</div>
