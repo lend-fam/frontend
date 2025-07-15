@@ -2,26 +2,26 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 69px;
-    padding-bottom: 41px;
-    margin-bottom: 32px;
+    padding-top: 40px;
+    padding-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .description {
     font-family: "Montserrat", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     font-weight: 800;
-    font-size: 44px;
+    font-size: 32px;
     color: #FFFFFF;
-    margin-bottom: 34px;
+    margin-bottom: 20px;
 }
 
 .text {
     position: relative;
     font-family: "Montserrat", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     font-weight: 800;
-    font-size: 24px;
+    font-size: 18px;
     color: #FFFFFF;
-    margin-bottom: 50px;
+    margin-bottom: 30px;
 
     &:before {
         content: url('../../../assets/svg/heart.svg');

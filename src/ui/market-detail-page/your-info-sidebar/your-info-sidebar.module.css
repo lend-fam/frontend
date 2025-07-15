@@ -1,9 +1,8 @@
 .container {
-	background: white;
+	background: #FFFFFF;
 	border-radius: 16px;
 	padding: 24px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-	border: 1px solid rgba(0, 0, 0, 0.05);
+	border: 2px solid #18171E;
 	display: flex;
 	flex-direction: column;
 	gap: 24px;

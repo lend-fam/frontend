@@ -17,6 +17,7 @@
 	display: flex;
 	flex-direction: column;
 	gap: 24px;
+	padding-left: 42px;
 	min-height: 1200px; /* Ensure enough space for all sections */
 }
 
