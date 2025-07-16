@@ -1,6 +1,8 @@
 import { formatUnits, type Address } from 'viem';
 import { useReadContract, useReadContracts, useChainId } from 'wagmi';
 import { COMPTROLLER_ABI, PRICE_ORACLE_ABI, getComptrollerAddress } from '../contracts';
+import { FormattingService } from './formatting.service';
+import { FALLBACK_PRICES, FORMATTING_THRESHOLDS } from '../constants';
 
 export function usePriceOracle() {
 	const chainId = useChainId();
@@ -38,19 +40,7 @@ export function useTokenPrices(marketAddresses: Address[]) {
 export class PriceService {
 	static getFallbackPrice(symbol: string): number {
 		const normalizedSymbol = symbol.toUpperCase();
-
-		const fallbackPrices: Record<string, number> = {
-			MDAI: 1.0, // Assume $1 for DAI derivative
-			MUSDC: 1.0, // Assume $1 for USDC derivative
-			MUSDT: 1.0, // Assume $1 for USDT derivative
-			DAI: 1.0,
-			USDC: 1.0,
-			USDT: 1.0,
-			ETH: 3000, // Rough ETH price
-			WETH: 3000,
-		};
-
-		return fallbackPrices[normalizedSymbol] || 1.0;
+		return FALLBACK_PRICES[normalizedSymbol as keyof typeof FALLBACK_PRICES] || 1.0;
 	}
 
 	static calculateUSDValueWithFallback(balance: bigint, decimals: number, fallbackPrice: number): string {
@@ -62,7 +52,7 @@ export class PriceService {
 				return '0';
 			}
 
-			return usdValue.toFixed(2);
+			return usdValue.toFixed(FORMATTING_THRESHOLDS.CURRENCY_DECIMALS);
 		} catch {
 			return '0';
 		}
@@ -71,7 +61,7 @@ export class PriceService {
 	static calculateUSDValue(balance: bigint, decimals: number, oraclePrice: bigint): string {
 		try {
 			const tokenAmount = formatUnits(balance, decimals);
-			const priceInUSD = formatUnits(oraclePrice, 18);
+			const priceInUSD = formatUnits(oraclePrice, FORMATTING_THRESHOLDS.DEFAULT_DECIMALS);
 
 			const usdValue = parseFloat(tokenAmount) * parseFloat(priceInUSD);
 
@@ -79,23 +69,13 @@ export class PriceService {
 				return '0';
 			}
 
-			return usdValue.toFixed(2);
+			return usdValue.toFixed(FORMATTING_THRESHOLDS.CURRENCY_DECIMALS);
 		} catch {
 			return '0';
 		}
 	}
 
 	static formatUSDValue(value: string): string {
-		const number = parseFloat(value);
-
-		if (number === 0) return '$0.00';
-		if (number < 0.01) return '<$0.01';
-
-		return new Intl.NumberFormat('en-US', {
-			style: 'currency',
-			currency: 'USD',
-			minimumFractionDigits: 2,
-			maximumFractionDigits: 2,
-		}).format(number);
+		return FormattingService.formatUSDValue(value);
 	}
 }

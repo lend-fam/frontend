@@ -1,74 +1,30 @@
-import { formatUnits } from 'viem';
 import type { Market, UserMarketPosition } from '../types/market.types';
-import { BLOCKS_PER_YEAR } from '../contracts';
+import { FormattingService } from './formatting.service';
+import { MathService } from './math.service';
 
 const apyCache = new Map<string, string>();
 
 export class MarketService {
 	static calculateSupplyAPY(supplyRatePerBlock: bigint): string {
-		if (supplyRatePerBlock === 0n) return '0.00';
-
 		const cacheKey = `supply_${supplyRatePerBlock.toString()}`;
-		const cached = apyCache.get(cacheKey);
-		if (cached) return cached;
-
-		const ratePerBlock = Number(formatUnits(supplyRatePerBlock, 18));
-		const apy = ratePerBlock * BLOCKS_PER_YEAR * 100;
-		const result = apy.toFixed(2);
-
-		apyCache.set(cacheKey, result);
-		return result;
+		return MathService.calculateAPYFromBlockRate(supplyRatePerBlock, apyCache, cacheKey);
 	}
 
 	static calculateBorrowAPY(borrowRatePerBlock: bigint): string {
-		if (borrowRatePerBlock === 0n) return '0.00';
-
 		const cacheKey = `borrow_${borrowRatePerBlock.toString()}`;
-		const cached = apyCache.get(cacheKey);
-		if (cached) return cached;
-
-		const ratePerBlock = Number(formatUnits(borrowRatePerBlock, 18));
-		const apy = ratePerBlock * BLOCKS_PER_YEAR * 100;
-		const result = apy.toFixed(2);
-
-		apyCache.set(cacheKey, result);
-		return result;
+		return MathService.calculateAPYFromBlockRate(borrowRatePerBlock, apyCache, cacheKey);
 	}
 
 	static formatTokenBalance(balance: bigint, decimals: number = 18, symbol: string = ''): string {
-		const formatted = formatUnits(balance, decimals);
-		const number = parseFloat(formatted);
-
-		if (number === 0 || number < 0.000001) return `0 ${symbol}`.trim();
-		if (number < 0.01) return `<0.01 ${symbol}`.trim();
-		if (number < 1) return `${number.toFixed(4)} ${symbol}`.trim();
-		if (number < 1000) return `${number.toFixed(2)} ${symbol}`.trim();
-
-		const formatter = new Intl.NumberFormat('en-US', {
-			notation: 'compact',
-			maximumFractionDigits: 2,
-		});
-
-		return `${formatter.format(number)} ${symbol}`.trim();
+		return FormattingService.formatTokenBalance(balance, decimals, symbol);
 	}
 
 	static formatUSDValue(value: string): string {
-		const number = parseFloat(value);
-
-		if (number === 0) return '$0.00';
-		if (number < 0.01) return '<$0.01';
-
-		return new Intl.NumberFormat('en-US', {
-			style: 'currency',
-			currency: 'USD',
-			minimumFractionDigits: 2,
-			maximumFractionDigits: 2,
-		}).format(number);
+		return FormattingService.formatUSDValue(value);
 	}
 
 	static formatCollateralFactor(collateralFactorMantissa: bigint): string {
-		const factor = Number(formatUnits(collateralFactorMantissa, 18)) * 100;
-		return `${factor.toFixed(0)}%`;
+		return FormattingService.formatCollateralFactor(collateralFactorMantissa);
 	}
 
 	static hasSupplied(userPosition: UserMarketPosition): boolean {
@@ -101,16 +57,7 @@ export class MarketService {
 		borrowCap: bigint = 0n,
 		totalBorrows: bigint = 0n,
 	): bigint {
-		// Start with the minimum of account liquidity and market liquidity
-		let maxBorrow = accountLiquidity < marketLiquidity ? accountLiquidity : marketLiquidity;
-
-		// Apply borrow cap if set
-		if (borrowCap > 0n && totalBorrows < borrowCap) {
-			const remainingCap = borrowCap - totalBorrows;
-			maxBorrow = maxBorrow < remainingCap ? maxBorrow : remainingCap;
-		}
-
-		return maxBorrow;
+		return MathService.calculateMaxBorrowAmount(accountLiquidity, marketLiquidity, borrowCap, totalBorrows);
 	}
 
 	/**
@@ -121,13 +68,7 @@ export class MarketService {
 	 * @returns true if the borrow is safe
 	 */
 	static isBorrowSafe(accountLiquidity: bigint, borrowAmountUSD: bigint, safetyThreshold: number = 1.1): boolean {
-		if (accountLiquidity === 0n || borrowAmountUSD === 0n) return false;
-
-		const remainingLiquidity = accountLiquidity - borrowAmountUSD;
-		if (remainingLiquidity <= 0n) return false;
-
-		const healthFactor = Number(formatUnits(remainingLiquidity, 18)) / Number(formatUnits(borrowAmountUSD, 18));
-		return healthFactor >= safetyThreshold;
+		return MathService.isBorrowSafe(accountLiquidity, borrowAmountUSD, safetyThreshold);
 	}
 
 	/**
@@ -136,7 +77,7 @@ export class MarketService {
 	 * @returns Minimum borrow amount in wei
 	 */
 	static getMinBorrowAmount(tokenDecimals: number): bigint {
-		return BigInt(10 ** Math.max(0, tokenDecimals - 3));
+		return MathService.getMinBorrowAmount(tokenDecimals);
 	}
 
 	/**
@@ -180,14 +121,6 @@ export class MarketService {
 	 * @returns Utilization rate as a percentage
 	 */
 	static calculateUtilizationRate(totalSupply: bigint, totalBorrows: bigint, exchangeRate: bigint): number {
-		if (totalSupply === 0n || exchangeRate === 0n) return 0;
-
-		const totalSuppliedUnderlying = (totalSupply * exchangeRate) / 10n ** 18n;
-
-		if (totalSuppliedUnderlying === 0n) return 0;
-
-		const utilizationRate = Number((totalBorrows * 100n) / totalSuppliedUnderlying);
-
-		return Math.max(0, Math.min(100, utilizationRate));
+		return MathService.calculateUtilizationRate(totalSupply, totalBorrows, exchangeRate);
 	}
 }
