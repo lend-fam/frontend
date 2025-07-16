@@ -88,7 +88,6 @@ export const InterestRateChart: FC<InterestRateChartProps> = ({
 					display: 'flex',
 					alignItems: 'center',
 					justifyContent: 'center',
-					backgroundColor: '#FAFAFA',
 					border: '1px solid #E0E0E0',
 					borderRadius: '8px',
 				}}>
@@ -115,9 +114,7 @@ export const InterestRateChart: FC<InterestRateChartProps> = ({
 			height="100%"
 			viewBox={`0 0 ${width} ${height}`}
 			preserveAspectRatio="xMidYMid meet"
-			style={{ display: 'block', maxWidth: '100%', maxHeight: '100%', backgroundColor: '#FAFAFA' }}>
-			{/* Light background */}
-			<rect width="100%" height="100%" fill="#FAFAFA" />
+			style={{ display: 'block', maxWidth: '100%', maxHeight: '100%' }}>
 
 			{/* Subtle grid lines - horizontal */}
 			{[dynamicMaxAPY * 0.25, dynamicMaxAPY * 0.5, dynamicMaxAPY * 0.75].map((rate) => (
@@ -208,11 +205,11 @@ export const InterestRateChart: FC<InterestRateChartProps> = ({
 			</text>
 
 			{/* Y-axis labels */}
-			<text x={15} y={height - padding + 4} fontSize="12" fill="#999" textAnchor="start">
+			<text x={5} y={height - padding + 4} fontSize="12" fill="#999" textAnchor="start">
 				0%
 			</text>
 			<text
-				x={15}
+				x={5}
 				y={height - padding - 0.25 * (height - 2 * padding) + 4}
 				fontSize="12"
 				fill="#999"
@@ -220,7 +217,7 @@ export const InterestRateChart: FC<InterestRateChartProps> = ({
 				{(dynamicMaxAPY * 0.25).toFixed(1)}%
 			</text>
 			<text
-				x={15}
+				x={5}
 				y={height - padding - 0.5 * (height - 2 * padding) + 4}
 				fontSize="12"
 				fill="#999"
@@ -228,14 +225,14 @@ export const InterestRateChart: FC<InterestRateChartProps> = ({
 				{(dynamicMaxAPY * 0.5).toFixed(1)}%
 			</text>
 			<text
-				x={15}
+				x={5}
 				y={height - padding - 0.75 * (height - 2 * padding) + 4}
 				fontSize="12"
 				fill="#999"
 				textAnchor="start">
 				{(dynamicMaxAPY * 0.75).toFixed(1)}%
 			</text>
-			<text x={15} y={padding + 4} fontSize="12" fill="#999" textAnchor="start">
+			<text x={5} y={padding + 4} fontSize="12" fill="#999" textAnchor="start">
 				{dynamicMaxAPY.toFixed(1)}%
 			</text>
 		</svg>
