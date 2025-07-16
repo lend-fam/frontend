@@ -1,13 +1,16 @@
 /* Container styles moved to Card component */
 
 .title {
-	font-size: 18px;
-	font-weight: 600;
+	font-family: var(--font-heading-menu-family);
+	font-size: 18px; /* Custom size for sidebar title */
+	font-weight: var(--font-heading-menu-weight);
+	line-height: var(--font-heading-menu-line-height);
 	margin: 0;
-	color: #333;
+	color: var(--color-text-default);
 }
 
 .balanceSection {
+	/* TODO: Add design token for border color */
 	border-bottom: 1px solid #f0f0f0;
 	padding-bottom: 24px;
 }
@@ -29,18 +32,26 @@
 }
 
 .balanceLabel {
-	font-size: 14px;
+	font-family: var(--font-text-small-family);
+	font-size: 14px; /* Custom size for labels */
+	font-weight: var(--font-text-small-weight);
+	/* TODO: Add design token for muted text color */
 	color: #666;
 }
 
 .balanceValue {
-	font-size: 16px;
-	font-weight: 600;
-	color: #333;
+	font-family: var(--font-text-small-bold-family);
+	font-size: var(--font-text-small-bold-size);
+	font-weight: var(--font-text-small-bold-weight);
+	line-height: var(--font-text-small-bold-line-height);
+	color: var(--color-text-default);
 }
 
 .balanceUsd {
-	font-size: 14px;
+	font-family: var(--font-text-small-family);
+	font-size: 14px; /* Custom size for USD values */
+	font-weight: var(--font-text-small-weight);
+	/* TODO: Add design token for secondary text color */
 	color: #999;
 }
 
@@ -63,24 +74,33 @@
 }
 
 .actionLabel {
-	font-size: 14px;
+	font-family: var(--font-text-small-family);
+	font-size: 14px; /* Custom size for action labels */
+	font-weight: var(--font-text-small-weight);
+	/* TODO: Add design token for muted text color */
 	color: #666;
 }
 
 .infoIcon {
 	font-size: 12px;
+	/* TODO: Add design token for secondary text color */
 	color: #999;
 	cursor: help;
 }
 
 .actionValue {
-	font-size: 16px;
-	font-weight: 600;
-	color: #333;
+	font-family: var(--font-text-small-bold-family);
+	font-size: var(--font-text-small-bold-size);
+	font-weight: var(--font-text-small-bold-weight);
+	line-height: var(--font-text-small-bold-line-height);
+	color: var(--color-text-default);
 }
 
 .actionUsd {
-	font-size: 14px;
+	font-family: var(--font-text-small-family);
+	font-size: 14px; /* Custom size for USD values */
+	font-weight: var(--font-text-small-weight);
+	/* TODO: Add design token for secondary text color */
 	color: #999;
 	margin-bottom: 8px;
 }
@@ -96,25 +116,30 @@
 }
 
 .primaryButton {
+	/* TODO: Add design token for primary button background */
 	background: #667eea;
-	color: white;
+	color: var(--color-text-inversion);
 }
 
 .primaryButton:hover {
+	/* TODO: Add design token for primary button hover state */
 	background: #5a6fd8;
 }
 
 .secondaryButton {
+	/* TODO: Add design tokens for secondary button colors */
 	background: #f8f9ff;
 	color: #667eea;
 	border: 1px solid #667eea;
 }
 
 .secondaryButton:hover {
+	/* TODO: Add design token for secondary button hover state */
 	background: #eef1ff;
 }
 
 .secondaryButton:disabled {
+	/* TODO: Add design tokens for disabled button states */
 	background: #f5f5f5;
 	color: #999;
 	border: 1px solid #ddd;

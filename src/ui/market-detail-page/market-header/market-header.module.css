@@ -1,7 +1,7 @@
 .container {
 	border-radius: 16px;
 	padding: 32px;
-	color: white;
+	color: var(--color-text-inversion);
 }
 
 .tokenInfo {
@@ -27,14 +27,17 @@
 }
 
 .tokenName {
-	font-size: 32px;
-	font-weight: 700;
+	font-family: var(--font-heading-h2-family);
+	font-size: var(--font-heading-h2-size);
+	font-weight: var(--font-heading-h2-weight);
+	line-height: var(--font-heading-h2-line-height);
 	margin: 0 0 4px 0;
-	font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 }
 
 .tokenSymbol {
-	font-size: 16px;
+	font-family: var(--font-text-small-family);
+	font-size: var(--font-text-small-size);
+	font-weight: var(--font-text-small-weight);
 	opacity: 0.8;
 }
 
@@ -50,7 +53,7 @@
 	border: none;
 	background: rgba(255, 255, 255, 0.2);
 	border-radius: 8px;
-	color: white;
+	color: var(--color-text-inversion);
 	cursor: pointer;
 	display: flex;
 	align-items: center;
@@ -64,6 +67,7 @@
 }
 
 .copyButton.copied {
+	/* TODO: Add design token for success color */
 	background: rgba(76, 175, 80, 0.3);
 	transform: scale(1.1);
 	animation: copySuccess 0.3s ease-in-out;
@@ -95,13 +99,17 @@
 }
 
 .metricLabel {
-	font-size: 14px;
+	font-family: var(--font-text-small-family);
+	font-size: 14px; /* Custom size for data labels */
+	font-weight: var(--font-text-small-weight);
 	opacity: 0.8;
 }
 
 .metricValue {
-	font-size: 20px;
-	font-weight: 600;
+	font-family: var(--font-heading-menu-family);
+	font-size: var(--font-heading-menu-size);
+	font-weight: var(--font-heading-menu-weight);
+	line-height: var(--font-heading-menu-line-height);
 }
 
 .oraclePrice {
@@ -111,8 +119,10 @@
 }
 
 .priceChange {
-	font-size: 16px;
-	color: #F58FC7;
+	font-family: var(--font-text-small-family);
+	font-size: var(--font-text-small-size);
+	font-weight: var(--font-text-small-weight);
+	color: var(--color-accent-pink);
 }
 
 @media (max-width: 768px) {
@@ -121,7 +131,7 @@
 	}
 	
 	.tokenName {
-		font-size: 24px;
+		font-size: var(--font-heading-h5-size);
 	}
 	
 	.metrics {

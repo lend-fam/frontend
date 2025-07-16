@@ -1,20 +1,27 @@
 .container {
+    /* TODO: Add spacing design tokens */
     padding-left: 31px;
     padding-right: 31px;
     width: 100%;
 }
 
 .header {
+    /* TODO: Add height design tokens */
     height: 48px;
 }
 
 .row {
+    /* TODO: Add height design tokens */
     min-height: 72px;
+    /* TODO: Add transition design tokens */
     transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    /* TODO: Add border radius design tokens */
     border-radius: 8px;
 }
 
 .row:hover {
+    /* TODO: Add hover background color design token */
     background-color: rgba(0, 0, 0, 0.05);
+    /* TODO: Add box shadow design tokens */
     box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }

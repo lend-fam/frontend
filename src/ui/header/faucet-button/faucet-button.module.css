@@ -4,11 +4,12 @@
 	gap: 8px;
 	padding: 8px 16px;
 	background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-	color: white;
+	color: var(--color-text-inversion);
 	border-radius: 8px;
 	text-decoration: none;
-	font-size: 14px;
-	font-weight: 500;
+	font-family: var(--font-text-small-family);
+	font-size: 14px; /* Keeping custom size for this component */
+	font-weight: var(--font-text-small-weight);
 	transition: all 0.2s ease;
 	white-space: nowrap;
 }

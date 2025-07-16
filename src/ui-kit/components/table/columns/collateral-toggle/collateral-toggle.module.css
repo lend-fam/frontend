@@ -40,15 +40,16 @@
 }
 
 .toggle.enabled {
-    background-color: #10B981;
+    background-color: var(--color-accent-green);
 }
 
 .toggle.disabled {
+    /* TODO: Add disabled background color design token */
     background-color: #E5E7EB;
 }
 
 .toggle:focus {
-    box-shadow: 0 0 0 2px #3B82F6;
+    box-shadow: 0 0 0 2px var(--color-accent-apechain);
 }
 
 .slider {
@@ -57,7 +58,7 @@
     width: 22px;
     height: 22px;
     border-radius: 50%;
-    background-color: #FFFFFF;
+    background-color: var(--color-white);
     transition: transform 0.2s ease;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
@@ -71,20 +72,22 @@
 }
 
 .notEligible {
+    /* TODO: Add secondary text color design token */
     color: #9CA3AF;
-    font-family: "Inter";
-    font-size: 14px;
-    font-weight: 500;
+    font-family: var(--font-text-small-family);
+    font-size: var(--font-text-small-size);
+    font-weight: var(--font-text-small-weight);
     text-align: center;
     width: 100%;
 }
 
 .toggle.blocked {
-    background-color: #F59E0B;
+    background-color: var(--color-accent-orange);
     cursor: not-allowed;
 }
 
 .toggle.blocked:hover {
+    /* TODO: Add orange hover color design token */
     background-color: #D97706;
 }
 

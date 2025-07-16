@@ -1,3 +1,6 @@
+/* Faucet Page - Design Tokens Applied */
+/* TODO: Add missing tokens for error states, warning states, info states, gradients, and secondary text */
+
 .container {
 	/* Flex properties moved to FlexContainer component */
 	padding: 40px 20px;
@@ -7,8 +10,8 @@
 /* Card styles moved to Card component */
 
 .errorCard {
-	background: #fef2f2;
-	border: 1px solid #fecaca;
+	background: #fef2f2; /* TODO: Add error background token */
+	border: 1px solid #fecaca; /* TODO: Add error border token */
 	border-radius: 16px;
 	padding: 32px;
 	max-width: 500px;
@@ -17,27 +20,31 @@
 }
 
 .errorCard h1 {
-	color: #dc2626;
+	color: #dc2626; /* TODO: Add error text token */
 	margin-bottom: 16px;
 }
 
 .errorCard p {
-	color: #991b1b;
+	color: #991b1b; /* TODO: Add error text dark token */
 	margin-bottom: 8px;
 }
 
 .card h1 {
-	color: #1f2937;
+	color: var(--color-text-default);
 	margin-bottom: 16px;
-	font-size: 32px;
-	font-weight: 600;
+	font-size: var(--font-heading-h2-size);
+	font-family: var(--font-heading-h2-family);
+	font-weight: var(--font-heading-h2-weight);
+	line-height: var(--font-heading-h2-line-height);
 }
 
 .description {
-	color: #6b7280;
+	color: #6b7280; /* TODO: Add text secondary token */
 	margin-bottom: 32px;
-	font-size: 16px;
-	line-height: 1.5;
+	font-size: var(--font-text-small-size);
+	font-family: var(--font-text-small-family);
+	font-weight: var(--font-text-small-weight);
+	line-height: var(--font-text-small-line-height);
 }
 
 .connectPrompt {
@@ -49,8 +56,10 @@
 }
 
 .connectPrompt p {
-	color: #6b7280;
-	font-size: 16px;
+	color: #6b7280; /* TODO: Add text secondary token */
+	font-size: var(--font-text-small-size);
+	font-family: var(--font-text-small-family);
+	font-weight: var(--font-text-small-weight);
 }
 
 .faucetSection {
@@ -60,14 +69,14 @@
 }
 
 .addressInfo {
-	background: #f0f9ff;
-	border: 1px solid #bae6fd;
+	background: var(--color-accent-ice);
+	border: 1px solid #bae6fd; /* TODO: Add info border token */
 	border-radius: 8px;
 	padding: 12px 16px;
 }
 
 .addressInfo p {
-	color: #0369a1;
+	color: var(--color-accent-apechain);
 	font-size: 14px;
 	font-family: 'Monaco', 'Menlo', monospace;
 	margin: 0;
@@ -82,9 +91,9 @@
 }
 
 .captchaSection h3 {
-	color: #1f2937;
+	color: var(--color-text-default);
 	margin-bottom: 8px;
-	font-size: 18px;
+	font-size: 18px; /* TODO: Add heading small token */
 	font-weight: 600;
 }
 
@@ -102,20 +111,22 @@
 
 .captchaSuccess {
 	text-align: center;
-	color: #059669;
+	color: var(--color-accent-green);
 	font-weight: 500;
 }
 
 .captchaSuccess p {
-	color: #059669;
+	color: var(--color-accent-green);
 	margin: 0;
 }
 
 .mintSection h3 {
-	color: #1f2937;
+	color: var(--color-text-default);
 	margin-bottom: 16px;
-	font-size: 20px;
-	font-weight: 600;
+	font-size: var(--font-heading-h6-size);
+	font-family: var(--font-heading-h6-family);
+	font-weight: var(--font-heading-h6-weight);
+	line-height: var(--font-heading-h6-line-height);
 }
 
 .nativeTokenCard {
@@ -155,10 +166,11 @@
 }
 
 .tokenInfo h4 {
-	color: #1f2937;
+	color: var(--color-text-default);
 	margin-bottom: 4px;
-	font-size: 16px;
-	font-weight: 600;
+	font-size: var(--font-text-small-size);
+	font-family: var(--font-text-small-family);
+	font-weight: var(--font-text-small-bold-weight);
 }
 
 .tokenInfo p {
@@ -178,11 +190,11 @@
 }
 
 .greenGradient {
-	background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+	background: linear-gradient(135deg, var(--color-accent-green) 0%, #047857 100%) !important; /* TODO: Add green gradient tokens */
 }
 
 .greenGradient:hover:not(:disabled) {
-	box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3) !important;
+	box-shadow: 0 4px 12px rgba(101, 178, 97, 0.3) !important; /* Using var(--color-accent-green) with alpha */
 }
 
 .greenGradient svg {
@@ -218,7 +230,7 @@
 }
 
 .successMessage a {
-	color: #059669;
+	color: var(--color-accent-green);
 	text-decoration: underline;
 }
 

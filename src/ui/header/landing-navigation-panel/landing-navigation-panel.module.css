@@ -16,10 +16,12 @@
 }
 
 .link a {
-	color: white;
+	color: var(--color-text-inversion);
 	text-decoration: none;
-	font-weight: 600;
-	font-size: 20px;
+	font-family: var(--font-heading-menu-family);
+	font-size: var(--font-heading-menu-size);
+	font-weight: var(--font-heading-menu-weight);
+	line-height: var(--font-heading-menu-line-height);
 	transition: opacity 0.2s ease;
 }
 

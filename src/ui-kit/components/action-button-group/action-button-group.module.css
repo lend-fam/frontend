@@ -1,10 +1,10 @@
 .container {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 6px; /* TODO: Add spacing design token */
     justify-content: flex-end;
     width: 100%;
-    min-width: 150px;
+    min-width: 150px; /* TODO: Add min-width design token */
 }
 
 .supplyButton,
@@ -12,16 +12,16 @@
 .borrowButton,
 .repayButton,
 .detailsButton {
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-family: "Inter", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
+    padding: 8px 12px; /* TODO: Add padding design tokens */
+    border-radius: 6px; /* TODO: Add border-radius design token */
+    font-family: var(--font-text-small-bold-family);
+    font-size: 13px; /* TODO: Add font size design token */
+    font-weight: var(--font-text-small-bold-weight);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.2s ease; /* TODO: Add transition design token */
     border: none;
-    min-width: 60px;
-    height: 32px;
+    min-width: 60px; /* TODO: Add min-width design token */
+    height: 32px; /* TODO: Add height design token */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -29,35 +29,35 @@
 
 .supplyButton,
 .borrowButton {
-    background-color: #18171E;
-    color: #FFFFFF;
+    background-color: var(--color-dark);
+    color: var(--color-white);
 }
 
 .supplyButton:hover,
 .borrowButton:hover {
-    background-color: #2D2A3A;
+    background-color: #2D2A3A; /* TODO: Add primary hover color design token */
 }
 
 .withdrawButton,
 .repayButton {
-    background-color: #3B82F6;
-    color: #FFFFFF;
+    background-color: var(--color-accent-apechain);
+    color: var(--color-white);
 }
 
 .withdrawButton:hover,
 .repayButton:hover {
-    background-color: #2563EB;
+    background-color: #2563EB; /* TODO: Add secondary hover color design token */
 }
 
 .detailsButton {
-    background-color: #F9FAFB;
-    color: #6B7280;
-    border: 1px solid #E5E7EB;
+    background-color: #F9FAFB; /* TODO: Add details background color design token */
+    color: #6B7280; /* TODO: Add details text color design token */
+    border: 1px solid #E5E7EB; /* TODO: Add details border color design token */
 }
 
 .detailsButton:hover {
-    background-color: #F3F4F6;
-    color: #374151;
+    background-color: #F3F4F6; /* TODO: Add details hover background design token */
+    color: #374151; /* TODO: Add details hover text color design token */
 }
 
 .supplyButton:focus,
@@ -66,52 +66,52 @@
 .repayButton:focus,
 .detailsButton:focus {
     outline: none;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); /* TODO: Add focus shadow design token */
 }
 
 .supplyButton:disabled,
 .withdrawButton:disabled,
 .borrowButton:disabled,
 .repayButton:disabled {
-    background-color: #E5E7EB;
-    color: #9CA3AF;
+    background-color: #E5E7EB; /* TODO: Add disabled background design token */
+    color: #9CA3AF; /* TODO: Add disabled text color design token */
     cursor: not-allowed;
-    opacity: 0.6;
+    opacity: 0.6; /* TODO: Add disabled opacity design token */
 }
 
 .supplyButton:disabled:hover,
 .withdrawButton:disabled:hover,
 .borrowButton:disabled:hover,
 .repayButton:disabled:hover {
-    background-color: #E5E7EB;
+    background-color: #E5E7EB; /* TODO: Add disabled hover background design token */
 }
 
 .moreButton {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 32px; /* TODO: Add button size design token */
+    height: 32px; /* TODO: Add button size design token */
     border: none;
-    border-radius: 6px;
-    background-color: #F9FAFB;
+    border-radius: 6px; /* TODO: Add border-radius design token */
+    background-color: #F9FAFB; /* TODO: Add more button background design token */
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: background-color 0.2s ease; /* TODO: Add transition design token */
 }
 
 .moreButton:hover {
-    background-color: #F3F4F6;
+    background-color: #F3F4F6; /* TODO: Add more button hover background design token */
 }
 
 .moreButton:focus {
     outline: none;
-    box-shadow: 0 0 0 2px #3B82F6;
+    box-shadow: 0 0 0 2px var(--color-accent-apechain);
 }
 
 .dots {
-    color: #6B7280;
-    font-size: 16px;
-    font-weight: 600;
+    color: #6B7280; /* TODO: Add dots color design token */
+    font-size: var(--font-text-small-size);
+    font-weight: var(--font-text-small-bold-weight);
     line-height: 1;
     user-select: none;
 }

@@ -12,12 +12,14 @@
 }
 
 .item {
-    color: #CAD5FF;
+    color: var(--color-accent-ice);
     margin-bottom: 20px;
 }
 
 .link {
-    color: #CAD5FF;
-    font-weight: 600;
-    font-size: 20px;
+    color: var(--color-accent-ice);
+    font-family: var(--font-heading-menu-family);
+    font-size: var(--font-heading-menu-size);
+    font-weight: var(--font-heading-menu-weight);
+    line-height: var(--font-heading-menu-line-height);
 }

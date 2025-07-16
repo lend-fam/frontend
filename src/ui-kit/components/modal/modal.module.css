@@ -4,21 +4,28 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
+	/* TODO: Add design token for overlay background */
 	background-color: rgba(0, 0, 0, 0.5);
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	/* TODO: Add design token for modal z-index */
 	z-index: 1000;
+	/* TODO: Add design token for backdrop blur */
 	backdrop-filter: blur(4px);
 }
 
 .modal {
+	/* TODO: Add design token for modal background */
 	background: #2a2d3a;
+	/* TODO: Add design token for modal border radius */
 	border-radius: 16px;
+	/* TODO: Add design tokens for modal dimensions */
 	min-width: 400px;
 	max-width: 90vw;
 	max-height: 90vh;
 	overflow: auto;
+	/* TODO: Add design token for modal shadow */
 	box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
@@ -26,25 +33,32 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	/* TODO: Add design tokens for modal spacing */
 	padding: 24px 24px 0 24px;
+	/* TODO: Add design token for border color */
 	border-bottom: 1px solid #404040;
+	/* TODO: Add design token for spacing */
 	margin-bottom: 24px;
 }
 
 .title {
-	font-size: 24px;
-	font-weight: 600;
-	color: white;
+	font-family: var(--font-heading-h5-family);
+	font-size: var(--font-heading-h5-size);
+	font-weight: var(--font-heading-h5-weight);
+	color: var(--color-text-inversion);
 	margin: 0;
 }
 
 .closeButton {
 	background: none;
 	border: none;
+	/* TODO: Add design token for muted text color */
 	color: #9ca3af;
 	cursor: pointer;
+	/* TODO: Add design tokens for button spacing and border radius */
 	padding: 8px;
 	border-radius: 8px;
+	/* TODO: Add design token for transition duration */
 	transition: all 0.2s;
 	display: flex;
 	align-items: center;
@@ -52,10 +66,12 @@
 }
 
 .closeButton:hover {
-	color: white;
+	color: var(--color-text-inversion);
+	/* TODO: Add design token for button hover background */
 	background-color: #374151;
 }
 
 .content {
+	/* TODO: Add design tokens for modal content padding */
 	padding: 0 24px 24px 24px;
 }

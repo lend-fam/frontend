@@ -1,8 +1,12 @@
 .container {
-	font-family: "Inter", sans-serif;
+	font-family: var(--font-text-small-family);
+	/* TODO: Add muted text color design token */
 	color: #6B7280;
-	font-size: 14px;
-	font-weight: 500;
+	font-size: var(--font-text-small-size);
+	font-weight: var(--font-text-small-weight);
+	line-height: var(--font-text-small-line-height);
+	letter-spacing: var(--font-text-small-letter-spacing);
+	/* TODO: Add spacing design tokens */
 	margin-left: 42px;
 	margin-bottom: 16px;
 }

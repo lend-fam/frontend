@@ -14,9 +14,11 @@ import { FaucetPage } from '../faucet-page/faucet-page.component';
 import { Footer } from '../footer/footer.component';
 import { wagmiConfig } from '../../config/wagmi.config';
 import { TransactionProvider } from '../../contexts/transaction.context';
+import { DesignThemeProvider } from '../../ui-kit/providers/design-theme-provider';
 
 import css from './app.module.css';
 import '../../assets/fonts/fonts.css';
+import '../../styles/design-tokens.css';
 import '@rainbow-me/rainbowkit/styles.css';
 
 const queryClient = new QueryClient({
@@ -33,8 +35,9 @@ export const App: FC = () => {
 			<WagmiProvider config={wagmiConfig}>
 				<QueryClientProvider client={queryClient}>
 					<RainbowKitProvider>
-						<TransactionProvider>
-							<div className={css.container}>
+						<DesignThemeProvider>
+							<TransactionProvider>
+								<div className={css.container}>
 								<Header />
 								<Routes>
 									<Route path="/" element={<LandingPage />} />
@@ -47,8 +50,9 @@ export const App: FC = () => {
 								</Routes>
 								<Footer />
 							</div>
-							<ReactQueryDevtools initialIsOpen={false} />
-						</TransactionProvider>
+								<ReactQueryDevtools initialIsOpen={false} />
+							</TransactionProvider>
+						</DesignThemeProvider>
 					</RainbowKitProvider>
 				</QueryClientProvider>
 			</WagmiProvider>

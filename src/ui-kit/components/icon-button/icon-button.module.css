@@ -5,8 +5,9 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	/* TODO: Add design token for transition duration and easing */
 	transition: all 0.2s ease;
-	font-family: 'Inter', sans-serif;
+	font-family: var(--font-text-small-family);
 }
 
 .button:disabled {
@@ -16,42 +17,51 @@
 
 /* Icon variant - for copy/external buttons */
 .icon {
+	/* TODO: Add design token for icon button background */
 	background: rgba(255, 255, 255, 0.2);
+	/* TODO: Add design token for button border radius */
 	border-radius: 8px;
-	color: white;
+	color: var(--color-text-inversion);
 }
 
 .icon:hover:not(:disabled) {
+	/* TODO: Add design token for icon button hover background */
 	background: rgba(255, 255, 255, 0.3);
 }
 
 /* Text variant - for details buttons */
 .text {
 	background: transparent;
-	border: 1px solid #18171E;
+	border: 1px solid var(--color-text-default);
+	/* TODO: Add design token for text button border radius */
 	border-radius: 6px;
-	color: #18171E;
+	color: var(--color-text-default);
+	/* TODO: Add design token for button text size and weight */
 	font-size: 14px;
 	font-weight: 500;
 }
 
 .text:hover:not(:disabled) {
+	/* TODO: Add design token for text button hover background */
 	background: rgba(24, 23, 30, 0.1);
-	border-color: #18171E;
+	border-color: var(--color-text-default);
 }
 
 /* Size variants */
 .small {
+	/* TODO: Add design tokens for button sizes */
 	width: 32px;
 	height: 32px;
 }
 
 .medium {
+	/* TODO: Add design tokens for button sizes */
 	width: 40px;
 	height: 40px;
 }
 
 .large {
+	/* TODO: Add design tokens for button sizes */
 	width: 48px;
 	height: 48px;
 }
@@ -60,17 +70,20 @@
 .text.small {
 	width: auto;
 	height: auto;
+	/* TODO: Add design tokens for text button padding */
 	padding: 6px 12px;
 }
 
 .text.medium {
 	width: auto;
 	height: auto;
+	/* TODO: Add design tokens for text button padding */
 	padding: 8px 16px;
 }
 
 .text.large {
 	width: auto;
 	height: auto;
+	/* TODO: Add design tokens for text button padding */
 	padding: 10px 20px;
 }

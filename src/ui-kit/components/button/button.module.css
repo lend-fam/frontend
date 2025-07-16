@@ -1,15 +1,15 @@
 /* Base button styles */
 .button {
 	border: none;
-	border-radius: 6px;
-	font-family: "Inter", sans-serif;
-	font-weight: 600;
+	border-radius: 6px; /* TODO: Add border-radius design token */
+	font-family: var(--font-text-small-bold-family);
+	font-weight: var(--font-text-small-bold-weight);
 	cursor: pointer;
-	transition: all 0.2s ease;
+	transition: all 0.2s ease; /* TODO: Add transition design token */
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	gap: 8px;
+	gap: 8px; /* TODO: Add spacing design token */
 	text-decoration: none;
 	outline: none;
 	box-sizing: border-box;
@@ -18,11 +18,11 @@
 }
 
 .button:focus {
-	box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+	box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); /* TODO: Add focus design token */
 }
 
 .button:active {
-	transform: translateY(1px);
+	transform: translateY(1px); /* TODO: Add active transform design token */
 }
 
 /* Content and icon layout */
@@ -41,108 +41,108 @@
 
 /* Size variants */
 .small {
-	padding: 4px 8px;
-	font-size: 12px;
-	min-height: 24px;
-	gap: 4px;
+	padding: 4px 8px; /* TODO: Add padding design tokens */
+	font-size: 12px; /* TODO: Add small font size design token */
+	min-height: 24px; /* TODO: Add height design token */
+	gap: 4px; /* TODO: Add spacing design token */
 }
 
 .medium {
-	padding: 8px 12px;
-	font-size: 13px;
-	min-height: 32px;
-	min-width: 60px;
-	gap: 6px;
+	padding: 8px 12px; /* TODO: Add padding design tokens */
+	font-size: 13px; /* TODO: Add medium font size design token */
+	min-height: 32px; /* TODO: Add height design token */
+	min-width: 60px; /* TODO: Add width design token */
+	gap: 6px; /* TODO: Add spacing design token */
 }
 
 .large {
-	padding: 16px;
-	font-size: 16px;
-	min-height: 48px;
-	border-radius: 12px;
-	gap: 8px;
+	padding: 16px; /* TODO: Add padding design tokens */
+	font-size: var(--font-text-small-size);
+	min-height: 48px; /* TODO: Add height design token */
+	border-radius: 12px; /* TODO: Add large border-radius design token */
+	gap: 8px; /* TODO: Add spacing design token */
 }
 
 /* Variant styles */
 .primary {
-	background-color: #18171E;
-	color: #FFFFFF;
+	background-color: var(--color-dark);
+	color: var(--color-white);
 }
 
 .primary:hover:not(:disabled) {
-	background-color: #2D2A3A;
+	background-color: #2D2A3A; /* TODO: Add primary hover color design token */
 }
 
 .secondary {
-	background-color: #3B82F6;
-	color: #FFFFFF;
+	background-color: var(--color-accent-apechain);
+	color: var(--color-white);
 }
 
 .secondary:hover:not(:disabled) {
-	background-color: #2563EB;
+	background-color: #2563EB; /* TODO: Add secondary hover color design token */
 }
 
 .outline {
 	background: none;
-	border: 1px solid #3B82F6;
-	color: #3B82F6;
+	border: 1px solid var(--color-accent-apechain);
+	color: var(--color-accent-apechain);
 }
 
 .outline:hover:not(:disabled) {
-	background: #3B82F6;
-	color: white;
+	background: var(--color-accent-apechain);
+	color: var(--color-white);
 }
 
 .outline.small {
-	border: 1px solid #4B5563;
-	color: #3B82F6;
+	border: 1px solid #4B5563; /* TODO: Add outline border color design token */
+	color: var(--color-accent-apechain);
 }
 
 .outline.small:hover:not(:disabled) {
-	background: #1E40AF;
-	color: white;
-	border-color: #1E40AF;
+	background: #1E40AF; /* TODO: Add outline hover background design token */
+	color: var(--color-white);
+	border-color: #1E40AF; /* TODO: Add outline hover border design token */
 }
 
 /* Special outline variants for different colors */
 .outline.warning {
-	border-color: #F59E0B;
-	color: #F59E0B;
+	border-color: var(--color-accent-orange);
+	color: var(--color-accent-orange);
 }
 
 .outline.warning:hover:not(:disabled) {
-	background: #F59E0B;
-	color: white;
-	border-color: #F59E0B;
+	background: var(--color-accent-orange);
+	color: var(--color-white);
+	border-color: var(--color-accent-orange);
 }
 
 .ghost {
-	background-color: #F9FAFB;
-	color: #6B7280;
-	border: 1px solid #E5E7EB;
+	background-color: #F9FAFB; /* TODO: Add ghost background color design token */
+	color: #6B7280; /* TODO: Add ghost text color design token */
+	border: 1px solid #E5E7EB; /* TODO: Add ghost border color design token */
 }
 
 .ghost:hover:not(:disabled) {
-	background-color: #F3F4F6;
-	color: #374151;
+	background-color: #F3F4F6; /* TODO: Add ghost hover background design token */
+	color: #374151; /* TODO: Add ghost hover text color design token */
 }
 
 .ghost.square {
-	width: 32px;
-	min-width: 32px;
+	width: 32px; /* TODO: Add square size design token */
+	min-width: 32px; /* TODO: Add square size design token */
 	padding: 0;
 	justify-content: center;
 }
 
 .gradient {
-	background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
-	color: white;
-	border-radius: 8px;
+	background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); /* TODO: Add gradient design token */
+	color: var(--color-white);
+	border-radius: 8px; /* TODO: Add border-radius design token */
 }
 
 .gradient:hover:not(:disabled) {
-	transform: translateY(-1px);
-	box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+	transform: translateY(-1px); /* TODO: Add hover transform design token */
+	box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3); /* TODO: Add gradient shadow design token */
 }
 
 .gradient:active {
@@ -150,63 +150,63 @@
 }
 
 .gradient.green {
-	background: linear-gradient(135deg, #059669 0%, #047857 100%);
+	background: linear-gradient(135deg, #059669 0%, #047857 100%); /* TODO: Add green gradient design token */
 }
 
 .gradient.green:hover:not(:disabled) {
-	box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+	box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3); /* TODO: Add green gradient shadow design token */
 }
 
 .submit {
-	background-color: #3B82F6;
-	color: white;
-	border-radius: 12px;
-	padding: 16px;
-	font-size: 16px;
-	font-weight: 600;
+	background-color: var(--color-accent-apechain);
+	color: var(--color-white);
+	border-radius: 12px; /* TODO: Add large border-radius design token */
+	padding: 16px; /* TODO: Add padding design token */
+	font-size: var(--font-text-default-size);
+	font-weight: var(--font-text-default-bold-weight);
 }
 
 .submit:hover:not(:disabled) {
-	background-color: #1D4ED8;
+	background-color: #1D4ED8; /* TODO: Add submit hover color design token */
 }
 
 /* State modifiers */
 .disabled {
-	background-color: #E5E7EB !important;
-	color: #9CA3AF !important;
+	background-color: #E5E7EB !important; /* TODO: Add disabled background design token */
+	color: #9CA3AF !important; /* TODO: Add disabled text color design token */
 	cursor: not-allowed !important;
-	opacity: 0.6;
+	opacity: 0.6; /* TODO: Add disabled opacity design token */
 	transform: none !important;
 	box-shadow: none !important;
 }
 
 .disabled.outline {
-	border-color: #E5E7EB !important;
+	border-color: #E5E7EB !important; /* TODO: Add disabled border design token */
 	background: none !important;
 }
 
 .disabled.ghost {
-	background-color: #F9FAFB !important;
-	border-color: #E5E7EB !important;
+	background-color: #F9FAFB !important; /* TODO: Add disabled ghost background design token */
+	border-color: #E5E7EB !important; /* TODO: Add disabled border design token */
 }
 
 .disabled.gradient {
-	background: #E5E7EB !important;
+	background: #E5E7EB !important; /* TODO: Add disabled gradient background design token */
 	box-shadow: none !important;
 }
 
 .disabled.submit {
-	background-color: #374151 !important;
-	color: #6B7280 !important;
+	background-color: #374151 !important; /* TODO: Add disabled submit background design token */
+	color: #6B7280 !important; /* TODO: Add disabled submit text design token */
 }
 
 .loading {
 	cursor: not-allowed;
-	opacity: 0.7;
+	opacity: 0.7; /* TODO: Add loading opacity design token */
 }
 
 .loading .content {
-	opacity: 0.6;
+	opacity: 0.6; /* TODO: Add loading content opacity design token */
 }
 
 .fullWidth {
@@ -215,17 +215,17 @@
 
 /* Utility classes for specific button types */
 .moreButton {
-	width: 32px;
-	min-width: 32px;
-	height: 32px;
+	width: 32px; /* TODO: Add button size design token */
+	min-width: 32px; /* TODO: Add button size design token */
+	height: 32px; /* TODO: Add button size design token */
 	padding: 0;
 	justify-content: center;
-	font-size: 16px;
-	font-weight: 600;
+	font-size: var(--font-text-small-size);
+	font-weight: var(--font-text-small-bold-weight);
 	line-height: 1;
 	user-select: none;
 }
 
 .moreButton .content {
-	color: #6B7280;
+	color: #6B7280; /* TODO: Add muted text color design token */
 }

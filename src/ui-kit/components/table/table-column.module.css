@@ -1,6 +1,8 @@
 .container {
-    font-size: 16px;
-    color: #18171E;
+    font-family: var(--font-text-small-family);
+    font-size: var(--font-text-small-size);
+    font-weight: var(--font-text-small-weight);
+    color: var(--color-text-default);
     padding: 0 12px;
 }
 

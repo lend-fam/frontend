@@ -1,7 +1,7 @@
 .container {
-	background: #FFFFFF;
+	background: var(--color-white);
 	border-radius: 16px;
-	border: 2px solid #18171E;
+	border: 2px solid var(--color-dark);
 	padding: 24px;
 	overflow-x: auto;
 }

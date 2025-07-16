@@ -1,26 +1,30 @@
+/* Unified Markets Table - Design Tokens Applied */
+/* TODO: Add missing tokens for hover states and secondary colors */
+
 .container {
-	background: #FFFFFF;
+	background: var(--color-white);
     border-radius: 16px;
-    border: 2px solid #18171E;
+    border: 2px solid var(--color-dark);
 	padding: 25px 0;
 	width: 100%;
 	overflow-x: auto;
 }
 
 .label {
-	font-family: "Montserrat";
-	color: #18171E;
-	font-size: 24px;
-	font-weight: 900;
+	font-family: var(--font-heading-h5-family);
+	color: var(--color-text-default);
+	font-size: var(--font-heading-h5-size);
+	font-weight: var(--font-heading-h5-weight);
+	line-height: var(--font-heading-h5-line-height);
 	margin-bottom: 30px;
 	margin-left: 42px;
 }
 
 .detailsButton {
 	background: transparent;
-	border: 1px solid #18171E;
+	border: 1px solid var(--color-dark);
 	border-radius: 6px;
-	color: #18171E;
+	color: var(--color-text-default);
 	padding: 8px 16px;
 	font-size: 14px;
 	font-weight: 500;
@@ -29,6 +33,6 @@
 }
 
 .detailsButton:hover {
-	background: rgba(24, 23, 30, 0.1);
-	border-color: #18171E;
+	background: rgba(24, 23, 30, 0.1); /* TODO: Add hover background token */
+	border-color: var(--color-dark);
 }

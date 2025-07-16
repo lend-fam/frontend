@@ -5,16 +5,24 @@
 
 .tooltip {
 	position: absolute;
+	/* TODO: Add design token for tooltip z-index */
 	z-index: 9999;
+	/* TODO: Add design tokens for tooltip padding */
 	padding: 8px 12px;
+	/* TODO: Add design token for tooltip background */
 	background-color: #333;
-	color: #fff;
+	color: var(--color-text-inversion);
+	/* TODO: Add design token for tooltip border radius */
 	border-radius: 4px;
+	/* TODO: Add design token for tooltip text size */
 	font-size: 12px;
+	/* TODO: Add design token for tooltip line height */
 	line-height: 1.4;
+	/* TODO: Add design tokens for tooltip dimensions */
 	min-width: 250px;
 	max-width: 350px;
 	white-space: normal;
+	/* TODO: Add design token for tooltip shadow */
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
@@ -22,6 +30,7 @@
 	bottom: 100%;
 	left: 50%;
 	transform: translateX(-50%);
+	/* TODO: Add design token for tooltip spacing */
 	margin-bottom: 5px;
 }
 
@@ -29,6 +38,7 @@
 	top: 100%;
 	left: 50%;
 	transform: translateX(-50%);
+	/* TODO: Add design token for tooltip spacing */
 	margin-top: 5px;
 }
 
@@ -36,6 +46,7 @@
 	right: 100%;
 	top: 50%;
 	transform: translateY(-50%);
+	/* TODO: Add design token for tooltip spacing */
 	margin-right: 5px;
 }
 
@@ -43,6 +54,7 @@
 	left: 100%;
 	top: 50%;
 	transform: translateY(-50%);
+	/* TODO: Add design token for tooltip spacing */
 	margin-left: 5px;
 }
 
@@ -56,6 +68,7 @@
 	top: 100%;
 	left: 50%;
 	transform: translateX(-50%);
+	/* TODO: Add design tokens for arrow size and color */
 	border-left: 5px solid transparent;
 	border-right: 5px solid transparent;
 	border-top: 5px solid #333;
@@ -65,6 +78,7 @@
 	bottom: 100%;
 	left: 50%;
 	transform: translateX(-50%);
+	/* TODO: Add design tokens for arrow size and color */
 	border-left: 5px solid transparent;
 	border-right: 5px solid transparent;
 	border-bottom: 5px solid #333;
@@ -74,6 +88,7 @@
 	top: 50%;
 	left: 100%;
 	transform: translateY(-50%);
+	/* TODO: Add design tokens for arrow size and color */
 	border-top: 5px solid transparent;
 	border-bottom: 5px solid transparent;
 	border-left: 5px solid #333;
@@ -83,6 +98,7 @@
 	top: 50%;
 	right: 100%;
 	transform: translateY(-50%);
+	/* TODO: Add design tokens for arrow size and color */
 	border-top: 5px solid transparent;
 	border-bottom: 5px solid transparent;
 	border-right: 5px solid #333;

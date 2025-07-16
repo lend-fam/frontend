@@ -10,8 +10,8 @@
 
 /* APY value styling */
 .apy {
-	font-family: 'Inter', sans-serif;
-	font-size: 14px;
-	font-weight: 500;
-	color: #18171E;
+	font-family: var(--font-text-small-family);
+	font-size: 14px; /* Keeping custom size for data display */
+	font-weight: var(--font-text-small-weight);
+	color: var(--color-text-default);
 }

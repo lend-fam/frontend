@@ -14,26 +14,31 @@
 }
 
 .label {
-    font-size: 16px;
+    font-family: var(--font-text-small-family);
+    font-size: var(--font-text-small-size);
+    font-weight: var(--font-text-small-weight);
     margin-bottom: 10px;
-    color: #CAD5FF;
+    color: var(--color-accent-ice);
 }
 
 .value {
-    font-size: 24px;
-    font-weight: 900;
-    color: #fff;
+    font-family: var(--font-heading-h5-family);
+    font-size: var(--font-heading-h5-size);
+    font-weight: var(--font-heading-h5-weight);
+    color: var(--color-white);
     word-wrap: break-word;
     overflow-wrap: break-word;
 }
 
 .dimension {
-    color: #CAD5FF;
+    color: var(--color-accent-ice);
 }
 
 .subtitle {
+    font-family: var(--font-text-small-family);
     font-size: 12px;
-    color: #CAD5FF;
+    font-weight: var(--font-text-small-weight);
+    color: var(--color-accent-ice);
     margin-top: 4px;
     opacity: 0.8;
     word-wrap: break-word;

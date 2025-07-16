@@ -3,18 +3,23 @@
 }
 
 .withdraw_button {
-    color: #FFFFFF;
+    color: var(--color-text-inversion);
     font-weight: 700;
-    background: #5877FE;
+    background: var(--color-accent-miracle-1);
+    /* TODO: Add button height design tokens */
     height: 26px;
+    /* TODO: Add border radius design tokens */
     border-radius: 4px;
+    /* TODO: Add spacing design tokens */
     margin-right: 10px;
 }
 
 .supply_button {
-    color: #18171E;
+    color: var(--color-text-default);
     font-weight: 700;
+    /* TODO: Add button height design tokens */
     height: 26px;
+    /* TODO: Add border radius design tokens */
     border-radius: 4px;
-    border: 2px solid #18171E;
+    border: 2px solid var(--color-dark);
 }

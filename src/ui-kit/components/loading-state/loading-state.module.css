@@ -1,8 +1,9 @@
 /* Container styles match the existing card pattern */
 .container {
-	background: #FFFFFF;
+	background: var(--color-white);
 	border-radius: 16px;
-	border: 2px solid #18171E;
+	border: 2px solid var(--color-dark);
+	/* TODO: Add padding design tokens */
 	padding: 25px 42px;
 	width: 100%;
 	overflow-x: auto;
@@ -10,18 +11,24 @@
 
 /* Title styles match the existing label pattern */
 .title {
-	font-family: "Montserrat", sans-serif;
-	color: #18171E;
-	font-size: 24px;
-	font-weight: 900;
+	font-family: var(--font-heading-h5-family);
+	color: var(--color-text-default);
+	font-size: var(--font-heading-h5-size);
+	font-weight: var(--font-heading-h5-weight);
+	line-height: var(--font-heading-h5-line-height);
+	letter-spacing: var(--font-heading-h5-letter-spacing);
+	/* TODO: Add margin design tokens */
 	margin: 0 0 16px 0;
 }
 
 /* Message styles */
 .message {
-	font-family: "Inter", sans-serif;
+	font-family: var(--font-text-small-family);
+	/* TODO: Add muted text color design token */
 	color: #6B7280;
-	font-size: 14px;
-	font-weight: 500;
+	font-size: var(--font-text-small-size);
+	font-weight: var(--font-text-small-weight);
+	line-height: var(--font-text-small-line-height);
+	letter-spacing: var(--font-text-small-letter-spacing);
 	margin: 0;
 }

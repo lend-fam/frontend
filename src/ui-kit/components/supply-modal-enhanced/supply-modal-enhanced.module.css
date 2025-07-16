@@ -13,9 +13,11 @@
 }
 
 .sectionTitle {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1a1a1a;
+  font-size: var(--font-text-small-size);
+  font-family: var(--font-text-small-family);
+  font-weight: var(--font-text-small-bold-weight);
+  line-height: var(--font-text-small-line-height);
+  color: var(--color-text-default);
 }
 
 .sectionHeader {
@@ -25,12 +27,16 @@
 }
 
 .label {
+  /* TODO: Add extra-small text design token (14px) */
   font-size: 14px;
-  font-weight: 500;
+  font-family: var(--font-text-small-family);
+  font-weight: var(--font-text-small-weight);
+  /* TODO: Add secondary text color design token */
   color: #666;
 }
 
 .info {
+  /* TODO: Add muted text color design token */
   color: #999;
   cursor: help;
 }
@@ -38,7 +44,9 @@
 .inputContainer {
   display: flex;
   align-items: center;
+  /* TODO: Add light input background color design token */
   background: #f8f9fa;
+  /* TODO: Add light input border color design token */
   border: 1px solid #e1e5e9;
   border-radius: 8px;
   padding: 16px;
@@ -50,9 +58,11 @@
   background: transparent;
   border: none;
   outline: none;
+  /* TODO: Add medium input text design token (18px) */
   font-size: 18px;
-  font-weight: 600;
-  color: #1a1a1a;
+  font-family: var(--font-text-default-family);
+  font-weight: var(--font-text-default-bold-weight);
+  color: var(--color-text-default);
 }
 
 .tokenInfo {
@@ -65,6 +75,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
+  /* TODO: Add light token icon background color design token */
   background: #e1e5e9;
   display: flex;
   align-items: center;
@@ -72,15 +83,20 @@
 }
 
 .tokenSymbol {
+  /* TODO: Add extra-small text design token (12px) */
   font-size: 12px;
-  font-weight: 600;
+  font-family: var(--font-text-small-family);
+  font-weight: var(--font-text-small-bold-weight);
+  /* TODO: Add secondary text color design token */
   color: #666;
 }
 
 .tokenName {
+  /* TODO: Add extra-small text design token (14px) */
   font-size: 14px;
-  font-weight: 500;
-  color: #1a1a1a;
+  font-family: var(--font-text-small-family);
+  font-weight: var(--font-text-small-weight);
+  color: var(--color-text-default);
 }
 
 .balanceInfo {
@@ -91,7 +107,9 @@
 }
 
 .usdValue {
+  /* TODO: Add extra-small text design token (12px) */
   font-size: 12px;
+  /* TODO: Add muted text color design token */
   color: #999;
 }
 
@@ -99,22 +117,27 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  /* TODO: Add extra-small text design token (12px) */
   font-size: 12px;
+  /* TODO: Add secondary text color design token */
   color: #666;
 }
 
 .maxButton {
-  background: #3b82f6;
-  color: white;
+  background: var(--color-accent-apechain);
+  color: var(--color-text-inversion);
   border: none;
   border-radius: 4px;
   padding: 4px 8px;
+  /* TODO: Add extra-extra-small text design token (10px) */
   font-size: 10px;
-  font-weight: 600;
+  font-family: var(--font-text-small-family);
+  font-weight: var(--font-text-small-bold-weight);
   cursor: pointer;
 }
 
 .maxButton:hover {
+  /* TODO: Add primary button hover color design token */
   background: #2563eb;
 }
 
@@ -129,6 +152,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px;
+  /* TODO: Add light border color design token */
   border: 1px solid #e1e5e9;
   border-radius: 8px;
 }
@@ -140,38 +164,43 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* TODO: Add extra-small text design token (12px) */
   font-size: 12px;
-  font-weight: 600;
+  font-family: var(--font-text-small-family);
+  font-weight: var(--font-text-small-bold-weight);
 }
 
 .stepIndicator.pending {
-  background: #f59e0b;
-  color: white;
+  background: var(--color-accent-orange);
+  color: var(--color-text-inversion);
 }
 
 .stepIndicator.success {
-  background: #10b981;
-  color: white;
+  background: var(--color-accent-green);
+  color: var(--color-text-inversion);
 }
 
 .stepIndicator.error {
+  /* TODO: Add error color design token */
   background: #ef4444;
-  color: white;
+  color: var(--color-text-inversion);
 }
 
 .stepIndicator.idle {
+  /* TODO: Add idle/neutral color design token */
   background: #6b7280;
-  color: white;
+  color: var(--color-text-inversion);
 }
 
 .stepIndicator.confirming {
-  background: #f59e0b;
-  color: white;
+  background: var(--color-accent-orange);
+  color: var(--color-text-inversion);
 }
 
 .stepIndicator.preparing {
+  /* TODO: Add preparing/purple color design token */
   background: #8b5cf6;
-  color: white;
+  color: var(--color-text-inversion);
 }
 
 .stepInfo {
@@ -179,18 +208,23 @@
 }
 
 .stepTitle {
+  /* TODO: Add extra-small text design token (14px) */
   font-size: 14px;
-  font-weight: 600;
-  color: #1a1a1a;
+  font-family: var(--font-text-small-family);
+  font-weight: var(--font-text-small-bold-weight);
+  color: var(--color-text-default);
 }
 
 .stepDescription {
+  /* TODO: Add extra-small text design token (12px) */
   font-size: 12px;
+  /* TODO: Add secondary text color design token */
   color: #666;
   margin-top: 2px;
 }
 
 .stepError {
+  /* TODO: Add error color design token */
   color: #ef4444;
 }
 
@@ -218,12 +252,15 @@
 }
 
 .approvalText {
+  /* TODO: Add extra-small text design token (14px) */
   font-size: 14px;
-  color: #1a1a1a;
+  color: var(--color-text-default);
 }
 
 .approvalDescription {
+  /* TODO: Add extra-small text design token (12px) */
   font-size: 12px;
+  /* TODO: Add secondary text color design token */
   color: #666;
   margin-left: 24px;
 }
@@ -241,21 +278,26 @@
 }
 
 .overviewLabel {
+  /* TODO: Add extra-small text design token (14px) */
   font-size: 14px;
+  /* TODO: Add secondary text color design token */
   color: #666;
 }
 
 .overviewValue {
+  /* TODO: Add extra-small text design token (14px) */
   font-size: 14px;
-  font-weight: 600;
-  color: #1a1a1a;
+  font-family: var(--font-text-small-family);
+  font-weight: var(--font-text-small-bold-weight);
+  color: var(--color-text-default);
 }
 
 .overviewValue.enabled {
-  color: #10b981;
+  color: var(--color-accent-green);
 }
 
 .overviewValue.disabled {
+  /* TODO: Add error color design token */
   color: #ef4444;
 }
 
@@ -264,36 +306,43 @@
   align-items: center;
   gap: 8px;
   padding: 12px;
+  /* TODO: Add light background color design token */
   background: #f8f9fa;
   border-radius: 8px;
 }
 
 .gasIcon {
+  /* TODO: Add secondary text color design token */
   color: #666;
 }
 
 .gasText {
+  /* TODO: Add extra-small text design token (14px) */
   font-size: 14px;
+  /* TODO: Add secondary text color design token */
   color: #666;
 }
 
 .submitButton {
-  background: #3b82f6;
-  color: white;
+  background: var(--color-accent-apechain);
+  color: var(--color-text-inversion);
   border: none;
   border-radius: 8px;
   padding: 16px;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: var(--font-text-small-size);
+  font-family: var(--font-text-small-family);
+  font-weight: var(--font-text-small-bold-weight);
   cursor: pointer;
   transition: background-color 0.2s;
 }
 
 .submitButton:hover:not(:disabled) {
+  /* TODO: Add primary button hover color design token */
   background: #2563eb;
 }
 
 .submitButton:disabled {
+  /* TODO: Add disabled button background color design token */
   background: #d1d5db;
   cursor: not-allowed;
 }

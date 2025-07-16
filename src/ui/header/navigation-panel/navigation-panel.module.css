@@ -9,12 +9,16 @@
 }
 
 .link {
-    color: #18171E;
-    font-weight: 600;
-    font-size: 20px;
+    color: var(--color-text-default);
+    font-family: var(--font-heading-menu-family);
+    font-size: var(--font-heading-menu-size);
+    font-weight: var(--font-heading-menu-weight);
+    line-height: var(--font-heading-menu-line-height);
     margin-right: 35px;
 }
 
 .link_active {
-    color: #5877FE;
+    color: var(--color-accent-miracle-1);
+    font-family: var(--font-heading-menu-active-family);
+    font-weight: var(--font-heading-menu-active-weight);
 }
