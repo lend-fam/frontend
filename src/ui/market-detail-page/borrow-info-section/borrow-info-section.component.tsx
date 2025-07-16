@@ -4,6 +4,7 @@ import { formatUnits } from 'viem';
 import { ProgressCircle } from '../reserve-status-section/progress-circle/progress-circle.component';
 import { APYChart } from '../reserve-status-section/apy-chart/apy-chart.component';
 import { MarketService } from '../../../services';
+import { Card } from '../../../ui-kit/components/card/card.component';
 
 import css from './borrow-info-section.module.css';
 
@@ -87,7 +88,7 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({ symbol, marketDa
 	}, [apyData.borrowAPY]);
 
 	return (
-		<div className={css.container}>
+		<Card>
 			<h2 className={css.title}>Borrow Info</h2>
 
 			<div className={css.content}>
@@ -138,6 +139,6 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({ symbol, marketDa
 					</div>
 				</div>
 			</div>
-		</div>
+		</Card>
 	);
 };

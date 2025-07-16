@@ -5,6 +5,7 @@ import { Button } from '../../../ui-kit/components/button/button.component';
 import { SupplyModal } from '../../../ui-kit/components/supply-modal/supply-modal.component';
 import { BorrowModal } from '../../../ui-kit/components/borrow-modal/borrow-modal.component';
 import { Tooltip } from '../../../ui-kit/components/tooltip/tooltip.component';
+import { Card } from '../../../ui-kit/components/card/card.component';
 import { MarketService, PriceService } from '../../../services';
 import { useTokenPrices } from '../../../services/price.service';
 import { useMarketWalletBalances, useAccountLiquidity } from '../../../hooks';
@@ -84,7 +85,7 @@ export const YourInfoSidebar: FC<YourInfoSidebarProps> = ({
 	const availableToBorrowFormatted = MarketService.formatTokenBalance(availableToBorrow, 18);
 
 	return (
-		<div className={css.container}>
+		<Card style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
 			<h3 className={css.title}>Your info</h3>
 
 			<div className={css.balanceSection}>
@@ -162,6 +163,6 @@ export const YourInfoSidebar: FC<YourInfoSidebarProps> = ({
 				borrowAPY={borrowAPY}
 				availableLiquidity={liquidityData || 0n}
 			/>
-		</div>
+		</Card>
 	);
 };

@@ -1,0 +1,1 @@
+export { SectionHeader, type SectionHeaderVariant } from './section-header.component';

@@ -7,6 +7,7 @@ import { FaucetService } from '../../services/faucet.service';
 import { TEST_TOKEN_ABI } from '../../contracts/test-token.abi';
 import { TEST_NFT_ABI } from '../../contracts/test-nft.abi';
 import { TurnstileComponent } from '../../ui-kit/components/turnstile';
+import { Card } from '../../ui-kit/components/card/card.component';
 
 import css from './faucet-page.module.css';
 
@@ -104,7 +105,7 @@ export const FaucetPage: FC = () => {
 	return (
 		<Layout>
 			<div className={css.container}>
-				<div className={css.card}>
+				<Card style={{ maxWidth: '800px' }}>
 					<h1>Testnet Faucet</h1>
 					<p className={css.description}>
 						Get test tokens and NFTs for testing the lend.fam protocol on ApeChain Testnet.
@@ -299,7 +300,7 @@ export const FaucetPage: FC = () => {
 							</div>
 						</div>
 					)}
-				</div>
+				</Card>
 			</div>
 		</Layout>
 	);

@@ -3,7 +3,8 @@ import type { Address } from 'viem';
 import { formatUnits } from 'viem';
 import { ProgressCircle } from './progress-circle/progress-circle.component';
 import { APYChart } from './apy-chart/apy-chart.component';
-import { Tooltip } from '../../../ui-kit/components/tooltip/tooltip.component';
+import { Card } from '../../../ui-kit/components/card/card.component';
+import { NativeYieldBadge } from '../../../ui-kit/components/native-yield-badge/native-yield-badge.component';
 import { MarketService } from '../../../services';
 import { useNativeYield } from '../../../hooks/use-native-yield.hook';
 
@@ -129,7 +130,7 @@ export const ReserveStatusSection: FC<ReserveStatusSectionProps> = ({
 	const nativeYieldAPY = hasNativeYield ? `${nativeYieldData?.apy}%` : undefined;
 
 	return (
-		<div className={css.container}>
+		<Card>
 			<h2 className={css.title}>Reserve status & configuration</h2>
 
 			<div className={css.content}>
@@ -158,46 +159,7 @@ export const ReserveStatusSection: FC<ReserveStatusSectionProps> = ({
 									<div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
 										<div>Supply APY: {parseFloat(apyData.supplyAPY) || 0}%</div>
 										{hasNativeYield && nativeYieldAPY && (
-											<Tooltip
-												content={
-													<div>
-														<div style={{ marginBottom: '8px' }}>
-															<strong>🦍</strong>
-														</div>
-														<div style={{ marginBottom: '8px' }}>
-															ApeChain&apos;s built-in yield feature that automatically earns you additional APY
-															on your APE token holdings.
-														</div>
-														<a
-															href="https://docs.apechain.com/apecoin-staking/native-yield/Overview"
-															target="_blank"
-															rel="noopener noreferrer"
-															style={{ color: '#007AFF', textDecoration: 'none', fontWeight: '500' }}>
-															Learn more about Native Yield →
-														</a>
-													</div>
-												}
-												position="top">
-												<div
-													style={{
-														fontFamily: 'Inter',
-														fontSize: '11px',
-														fontWeight: '400',
-														color: '#007AFF',
-														display: 'flex',
-														alignItems: 'center',
-														justifyContent: 'center',
-														gap: '4px',
-														padding: '2px 6px',
-														border: '1px solid #007AFF',
-														borderRadius: '12px',
-														width: 'fit-content',
-														cursor: 'help',
-														margin: '0 auto',
-													}}>
-													{nativeYieldAPY} 🦍
-												</div>
-											</Tooltip>
+											<NativeYieldBadge apy={nativeYieldAPY} />
 										)}
 									</div>
 								</div>
@@ -256,6 +218,6 @@ export const ReserveStatusSection: FC<ReserveStatusSectionProps> = ({
 					</div>
 				</div>
 			</div>
-		</div>
+		</Card>
 	);
 };

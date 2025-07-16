@@ -1,0 +1,66 @@
+/* Base container */
+.container {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+/* Main variant - used for top-level section headers */
+.main {
+	margin-bottom: 30px;
+	margin-left: 42px;
+	margin-right: 42px;
+}
+
+/* Subsection variant - used for subsection headers */
+.subsection {
+	margin-bottom: 16px;
+	margin-left: 42px;
+	margin-top: 16px;
+}
+
+/* Inline variant - used for headers with actions */
+.inline {
+	margin-right: 42px;
+	margin-top: 16px;
+}
+
+/* Content container */
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+/* Title styles */
+.title {
+	font-family: "Montserrat";
+	color: #18171E;
+	font-size: 24px;
+	font-weight: 900;
+	margin: 0;
+}
+
+/* Subsection title styles */
+.subsectionTitle {
+	font-family: "Montserrat";
+	color: #18171E;
+	font-size: 16px;
+	font-weight: 700;
+	margin: 0;
+}
+
+/* Subtitle styles */
+.subtitle {
+	font-family: "Inter";
+	color: #18171E;
+	font-size: 16px;
+	font-weight: 600;
+	margin: 0;
+}
+
+/* Action container */
+.action {
+	display: flex;
+	align-items: center;
+}

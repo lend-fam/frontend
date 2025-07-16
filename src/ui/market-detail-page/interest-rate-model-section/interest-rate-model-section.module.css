@@ -1,10 +1,4 @@
-.container {
-	background: #FFFFFF;
-	border-radius: 16px;
-	padding: 24px;
-	border: 2px solid #18171E;
-	min-height: 300px;
-}
+/* Container styles moved to Card component */
 
 .header {
 	display: flex;

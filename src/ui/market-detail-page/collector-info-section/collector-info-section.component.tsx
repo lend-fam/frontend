@@ -3,6 +3,7 @@ import type { Address } from 'viem';
 import { useReadContract, useChainId } from 'wagmi';
 import { CTOKEN_ABI } from '../../../contracts';
 import { getBlockExplorerUrl } from '../../../config/wagmi.config';
+import { Card } from '../../../ui-kit/components/card/card.component';
 
 import css from './collector-info-section.module.css';
 
@@ -29,7 +30,7 @@ export const CollectorInfoSection: FC<CollectorInfoSectionProps> = ({ marketAddr
 	const explorerUrl = getBlockExplorerUrl(chainId);
 
 	return (
-		<div className={css.container}>
+		<Card style={{ minHeight: '120px' }}>
 			<h2 className={css.title}>Collector Info</h2>
 
 			<div className={css.content}>
@@ -50,6 +51,6 @@ export const CollectorInfoSection: FC<CollectorInfoSectionProps> = ({ marketAddr
 					</div>
 				</div>
 			</div>
-		</div>
+		</Card>
 	);
 };

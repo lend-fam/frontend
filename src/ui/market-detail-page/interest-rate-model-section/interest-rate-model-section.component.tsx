@@ -5,6 +5,7 @@ import { CTOKEN_ABI, INTEREST_RATE_MODEL_ABI, BLOCKS_PER_YEAR } from '../../../c
 import { InterestRateChart } from './interest-rate-chart/interest-rate-chart.component';
 import { useMarketTotals } from '../../../hooks';
 import { MarketService } from '../../../services';
+import { Card } from '../../../ui-kit/components/card/card.component';
 
 import css from './interest-rate-model-section.module.css';
 
@@ -167,7 +168,7 @@ export const InterestRateModelSection: FC<InterestRateModelSectionProps> = ({ ma
 	}, [marketTotals, marketAddress, apyData, irModelData]);
 
 	return (
-		<div className={css.container}>
+		<Card style={{ minHeight: '300px' }}>
 			<div className={css.header}>
 				<div className={css.titleSection}>
 					<h2 className={css.title}>Interest rate model ({interestRateMetrics.modelType})</h2>
@@ -226,6 +227,6 @@ export const InterestRateModelSection: FC<InterestRateModelSectionProps> = ({ ma
 					</div>
 				</div>
 			</div>
-		</div>
+		</Card>
 	);
 };

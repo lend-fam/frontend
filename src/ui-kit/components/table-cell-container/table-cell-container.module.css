@@ -1,0 +1,44 @@
+/* Base container */
+.container {
+	display: flex;
+	padding: 0 12px;
+	height: 100%;
+	align-items: center;
+}
+
+/* Direction variants */
+.row {
+	flex-direction: row;
+}
+
+.column {
+	flex-direction: column;
+	justify-content: center;
+	gap: 2px;
+}
+
+/* Alignment variants */
+.left {
+	justify-content: flex-start;
+}
+
+.center {
+	justify-content: center;
+}
+
+.right {
+	justify-content: flex-end;
+}
+
+/* Column-specific alignment overrides */
+.column.left {
+	align-items: flex-start;
+}
+
+.column.center {
+	align-items: center;
+}
+
+.column.right {
+	align-items: flex-end;
+}

@@ -3,14 +3,23 @@
  */
 
 // Base components
+export { APYDisplay } from './apy-display/apy-display.component';
 export { Button } from './button/button.component';
+export { Card } from './card/card.component';
+export { EmptyState } from './empty-state/empty-state.component';
+export { FlexContainer, type FlexVariant } from './flex-container/flex-container.component';
 export { Icon } from './icon/icon.component';
+export { IconButton, type IconButtonVariant, type IconButtonSize } from './icon-button/icon-button.component';
 export { Link } from './link/link.component';
+export { LoadingState } from './loading-state/loading-state.component';
 export { Modal } from './modal/modal.component';
+export { NativeYieldBadge } from './native-yield-badge/native-yield-badge.component';
+export { SectionHeader, type SectionHeaderVariant } from './section-header/section-header.component';
 
 // Table components
 export { Table, type TableData, type TableColumnProps, type TableColumnRendererProps } from './table/table.component';
 export { TableColumn, type TableAlign } from './table/table-column.component';
+export { TableCellContainer, type TableCellAlignment, type TableCellDirection } from './table-cell-container/table-cell-container.component';
 
 // Action button components
 export { ActionButtonGroup } from './action-button-group/action-button-group.component';

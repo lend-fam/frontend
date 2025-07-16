@@ -23,7 +23,7 @@ import { useTokenMetadata } from '../../../hooks/use-token-metadata.hook';
 import { TokenService, MarketService } from '../../../services';
 
 import css from './markets-borrow-table.module.css';
-import tableCss from './theme/table.module.css';
+import tableCss from '../../../ui-kit/themes/market-table.module.css';
 
 type MarketsBorrowTableData = {
 	assets: string;

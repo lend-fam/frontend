@@ -25,7 +25,7 @@ import { useTokenMetadata, type TokenMetadata } from '../../../hooks/use-token-m
 import { MarketService, TokenService } from '../../../services';
 
 import css from './markets-supply-table.module.css';
-import tableCss from './theme/table.module.css';
+import tableCss from '../../../ui-kit/themes/market-table.module.css';
 
 type MarketsSupplyTableData = {
 	assets: string;
