@@ -1,7 +1,7 @@
 /* Container styles moved to Card component */
 
 .title {
-	font-size: 20px;
+	/* Title styles moved to SectionHeader component */
 	font-weight: 600;
 	margin: 0 0 24px 0;
 	color: #333;
@@ -14,7 +14,6 @@
 .info {
 	display: flex;
 	gap: 48px;
-	margin-left: 24px;
 }
 
 .infoItem {

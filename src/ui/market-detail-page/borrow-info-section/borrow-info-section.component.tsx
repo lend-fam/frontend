@@ -5,6 +5,7 @@ import { ProgressCircle } from '../reserve-status-section/progress-circle/progre
 import { APYChart } from '../reserve-status-section/apy-chart/apy-chart.component';
 import { MarketService } from '../../../services';
 import { Card } from '../../../ui-kit/components/card/card.component';
+import { SectionHeader } from '../../../ui-kit/components/section-header/section-header.component';
 
 import css from './borrow-info-section.module.css';
 
@@ -89,7 +90,7 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({ symbol, marketDa
 
 	return (
 		<Card>
-			<h2 className={css.title}>Borrow Info</h2>
+			<SectionHeader title="Borrow Info" variant="main" />
 
 			<div className={css.content}>
 				<div className={css.borrowStats}>

@@ -6,6 +6,7 @@ import { SupplyModal } from '../../../ui-kit/components/supply-modal/supply-moda
 import { BorrowModal } from '../../../ui-kit/components/borrow-modal/borrow-modal.component';
 import { Tooltip } from '../../../ui-kit/components/tooltip/tooltip.component';
 import { Card } from '../../../ui-kit/components/card/card.component';
+import { SectionHeader } from '../../../ui-kit/components/section-header/section-header.component';
 import { MarketService, PriceService } from '../../../services';
 import { useTokenPrices } from '../../../services/price.service';
 import { useMarketWalletBalances, useAccountLiquidity } from '../../../hooks';
@@ -86,7 +87,7 @@ export const YourInfoSidebar: FC<YourInfoSidebarProps> = ({
 
 	return (
 		<Card style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-			<h3 className={css.title}>Your info</h3>
+			<SectionHeader title="Your info" variant="main" />
 
 			<div className={css.balanceSection}>
 				<div className={css.balanceItem}>

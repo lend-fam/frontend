@@ -121,3 +121,9 @@
 		gap: 12px;
 	}
 }
+.utilizationInfo {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	margin-bottom: 24px;
+}

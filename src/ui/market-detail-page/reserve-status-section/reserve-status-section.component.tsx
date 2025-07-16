@@ -5,6 +5,7 @@ import { ProgressCircle } from './progress-circle/progress-circle.component';
 import { APYChart } from './apy-chart/apy-chart.component';
 import { Card } from '../../../ui-kit/components/card/card.component';
 import { NativeYieldBadge } from '../../../ui-kit/components/native-yield-badge/native-yield-badge.component';
+import { SectionHeader } from '../../../ui-kit/components/section-header/section-header.component';
 import { MarketService } from '../../../services';
 import { useNativeYield } from '../../../hooks/use-native-yield.hook';
 
@@ -131,11 +132,11 @@ export const ReserveStatusSection: FC<ReserveStatusSectionProps> = ({
 
 	return (
 		<Card>
-			<h2 className={css.title}>Reserve status & configuration</h2>
+			<SectionHeader title="Reserve status & configuration" variant="main" />
 
 			<div className={css.content}>
 				<div className={css.supplyInfo}>
-					<h3 className={css.sectionTitle}>Supply info</h3>
+					<SectionHeader title="Supply info" variant="subsection" />
 
 					<div className={css.supplyStats}>
 						<div className={css.progressSection}>
@@ -182,7 +183,7 @@ export const ReserveStatusSection: FC<ReserveStatusSectionProps> = ({
 				</div>
 
 				<div className={css.collateralUsage}>
-					<h3 className={css.sectionTitle}>Collateral usage</h3>
+					<SectionHeader title="Collateral usage" variant="subsection" />
 					<div className={css.collateralStatus}>
 						<span
 							className={css.statusIndicator}

@@ -6,6 +6,7 @@ import { InterestRateChart } from './interest-rate-chart/interest-rate-chart.com
 import { useMarketTotals } from '../../../hooks';
 import { MarketService } from '../../../services';
 import { Card } from '../../../ui-kit/components/card/card.component';
+import { SectionHeader } from '../../../ui-kit/components/section-header/section-header.component';
 
 import css from './interest-rate-model-section.module.css';
 
@@ -169,13 +170,14 @@ export const InterestRateModelSection: FC<InterestRateModelSectionProps> = ({ ma
 
 	return (
 		<Card style={{ minHeight: '300px' }}>
-			<div className={css.header}>
-				<div className={css.titleSection}>
-					<h2 className={css.title}>Interest rate model ({interestRateMetrics.modelType})</h2>
-					<span className={css.utilizationLabel}>Utilization Rate</span>
-					<span className={css.utilizationValue}>{interestRateMetrics.utilizationRate.toFixed(2)}%</span>
-				</div>
-				<button className={css.strategyButton}>Interest Rate Strategy</button>
+			<SectionHeader 
+				title={`Interest rate model (${interestRateMetrics.modelType})`}
+				variant="main"
+				action={<button className={css.strategyButton}>Interest Rate Strategy</button>}
+			/>
+			<div className={css.utilizationInfo}>
+				<span className={css.utilizationLabel}>Utilization Rate</span>
+				<span className={css.utilizationValue}>{interestRateMetrics.utilizationRate.toFixed(2)}%</span>
 			</div>
 
 			<div className={css.content}>

@@ -4,6 +4,7 @@ import { useReadContract, useChainId } from 'wagmi';
 import { CTOKEN_ABI } from '../../../contracts';
 import { getBlockExplorerUrl } from '../../../config/wagmi.config';
 import { Card } from '../../../ui-kit/components/card/card.component';
+import { SectionHeader } from '../../../ui-kit/components/section-header/section-header.component';
 
 import css from './collector-info-section.module.css';
 
@@ -31,7 +32,7 @@ export const CollectorInfoSection: FC<CollectorInfoSectionProps> = ({ marketAddr
 
 	return (
 		<Card style={{ minHeight: '120px' }}>
-			<h2 className={css.title}>Collector Info</h2>
+			<SectionHeader title="Collector Info" variant="main" />
 
 			<div className={css.content}>
 				<div className={css.info}>

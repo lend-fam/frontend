@@ -1,11 +1,6 @@
 /* Container styles moved to Card component */
 
-.title {
-	font-size: 20px;
-	font-weight: 600;
-	margin: 0 0 24px 0;
-	color: #333;
-}
+/* Title styles moved to SectionHeader component */
 
 .content {
 	display: grid;
@@ -13,12 +8,7 @@
 	gap: 32px;
 }
 
-.sectionTitle {
-	font-size: 16px;
-	font-weight: 600;
-	margin: 0 0 16px 0;
-	color: #333;
-}
+/* Section title styles moved to SectionHeader component */
 
 .supplyInfo {
 	/* Supply info styles */

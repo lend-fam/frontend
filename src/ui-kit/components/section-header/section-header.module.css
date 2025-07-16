@@ -7,15 +7,14 @@
 
 /* Main variant - used for top-level section headers */
 .main {
-	margin-bottom: 30px;
-	margin-left: 42px;
+	margin-bottom: 16px;
 	margin-right: 42px;
 }
 
 /* Subsection variant - used for subsection headers */
 .subsection {
 	margin-bottom: 16px;
-	margin-left: 42px;
+	/* margin-left: 42px; */
 	margin-top: 16px;
 }
 
