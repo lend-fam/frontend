@@ -2,40 +2,28 @@
     display: flex;
     align-items: center;
     margin-left: 5px;
+    padding: 8px 16px;
 }
 
-.container button {
-    background: #FE8258 !important;
-    color: #fff !important;
-    border-radius: 18px !important;
-    font-size: 14px !important;
-    font-weight: 500 !important;
-    box-sizing: border-box !important;
+.connectButton {
+    background: var(--color-accent-orange, #fe8258);
+    color: var(--color-white);
+    border: none;
+    border-radius: 18px;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 8px 16px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    box-sizing: border-box;
+    min-width: 133px;
+    text-align: center;
 }
 
-.container button *,
-.container div *,
-.container span * {
-    color: #fff !important;
+.connectButton:hover {
+    transform: scale(1.05);
 }
 
-.container button:last-child img,
-.container button:last-child svg,
-.container button:last-child [role="img"] {
-    display: none !important;
-}
-
-.container button:focus,
-.container button:hover,
-.container button:active {
-    background: #FE8258 !important;
-}
-
-.container *,
-.container :global([class*="rk-"]),
-.container :global([class*="rk-"]) *,
-.container [style*="border"] {
-    border: none !important;
-    outline: none !important;
-    box-shadow: none !important;
+.connectButton:focus {
+    outline: none;
 }

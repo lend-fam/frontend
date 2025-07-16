@@ -85,28 +85,28 @@
 .captchaSection {
 	background: #f8fafc;
 	border: 1px solid #e2e8f0;
-	border-radius: 12px;
-	padding: 24px;
-	margin: 24px 0;
+	border-radius: 8px;
+	padding: 16px;
+	margin: 16px 0;
 }
 
 .captchaSection h3 {
 	color: var(--color-text-default);
-	margin-bottom: 8px;
-	font-size: 18px; /* TODO: Add heading small token */
+	margin-bottom: 6px;
+	font-size: 16px; /* TODO: Add heading small token */
 	font-weight: 600;
 }
 
 .captchaSection p {
 	color: #6b7280;
-	margin-bottom: 16px;
-	font-size: 14px;
+	margin-bottom: 12px;
+	font-size: 13px;
 }
 
 .captchaContainer {
 	display: flex;
 	justify-content: center;
-	margin-bottom: 16px;
+	margin-bottom: 12px;
 }
 
 .captchaSuccess {
@@ -189,15 +189,17 @@
 	min-width: 180px;
 }
 
-.greenGradient {
-	background: linear-gradient(135deg, var(--color-accent-green) 0%, #047857 100%) !important; /* TODO: Add green gradient tokens */
+.greenSolid {
+	background: var(--color-accent-green) !important;
+	color: white !important;
 }
 
-.greenGradient:hover:not(:disabled) {
-	box-shadow: 0 4px 12px rgba(101, 178, 97, 0.3) !important; /* Using var(--color-accent-green) with alpha */
+.greenSolid:hover:not(:disabled) {
+	background: rgb(104, 189, 99) !important;
+	box-shadow: 0 4px 12px rgba(101, 178, 97, 0.3) !important;
 }
 
-.greenGradient svg {
+.greenSolid svg {
 	opacity: 0.9;
 }
 

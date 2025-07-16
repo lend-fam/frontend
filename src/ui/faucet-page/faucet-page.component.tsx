@@ -150,9 +150,9 @@ export const FaucetPage: FC = () => {
 										<p>Get native APE tokens from the official Caldera testnet faucet</p>
 									</div>
 									<Button
-										variant="secondary"
+										variant="primary"
 										size="medium"
-										className={`${css.externalFaucetButton} ${css.greenGradient}`}
+										className={`${css.externalFaucetButton} ${css.greenSolid}`}
 										icon={
 											<svg
 												width="16"

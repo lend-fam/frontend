@@ -3,26 +3,23 @@
 	align-items: center;
 	gap: 8px;
 	padding: 8px 16px;
-	background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-	color: var(--color-text-inversion);
+	background: var(--color-accent-green);
+	color: var(--color-white);
+	border: none;
 	border-radius: 8px;
-	text-decoration: none;
 	font-family: var(--font-text-small-family);
-	font-size: 14px; /* Keeping custom size for this component */
-	font-weight: var(--font-text-small-weight);
-	transition: all 0.2s ease;
+	font-size: 13px;
+	font-weight: var(--font-text-small-bold-weight);
+	cursor: pointer;
 	white-space: nowrap;
+	text-decoration: none;
+	outline: none;
+	user-select: none;
+	margin-right: 42px;
 }
 
 .faucetButton:hover {
-	transform: translateY(-1px);
-	box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+	background: rgb(104, 189, 99);
 }
 
-.faucetButton:active {
-	transform: translateY(0);
-}
 
-.faucetButton svg {
-	opacity: 0.9;
-}
