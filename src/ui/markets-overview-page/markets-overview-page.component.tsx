@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { Layout } from '../layout/layout.component';
-import { UnifiedMarketsTable } from '../markets-page/unified-markets-table';
+import { UnifiedMarketsTable } from '../dashboard-page/unified-markets-table';
 import { useAllMarkets, useUnderlyingTokens, useMarketEvents } from '../../hooks';
 
 import css from './markets-overview-page.module.css';

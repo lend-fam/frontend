@@ -7,7 +7,7 @@ import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { hashFn } from '@wagmi/core/query';
 import { Header } from '../header/header.component';
 import { LandingPage } from '../landing-page';
-import { MarketsPage } from '../markets-page/markets-page/markets-page.component';
+import { MarketsPage } from '../dashboard-page/markets-page/markets-page.component';
 import { MarketsOverviewPage } from '../markets-overview-page';
 import { MarketDetailPage } from '../market-detail-page';
 import { FaucetPage } from '../faucet-page/faucet-page.component';

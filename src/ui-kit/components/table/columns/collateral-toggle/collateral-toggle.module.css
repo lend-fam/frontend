@@ -86,10 +86,6 @@
     cursor: not-allowed;
 }
 
-.toggle.blocked:hover {
-    /* TODO: Add orange hover color design token */
-    background-color: #D97706;
-}
 
 .blockIcon {
     position: absolute;

@@ -1,7 +1,13 @@
 .container {
     display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
 .network {
-    margin: 0 5px;
+    transition: transform 0.3s ease;
+}
+
+.network:hover {
+    transform: scale(1.05);
 }

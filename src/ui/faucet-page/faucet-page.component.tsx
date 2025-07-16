@@ -150,7 +150,7 @@ export const FaucetPage: FC = () => {
 										<p>Get native APE tokens from the official Caldera testnet faucet</p>
 									</div>
 									<Button
-										variant="gradient"
+										variant="secondary"
 										size="medium"
 										className={`${css.externalFaucetButton} ${css.greenGradient}`}
 										icon={
@@ -200,7 +200,7 @@ export const FaucetPage: FC = () => {
 											<p>Stablecoin for testing</p>
 										</div>
 										<Button
-											variant="gradient"
+											variant="secondary"
 											size="medium"
 											className={css.mintButton}
 											onClick={() => handleMintTestToken('usdc')}
@@ -227,7 +227,7 @@ export const FaucetPage: FC = () => {
 											<p>Wrapped ETH for testing</p>
 										</div>
 										<Button
-											variant="gradient"
+											variant="secondary"
 											size="medium"
 											className={css.mintButton}
 											onClick={() => handleMintTestToken('weth')}
@@ -258,7 +258,7 @@ export const FaucetPage: FC = () => {
 										<p>NFT for testing collection-backed lending</p>
 									</div>
 									<Button
-										variant="gradient"
+										variant="secondary"
 										size="medium"
 										className={css.mintButton}
 										onClick={handleMintTestNFT}

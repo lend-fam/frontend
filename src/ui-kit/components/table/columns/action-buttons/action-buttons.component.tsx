@@ -106,23 +106,23 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
 						<Button
 							variant="secondary"
 							size="medium"
-							onClick={handleWithdraw}
-						>
-							Withdraw
-						</Button>
-						<Button
-							variant="primary"
-							size="medium"
 							onClick={handleSupply}
 							disabled={supplyButtonState.disabled}
 						>
 							{supplyButtonState.text}
 						</Button>
+						<Button
+							variant="outline"
+							size="medium"
+							onClick={handleWithdraw}
+						>
+							Withdraw
+						</Button>
 					</>
 				) : (
 					<>
 						<Button
-							variant="primary"
+							variant="secondary"
 							size="medium"
 							onClick={handleSupply}
 							disabled={supplyButtonState.disabled}
@@ -134,10 +134,8 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
 								variant="ghost"
 								size="medium"
 								onClick={handleMore}
-								className={css.moreButton}
-								aria-label="More actions"
 							>
-								...
+								Details
 							</Button>
 						)}
 					</>

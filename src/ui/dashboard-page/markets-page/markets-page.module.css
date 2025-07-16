@@ -9,6 +9,19 @@
     padding-right: 42px;
 }
 
+.topSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+}
+
+.faucetContainer {
+    display: flex;
+    align-items: center;
+    margin-top: 16px;
+}
+
 .tables {
     display: flex;
     width: 100%;

@@ -15,10 +15,16 @@
     font-weight: var(--font-heading-menu-weight);
     line-height: var(--font-heading-menu-line-height);
     margin-right: 35px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.link:hover {
+    color: var(--color-accent-miracle-1);
 }
 
 .link_active {
     color: var(--color-accent-miracle-1);
     font-family: var(--font-heading-menu-active-family);
-    font-weight: var(--font-heading-menu-active-weight);
+    /* font-weight: var(--font-heading-menu-active-weight); */
 }

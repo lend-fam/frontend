@@ -71,13 +71,6 @@ export const BorrowActionButtons: FC<BorrowActionButtonsProps> = ({
 						<Button
 							variant="secondary"
 							size="medium"
-							onClick={handleRepay}
-						>
-							Repay
-						</Button>
-						<Button
-							variant="primary"
-							size="medium"
 							onClick={handleBorrow}
 							disabled={!borrowEligibility.canBorrow}
 							title={
@@ -86,11 +79,18 @@ export const BorrowActionButtons: FC<BorrowActionButtonsProps> = ({
 						>
 							{borrowEligibility.buttonText}
 						</Button>
+						<Button
+							variant="outline"
+							size="medium"
+							onClick={handleRepay}
+						>
+							Repay
+						</Button>
 					</>
 				) : (
 					<>
 						<Button
-							variant="primary"
+							variant="secondary"
 							size="medium"
 							onClick={handleBorrow}
 							disabled={!borrowEligibility.canBorrow}

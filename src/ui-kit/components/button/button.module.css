@@ -74,7 +74,7 @@
 }
 
 .secondary {
-	background-color: var(--color-accent-apechain);
+	background-color: var(--color-accent-miracle-1);
 	color: var(--color-white);
 }
 
@@ -84,12 +84,12 @@
 
 .outline {
 	background: none;
-	border: 1px solid var(--color-accent-apechain);
-	color: var(--color-accent-apechain);
+	border: 1px solid var(--color-accent-miracle-1);
+	color: var(--color-accent-miracle-1);
 }
 
 .outline:hover:not(:disabled) {
-	background: var(--color-accent-apechain);
+	background: #2563EB;
 	color: var(--color-white);
 }
 

@@ -4,7 +4,6 @@ import { NavigationPanel } from './navigation-panel/navigation-panel.component';
 import { Logo } from './logo/logo.component';
 import { SocialNetwork } from './social-network/social-network.component';
 import { SignIn } from './sign-in/sign-in.component';
-import { FaucetButton } from './faucet-button/faucet-button.component';
 import { FlexContainer } from '../../ui-kit/components/flex-container/flex-container.component';
 
 import css from './header.module.css';
@@ -18,18 +17,19 @@ export const Header: FC = () => {
 	}
 
 	return (
-		<FlexContainer variant="spaceBetween" className={css.container}>
-			<FlexContainer variant="alignCenter" className={css.navigation}>
-				<div className={css.logo}>
-					<Logo />
-				</div>
-				<NavigationPanel />
+		<div className={css.container}>
+			<FlexContainer variant="spaceBetween" className={css.container}>
+				<FlexContainer variant="alignCenter" className={css.navigation}>
+					<div className={css.logo}>
+						<Logo />
+					</div>
+					<NavigationPanel />
+				</FlexContainer>
+				<FlexContainer variant="alignCenter" className={css.controls}>
+					<SocialNetwork />
+					<SignIn />
+				</FlexContainer>
 			</FlexContainer>
-			<FlexContainer variant="alignCenter" className={css.controls}>
-				<SocialNetwork />
-				<FaucetButton />
-				<SignIn />
-			</FlexContainer>
-		</FlexContainer>
+		</div>
 	);
 };

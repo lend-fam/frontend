@@ -180,7 +180,7 @@ const createUnifiedMarketsColumns = (
 					padding: '0 12px',
 					height: '100%',
 				}}>
-				<Button className={css.detailsButton} onClick={() => navigate(`/markets/${data.marketAddress}`)}>
+				<Button variant="ghost" size="medium" onClick={() => navigate(`/markets/${data.marketAddress}`)}>
 					Details
 				</Button>
 			</div>

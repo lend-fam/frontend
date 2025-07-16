@@ -113,7 +113,9 @@ export const YourInfoSidebar: FC<YourInfoSidebarProps> = ({
 					</div>
 					<div className={css.actionUsd}>{usdValues.supply}</div>
 					<Button
-						className={`${css.actionButton} ${css.primaryButton}`}
+						variant="secondary"
+						size="medium"
+						className={css.actionButton}
 						onClick={() => setIsSupplyModalOpen(true)}>
 						Supply
 					</Button>
@@ -131,7 +133,9 @@ export const YourInfoSidebar: FC<YourInfoSidebarProps> = ({
 					{shouldShowTooltip ? (
 						<Tooltip content="Enable your supplied assets as collateral to start borrowing" position="top">
 							<Button
-								className={`${css.actionButton} ${css.secondaryButton}`}
+								variant="outline"
+								size="medium"
+								className={css.actionButton}
 								onClick={() => setIsBorrowModalOpen(true)}
 								disabled={borrowingCapacity === 0n}>
 								Borrow
@@ -139,7 +143,9 @@ export const YourInfoSidebar: FC<YourInfoSidebarProps> = ({
 						</Tooltip>
 					) : (
 						<Button
-							className={`${css.actionButton} ${css.secondaryButton}`}
+							variant="outline"
+							size="medium"
+							className={css.actionButton}
 							onClick={() => setIsBorrowModalOpen(true)}
 							disabled={borrowingCapacity === 0n}>
 							Borrow
