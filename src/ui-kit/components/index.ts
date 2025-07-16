@@ -4,7 +4,7 @@
 
 // Base components
 export { APYDisplay } from './apy-display/apy-display.component';
-export { Button } from './button/button.component';
+export { Button, type ButtonProps, type ButtonVariant, type ButtonSize } from './button/button.component';
 export { Card } from './card/card.component';
 export { EmptyState } from './empty-state/empty-state.component';
 export { FlexContainer, type FlexVariant } from './flex-container/flex-container.component';

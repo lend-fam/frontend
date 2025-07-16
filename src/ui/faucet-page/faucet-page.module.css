@@ -168,53 +168,24 @@
 }
 
 .mintButton {
-	background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-	color: white;
-	border: none;
-	border-radius: 8px;
-	padding: 12px 24px;
-	font-size: 14px;
-	font-weight: 500;
-	cursor: pointer;
-	transition: all 0.2s ease;
+	/* Most properties moved to Button component */
 	min-width: 140px;
 }
 
-.mintButton:hover:not(:disabled) {
-	transform: translateY(-1px);
-	box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
-}
-
-.mintButton:disabled {
-	opacity: 0.6;
-	cursor: not-allowed;
-	transform: none;
-}
-
 .externalFaucetButton {
-	/* Flex properties moved to FlexContainer component */
-	gap: 8px;
-	background: linear-gradient(135deg, #059669 0%, #047857 100%);
-	color: white;
-	text-decoration: none;
-	border-radius: 8px;
-	padding: 12px 24px;
-	font-size: 14px;
-	font-weight: 500;
-	transition: all 0.2s ease;
+	/* Most properties moved to Button component */
 	min-width: 180px;
 }
 
-.externalFaucetButton:hover {
-	transform: translateY(-1px);
-	box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+.greenGradient {
+	background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
 }
 
-.externalFaucetButton:active {
-	transform: translateY(0);
+.greenGradient:hover:not(:disabled) {
+	box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3) !important;
 }
 
-.externalFaucetButton svg {
+.greenGradient svg {
 	opacity: 0.9;
 }
 

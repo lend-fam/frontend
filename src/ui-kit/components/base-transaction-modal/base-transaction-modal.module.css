@@ -98,53 +98,26 @@
 }
 
 .walletBalance {
-	display: flex;
-	align-items: center;
+	/* Flex properties moved to FlexContainer component */
 	gap: 8px;
 	color: #9ca3af;
 	font-size: 14px;
 }
 
-.maxButton {
-	background: none;
-	border: 1px solid #4b5563;
-	color: #3b82f6;
-	padding: 4px 8px;
-	border-radius: 6px;
-	font-size: 12px;
-	font-weight: 600;
-	cursor: pointer;
-	transition: all 0.2s;
-}
-
-.maxButton:hover {
-	background: #1e40af;
-	color: white;
-	border-color: #1e40af;
-}
-
 .buttonGroup {
-	display: flex;
+	/* Flex properties moved to FlexContainer component */
 	gap: 8px;
-	align-items: center;
 }
 
 .cleanDustButton {
-	background: none;
-	border: 1px solid #f59e0b;
-	color: #f59e0b;
-	padding: 4px 8px;
-	border-radius: 6px;
-	font-size: 12px;
-	font-weight: 600;
-	cursor: pointer;
-	transition: all 0.2s;
+	border-color: #f59e0b !important;
+	color: #f59e0b !important;
 }
 
 .cleanDustButton:hover {
-	background: #f59e0b;
-	color: white;
-	border-color: #f59e0b;
+	background: #f59e0b !important;
+	color: white !important;
+	border-color: #f59e0b !important;
 }
 
 .insufficientBalance {
@@ -206,27 +179,7 @@
 	font-size: 14px;
 }
 
-.submitButton {
-	background: #3b82f6;
-	color: white;
-	border: none;
-	border-radius: 12px;
-	padding: 16px;
-	font-size: 16px;
-	font-weight: 600;
-	cursor: pointer;
-	transition: all 0.2s;
-}
-
-.submitButton:hover:not(:disabled) {
-	background: #1d4ed8;
-}
-
-.submitButton:disabled {
-	background: #374151;
-	color: #6b7280;
-	cursor: not-allowed;
-}
+/* Submit button styles moved to Button component */
 
 .approvalContainer {
 	position: relative;

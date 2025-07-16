@@ -2,6 +2,8 @@ import { type FC, useState, useRef } from 'react';
 import { useAccount, useChainId } from 'wagmi';
 import type { Address } from 'viem';
 
+import { Button } from '../../../button/button.component';
+import { FlexContainer } from '../../../flex-container/flex-container.component';
 import { SupplyModal } from '../../../supply-modal/supply-modal.component';
 import { WithdrawModal } from '../../../withdraw-modal/withdraw-modal.component';
 
@@ -98,41 +100,49 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
 
 	return (
 		<>
-			<div className={css.container}>
+			<FlexContainer variant="alignCenter" className={css.container}>
 				{hasSupplied ? (
 					<>
-						<button type="button" className={css.withdrawButton} onClick={handleWithdraw}>
+						<Button
+							variant="secondary"
+							size="medium"
+							onClick={handleWithdraw}
+						>
 							Withdraw
-						</button>
-						<button
-							type="button"
-							className={css.supplyButton}
+						</Button>
+						<Button
+							variant="primary"
+							size="medium"
 							onClick={handleSupply}
-							disabled={supplyButtonState.disabled}>
+							disabled={supplyButtonState.disabled}
+						>
 							{supplyButtonState.text}
-						</button>
+						</Button>
 					</>
 				) : (
 					<>
-						<button
-							type="button"
-							className={css.supplyButton}
+						<Button
+							variant="primary"
+							size="medium"
 							onClick={handleSupply}
-							disabled={supplyButtonState.disabled}>
+							disabled={supplyButtonState.disabled}
+						>
 							{supplyButtonState.text}
-						</button>
+						</Button>
 						{showMoreMenu && (
-							<button
-								type="button"
-								className={css.moreButton}
+							<Button
+								variant="ghost"
+								size="medium"
 								onClick={handleMore}
-								aria-label="More actions">
-								<span className={css.dots}>...</span>
-							</button>
+								className={css.moreButton}
+								aria-label="More actions"
+							>
+								...
+							</Button>
 						)}
 					</>
 				)}
-			</div>
+			</FlexContainer>
 
 			<SupplyModal
 				isOpen={isSupplyModalOpen}

@@ -9,6 +9,7 @@ import { HealthFactorService, type PositionData } from '../../../services/health
 import { typedMemo } from '../../utils/typed-memo.utils';
 import { useTheme } from '../../hooks/use-theme.hook';
 import { FlexContainer } from '../flex-container/flex-container.component';
+import { Button } from '../button/button.component';
 import { useTransactionFlow } from './use-transaction-flow.hook';
 import { useUserSupplyPositions, useUserBorrowPositions } from '../../../hooks/use-user-positions.hook';
 import { useMarketsCollateralFactors } from '../../../hooks/use-market-data.hook';
@@ -652,16 +653,25 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 							<span>
 								{balanceInfo.label} {balanceInfo.value}
 							</span>
-							<div className={styles.buttonGroup}>
-								<button type="button" onClick={handleMaxClick} className={styles.maxButton}>
+							<FlexContainer variant="alignCenter" className={styles.buttonGroup}>
+								<Button
+									variant="outline"
+									size="small"
+									onClick={handleMaxClick}
+								>
 									MAX
-								</button>
+								</Button>
 								{config.type === 'repay' && isDustAmount && (
-									<button type="button" onClick={handleCleanDust} className={styles.cleanDustButton}>
+									<Button
+										variant="outline"
+										size="small"
+										onClick={handleCleanDust}
+										className={styles.cleanDustButton}
+									>
 										CLEAN DUST
-									</button>
+									</Button>
 								)}
-							</div>
+							</FlexContainer>
 						</div>
 					</div>
 				</div>
@@ -734,13 +744,16 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 					<span className={styles.gasText}>-</span>
 				</div>
 
-				<button
-					type="button"
+				<Button
+					variant="submit"
+					size="large"
 					onClick={handleSubmit}
 					disabled={!isValidAmount || transactionState.isProcessing}
-					className={styles.submitButton}>
+					loading={transactionState.isProcessing}
+					fullWidth
+				>
 					{getSubmitButtonText()}
-				</button>
+				</Button>
 			</FlexContainer>
 		</Modal>
 	);

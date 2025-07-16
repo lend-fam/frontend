@@ -7,6 +7,7 @@ import { FaucetService } from '../../services/faucet.service';
 import { TEST_TOKEN_ABI } from '../../contracts/test-token.abi';
 import { TEST_NFT_ABI } from '../../contracts/test-nft.abi';
 import { TurnstileComponent } from '../../ui-kit/components/turnstile';
+import { Button } from '../../ui-kit/components/button/button.component';
 import { Card } from '../../ui-kit/components/card/card.component';
 import { FlexContainer } from '../../ui-kit/components/flex-container/flex-container.component';
 
@@ -148,41 +149,45 @@ export const FaucetPage: FC = () => {
 										<h4>Native APE</h4>
 										<p>Get native APE tokens from the official Caldera testnet faucet</p>
 									</div>
-									<a
-										href="https://curtis.hub.caldera.xyz/"
-										target="_blank"
-										rel="noopener noreferrer"
-										className={css.externalFaucetButton}>
-										<svg
-											width="16"
-											height="16"
-											viewBox="0 0 16 16"
-											fill="none"
-											xmlns="http://www.w3.org/2000/svg">
-											<path
-												d="M12 8.5V12.5C12 13.0523 11.5523 13.5 11 13.5H3C2.44772 13.5 2 13.0523 2 12.5V4.5C2 3.94772 2.44772 3.5 3 3.5H7"
-												stroke="currentColor"
-												strokeWidth="1.5"
-												strokeLinecap="round"
-												strokeLinejoin="round"
-											/>
-											<path
-												d="M10 2.5H14V6.5"
-												stroke="currentColor"
-												strokeWidth="1.5"
-												strokeLinecap="round"
-												strokeLinejoin="round"
-											/>
-											<path
-												d="M14 2.5L8 8.5"
-												stroke="currentColor"
-												strokeWidth="1.5"
-												strokeLinecap="round"
-												strokeLinejoin="round"
-											/>
-										</svg>
+									<Button
+										variant="gradient"
+										size="medium"
+										className={`${css.externalFaucetButton} ${css.greenGradient}`}
+										icon={
+											<svg
+												width="16"
+												height="16"
+												viewBox="0 0 16 16"
+												fill="none"
+												xmlns="http://www.w3.org/2000/svg">
+												<path
+													d="M12 8.5V12.5C12 13.0523 11.5523 13.5 11 13.5H3C2.44772 13.5 2 13.0523 2 12.5V4.5C2 3.94772 2.44772 3.5 3 3.5H7"
+													stroke="currentColor"
+													strokeWidth="1.5"
+													strokeLinecap="round"
+													strokeLinejoin="round"
+												/>
+												<path
+													d="M10 2.5H14V6.5"
+													stroke="currentColor"
+													strokeWidth="1.5"
+													strokeLinecap="round"
+													strokeLinejoin="round"
+												/>
+												<path
+													d="M14 2.5L8 8.5"
+													stroke="currentColor"
+													strokeWidth="1.5"
+													strokeLinecap="round"
+													strokeLinejoin="round"
+												/>
+											</svg>
+										}
+										iconPosition="right"
+										onClick={() => window.open('https://curtis.hub.caldera.xyz/', '_blank')}
+									>
 										Open Caldera Faucet
-									</a>
+									</Button>
 								</FlexContainer>
 							</div>
 
@@ -194,12 +199,16 @@ export const FaucetPage: FC = () => {
 											<h4>Test USDC</h4>
 											<p>Stablecoin for testing</p>
 										</div>
-										<button
+										<Button
+											variant="gradient"
+											size="medium"
 											className={css.mintButton}
 											onClick={() => handleMintTestToken('usdc')}
 											disabled={
 												!captchaVerified || mintingToken === 'usdc' || isPending || isConfirming
-											}>
+											}
+											loading={mintingToken === 'usdc' && (isPending || isConfirming)}
+										>
 											{!captchaVerified
 												? 'Complete CAPTCHA First'
 												: mintingToken === 'usdc'
@@ -209,7 +218,7 @@ export const FaucetPage: FC = () => {
 															? 'Confirming...'
 															: 'Minting...'
 													: 'Mint 10000 USDC'}
-										</button>
+										</Button>
 									</div>
 
 									<div className={css.tokenCard}>
@@ -217,12 +226,16 @@ export const FaucetPage: FC = () => {
 											<h4>Test WETH</h4>
 											<p>Wrapped ETH for testing</p>
 										</div>
-										<button
+										<Button
+											variant="gradient"
+											size="medium"
 											className={css.mintButton}
 											onClick={() => handleMintTestToken('weth')}
 											disabled={
 												!captchaVerified || mintingToken === 'weth' || isPending || isConfirming
-											}>
+											}
+											loading={mintingToken === 'weth' && (isPending || isConfirming)}
+										>
 											{!captchaVerified
 												? 'Complete CAPTCHA First'
 												: mintingToken === 'weth'
@@ -232,7 +245,7 @@ export const FaucetPage: FC = () => {
 															? 'Confirming...'
 															: 'Minting...'
 													: 'Mint 10 WETH'}
-										</button>
+										</Button>
 									</div>
 								</div>
 							</div>
@@ -244,12 +257,16 @@ export const FaucetPage: FC = () => {
 										<h4>Test Collection NFT</h4>
 										<p>NFT for testing collection-backed lending</p>
 									</div>
-									<button
+									<Button
+										variant="gradient"
+										size="medium"
 										className={css.mintButton}
 										onClick={handleMintTestNFT}
 										disabled={
 											!captchaVerified || mintingToken === 'nft' || isPending || isConfirming
-										}>
+										}
+										loading={mintingToken === 'nft' && (isPending || isConfirming)}
+									>
 										{!captchaVerified
 											? 'Complete CAPTCHA First'
 											: mintingToken === 'nft'
@@ -259,7 +276,7 @@ export const FaucetPage: FC = () => {
 														? 'Confirming...'
 														: 'Minting...'
 												: 'Mint Test NFT'}
-									</button>
+									</Button>
 								</div>
 							</div>
 

@@ -1,6 +1,8 @@
 import { type FC, useState } from 'react';
 import type { Address } from 'viem';
 
+import { Button } from '../../../button/button.component';
+import { FlexContainer } from '../../../flex-container/flex-container.component';
 import { BorrowModal } from '../../../borrow-modal/borrow-modal.component';
 import { RepayModal } from '../../../repay-modal/repay-modal.component';
 import { useBorrowEligibility } from '../../../../../hooks/use-borrow-eligibility.hook';
@@ -63,41 +65,51 @@ export const BorrowActionButtons: FC<BorrowActionButtonsProps> = ({
 
 	return (
 		<>
-			<div className={css.container}>
+			<FlexContainer variant="alignCenter" className={css.container}>
 				{hasBorrowed ? (
 					<>
-						<button type="button" className={css.repayButton} onClick={handleRepay}>
+						<Button
+							variant="secondary"
+							size="medium"
+							onClick={handleRepay}
+						>
 							Repay
-						</button>
-						<button
-							type="button"
-							className={css.borrowButton}
+						</Button>
+						<Button
+							variant="primary"
+							size="medium"
 							onClick={handleBorrow}
 							disabled={!borrowEligibility.canBorrow}
 							title={
 								borrowEligibility.canBorrow ? undefined : `Cannot borrow: ${borrowEligibility.reason}`
-							}>
+							}
+						>
 							{borrowEligibility.buttonText}
-						</button>
+						</Button>
 					</>
 				) : (
 					<>
-						<button
-							type="button"
-							className={css.borrowButton}
+						<Button
+							variant="primary"
+							size="medium"
 							onClick={handleBorrow}
 							disabled={!borrowEligibility.canBorrow}
 							title={
 								borrowEligibility.canBorrow ? undefined : `Cannot borrow: ${borrowEligibility.reason}`
-							}>
+							}
+						>
 							{borrowEligibility.buttonText}
-						</button>
-						<button type="button" className={css.detailsButton} onClick={handleDetails}>
+						</Button>
+						<Button
+							variant="ghost"
+							size="medium"
+							onClick={handleDetails}
+						>
 							Details
-						</button>
+						</Button>
 					</>
 				)}
-			</div>
+			</FlexContainer>
 
 			<BorrowModal
 				isOpen={isBorrowModalOpen}

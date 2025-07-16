@@ -1,92 +1,14 @@
 .container {
-    display: flex;
-    align-items: center;
+    /* Flex properties moved to FlexContainer component */
     gap: 6px;
     justify-content: flex-end;
     width: 100%;
     min-width: 150px;
 }
 
-.supplyButton,
-.withdrawButton {
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-family: "Inter";
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border: none;
-    min-width: 60px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.supplyButton {
-    background-color: #18171E;
-    color: #FFFFFF;
-}
-
-.supplyButton:hover {
-    background-color: #2D2A3A;
-}
-
-.withdrawButton {
-    background-color: #3B82F6;
-    color: #FFFFFF;
-}
-
-.withdrawButton:hover {
-    background-color: #2563EB;
-}
-
-.supplyButton:focus,
-.withdrawButton:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
-}
-
-.supplyButton:disabled,
-.withdrawButton:disabled {
-    background-color: #E5E7EB;
-    color: #9CA3AF;
-    cursor: not-allowed;
-    opacity: 0.6;
-}
-
-.supplyButton:disabled:hover,
-.withdrawButton:disabled:hover {
-    background-color: #E5E7EB;
-}
-
 .moreButton {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     width: 32px;
+    min-width: 32px;
     height: 32px;
-    border: none;
-    border-radius: 6px;
-    background-color: #F9FAFB;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-}
-
-.moreButton:hover {
-    background-color: #F3F4F6;
-}
-
-.moreButton:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px #3B82F6;
-}
-
-.dots {
-    color: #6B7280;
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 1;
-    user-select: none;
+    justify-content: center;
 }
