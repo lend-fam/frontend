@@ -8,6 +8,7 @@ import { useTokenPrices, PriceService } from '../../../services/price.service';
 import { HealthFactorService, type PositionData } from '../../../services/health-factor.service';
 import { typedMemo } from '../../utils/typed-memo.utils';
 import { useTheme } from '../../hooks/use-theme.hook';
+import { FlexContainer } from '../flex-container/flex-container.component';
 import { useTransactionFlow } from './use-transaction-flow.hook';
 import { useUserSupplyPositions, useUserBorrowPositions } from '../../../hooks/use-user-positions.hook';
 import { useMarketsCollateralFactors } from '../../../hooks/use-market-data.hook';
@@ -518,7 +519,7 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 			isOpen={isOpen}
 			onClose={onClose}
 			title={`${config.type.charAt(0).toUpperCase() + config.type.slice(1)} ${cleanSymbol}`}>
-			<div className={styles.container}>
+			<FlexContainer variant="column" className={styles.container}>
 				<div className={styles.section}>
 					<div className={styles.sectionHeader}>
 						<label className={styles.label}>Amount</label>
@@ -740,7 +741,7 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 					className={styles.submitButton}>
 					{getSubmitButtonText()}
 				</button>
-			</div>
+			</FlexContainer>
 		</Modal>
 	);
 };

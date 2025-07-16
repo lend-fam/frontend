@@ -1,5 +1,6 @@
 import { type FC, type ReactNode, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import { FlexContainer } from '../flex-container/flex-container.component';
 
 import css from './modal.module.css';
 
@@ -42,11 +43,11 @@ export const Modal: FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
 	if (!isOpen) return null;
 
 	return createPortal(
-		<div className={css.overlay} onClick={onClose}>
+		<FlexContainer variant="center" className={css.overlay} onClick={onClose}>
 			<div className={css.modal} onClick={(e) => e.stopPropagation()}>
-				<div className={css.header}>
+				<FlexContainer variant="spaceBetween" className={css.header}>
 					{title && <h2 className={css.title}>{title}</h2>}
-					<button type="button" className={css.closeButton} onClick={onClose} aria-label="Close modal">
+					<button className={css.closeButton} onClick={onClose} aria-label="Close modal">
 						<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
 							<path
 								d="M18 6L6 18M6 6L18 18"
@@ -57,10 +58,10 @@ export const Modal: FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
 							/>
 						</svg>
 					</button>
-				</div>
+				</FlexContainer>
 				<div className={css.content}>{children}</div>
 			</div>
-		</div>,
+		</FlexContainer>,
 		document.body,
 	);
 };

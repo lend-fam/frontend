@@ -8,6 +8,7 @@ import { TEST_TOKEN_ABI } from '../../contracts/test-token.abi';
 import { TEST_NFT_ABI } from '../../contracts/test-nft.abi';
 import { TurnstileComponent } from '../../ui-kit/components/turnstile';
 import { Card } from '../../ui-kit/components/card/card.component';
+import { FlexContainer } from '../../ui-kit/components/flex-container/flex-container.component';
 
 import css from './faucet-page.module.css';
 
@@ -91,20 +92,20 @@ export const FaucetPage: FC = () => {
 	if (!isTestnet) {
 		return (
 			<Layout>
-				<div className={css.container}>
+				<FlexContainer variant="center" className={css.container}>
 					<div className={css.errorCard}>
 						<h1>Testnet Faucet</h1>
 						<p>This faucet is only available on ApeChain Testnet.</p>
 						<p>Please switch to the testnet to use this feature.</p>
 					</div>
-				</div>
+				</FlexContainer>
 			</Layout>
 		);
 	}
 
 	return (
 		<Layout>
-			<div className={css.container}>
+			<FlexContainer variant="center" className={css.container}>
 				<Card style={{ maxWidth: '800px' }}>
 					<h1>Testnet Faucet</h1>
 					<p className={css.description}>
@@ -142,7 +143,7 @@ export const FaucetPage: FC = () => {
 
 							<div className={css.mintSection}>
 								<h3>Native APE Token</h3>
-								<div className={css.nativeTokenCard}>
+								<FlexContainer variant="spaceBetween" className={css.nativeTokenCard}>
 									<div className={css.tokenInfo}>
 										<h4>Native APE</h4>
 										<p>Get native APE tokens from the official Caldera testnet faucet</p>
@@ -182,7 +183,7 @@ export const FaucetPage: FC = () => {
 										</svg>
 										Open Caldera Faucet
 									</a>
-								</div>
+								</FlexContainer>
 							</div>
 
 							<div className={css.mintSection}>
@@ -301,7 +302,7 @@ export const FaucetPage: FC = () => {
 						</div>
 					)}
 				</Card>
-			</div>
+			</FlexContainer>
 		</Layout>
 	);
 };

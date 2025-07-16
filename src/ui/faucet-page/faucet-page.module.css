@@ -1,6 +1,5 @@
 .container {
-	display: flex;
-	justify-content: center;
+	/* Flex properties moved to FlexContainer component */
 	padding: 40px 20px;
 	min-height: 80vh;
 }
@@ -120,13 +119,11 @@
 }
 
 .nativeTokenCard {
+	/* Flex properties moved to FlexContainer component */
 	background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
 	border: 2px solid #d1d5db;
 	border-radius: 12px;
 	padding: 20px;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
 	margin-bottom: 24px;
 }
 
@@ -195,8 +192,7 @@
 }
 
 .externalFaucetButton {
-	display: flex;
-	align-items: center;
+	/* Flex properties moved to FlexContainer component */
 	gap: 8px;
 	background: linear-gradient(135deg, #059669 0%, #047857 100%);
 	color: white;
@@ -207,7 +203,6 @@
 	font-weight: 500;
 	transition: all 0.2s ease;
 	min-width: 180px;
-	justify-content: center;
 }
 
 .externalFaucetButton:hover {

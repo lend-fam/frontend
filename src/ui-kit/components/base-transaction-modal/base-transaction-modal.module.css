@@ -1,18 +1,15 @@
 .container {
-	display: flex;
-	flex-direction: column;
+	/* Flex properties moved to FlexContainer component */
 	gap: 24px;
 }
 
 .section {
-	display: flex;
-	flex-direction: column;
+	/* Flex properties moved to FlexContainer component */
 	gap: 12px;
 }
 
 .sectionHeader {
-	display: flex;
-	align-items: center;
+	/* Flex properties moved to FlexContainer component */
 	gap: 8px;
 }
 
@@ -34,12 +31,11 @@
 }
 
 .inputContainer {
+	/* Flex properties moved to FlexContainer component */
 	background: #374151;
 	border: 1px solid #4b5563;
 	border-radius: 12px;
 	padding: 16px;
-	display: flex;
-	align-items: center;
 	gap: 12px;
 	transition: border-color 0.2s;
 }
@@ -64,20 +60,17 @@
 }
 
 .tokenInfo {
-	display: flex;
-	align-items: center;
+	/* Flex properties moved to FlexContainer component */
 	gap: 8px;
 	flex-shrink: 0;
 }
 
 .tokenIcon {
+	/* Flex properties moved to FlexContainer component */
 	width: 32px;
 	height: 32px;
 	border-radius: 50%;
 	background: #1f2937;
-	display: flex;
-	align-items: center;
-	justify-content: center;
 	border: 1px solid #374151;
 }
 

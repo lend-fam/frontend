@@ -1,6 +1,5 @@
 .container {
-    display: flex;
-    justify-content: space-between;
+    /* Flex properties moved to FlexContainer component */
     width: 100%;
     height: 64px;
     min-height: 64px;
@@ -9,8 +8,7 @@
 }
 
 .navigation {
-    display: flex;
-    align-items: center;
+    /* Flex properties moved to FlexContainer component */
 }
 
 .logo {
@@ -19,6 +17,5 @@
 }
 
 .controls {
-    display: flex;
-    align-items: center;
+    /* Flex properties moved to FlexContainer component */
 }
