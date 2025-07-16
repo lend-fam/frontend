@@ -346,6 +346,7 @@ const createAvailableAssetsColumns = (
 					isCollateralEnabled={data.isCollateralEnabled}
 					walletBalance={data.walletBalance}
 					showMoreMenu
+					onMoreClick={(marketAddress) => navigate(`/markets/${marketAddress}`)}
 				/>
 			</div>
 		),

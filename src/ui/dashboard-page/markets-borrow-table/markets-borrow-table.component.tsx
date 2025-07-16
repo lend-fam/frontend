@@ -117,6 +117,7 @@ const createBorrowedAssetsColumns = (
 					tokenSymbol={data.symbol}
 					borrowAPY={data.borrowAPY}
 					availableLiquidity={data.availableLiquidity}
+					onDetails={(marketAddress) => navigate(`/markets/${marketAddress}`)}
 				/>
 			</div>
 		),
@@ -198,6 +199,7 @@ const createAvailableAssetsColumns = (
 					tokenSymbol={data.symbol}
 					borrowAPY={data.borrowAPY}
 					availableLiquidity={data.availableLiquidity}
+					onDetails={(marketAddress) => navigate(`/markets/${marketAddress}`)}
 				/>
 			</div>
 		),
