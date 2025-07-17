@@ -1,4 +1,4 @@
-import { type FC, useMemo, memo, useState, useCallback } from 'react';
+import { type FC, type ComponentType, useMemo, memo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Address } from 'viem';
 import {
@@ -6,6 +6,7 @@ import {
 	type TableColumnProps,
 	type TableData,
 	type SortState,
+	type TableHeadColumnRendererProps,
 } from '../../../ui-kit/components/table/table.component';
 import { createSortableColumnRenderer } from '../../../ui-kit/components/table/sortable-table-column.component';
 import { AssetsColumn } from '../../../ui-kit/components/table/columns/assets-column/assets-column.component';
@@ -51,7 +52,9 @@ const createUnifiedMarketsColumns = (
 		label: 'Asset',
 		width: '20%',
 		sortable: true,
-		headCellRenderer: createSortableColumnRenderer('assets', 'Asset'),
+		headCellRenderer: createSortableColumnRenderer('assets' as const, 'Asset') as ComponentType<
+			TableHeadColumnRendererProps<UnifiedMarketsTableColumn>
+		>,
 		cellRenderer: ({ data, ...props }) => (
 			<AssetsColumn
 				{...props}
@@ -67,7 +70,9 @@ const createUnifiedMarketsColumns = (
 		align: 'right',
 		width: '16%',
 		sortable: true,
-		headCellRenderer: createSortableColumnRenderer('totalSupplied', 'Total supplied'),
+		headCellRenderer: createSortableColumnRenderer('totalSupplied' as const, 'Total supplied') as ComponentType<
+			TableHeadColumnRendererProps<UnifiedMarketsTableColumn>
+		>,
 		cellRenderer: ({ data, style }) => (
 			<div
 				style={{
@@ -91,7 +96,9 @@ const createUnifiedMarketsColumns = (
 		align: 'right',
 		width: '12%',
 		sortable: true,
-		headCellRenderer: createSortableColumnRenderer('supplyAPY', 'Supply APY'),
+		headCellRenderer: createSortableColumnRenderer('supplyAPY' as const, 'Supply APY') as ComponentType<
+			TableHeadColumnRendererProps<UnifiedMarketsTableColumn>
+		>,
 		cellRenderer: ({ data, style }) => (
 			<div
 				style={{
@@ -157,7 +164,9 @@ const createUnifiedMarketsColumns = (
 		align: 'right',
 		width: '16%',
 		sortable: true,
-		headCellRenderer: createSortableColumnRenderer('totalBorrowed', 'Total borrowed'),
+		headCellRenderer: createSortableColumnRenderer('totalBorrowed' as const, 'Total borrowed') as ComponentType<
+			TableHeadColumnRendererProps<UnifiedMarketsTableColumn>
+		>,
 		cellRenderer: ({ data, style }) => (
 			<div
 				style={{
@@ -181,7 +190,9 @@ const createUnifiedMarketsColumns = (
 		align: 'right',
 		width: '16%',
 		sortable: true,
-		headCellRenderer: createSortableColumnRenderer('borrowAPY', 'Borrow APY, variable'),
+		headCellRenderer: createSortableColumnRenderer('borrowAPY' as const, 'Borrow APY, variable') as ComponentType<
+			TableHeadColumnRendererProps<UnifiedMarketsTableColumn>
+		>,
 	},
 	{
 		key: 'details',

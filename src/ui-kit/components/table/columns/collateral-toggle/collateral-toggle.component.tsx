@@ -100,7 +100,7 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 		comptrollerAddress,
 		toggleCollateral,
 		borrowBalance,
-		hasOutstandingBorrows,
+		dustThreshold,
 	]);
 
 	const { refetch: manualRefetch } = useReadContract({

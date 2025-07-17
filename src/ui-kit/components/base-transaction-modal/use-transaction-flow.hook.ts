@@ -269,7 +269,7 @@ export const useTransactionFlow = ({
 
 		const isValid = amountInWei <= maxWithTolerance;
 		return isValid;
-	}, [debouncedAmount, amountInWei, maxAvailable, config.type, balance, borrowBalance]);
+	}, [debouncedAmount, amountInWei, maxAvailable, config.type, balance, borrowBalance, isMaxRepayAttempt]);
 
 	const isProcessing = isApprovePending || isApproveConfirming || isTransactionPending || isTransactionConfirming;
 
@@ -371,7 +371,6 @@ export const useTransactionFlow = ({
 		marketAddress,
 		amountInWei,
 		exchangeRate,
-		borrowBalance,
 		cTokenBalance,
 		isNativeToken,
 		isMaxRepayAttempt,

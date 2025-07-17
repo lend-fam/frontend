@@ -41,7 +41,7 @@ VITE_TURNSTILE_SITE_KEY=your_actual_site_key_here
 
 ### 5. Test the Integration
 
-1. Start your development server: `npm run dev`
+1. Start your development server: `bun run dev`
 2. Navigate to `/faucet` on testnet
 3. You should see the Turnstile widget appear
 4. Complete the verification to enable faucet buttons

@@ -276,8 +276,6 @@ export const MarketsBorrowTable: FC = () => {
 	const borrowedAssetsColumns = useMemo(() => createBorrowedAssetsColumns(navigate), [navigate]);
 	const availableAssetsColumns = useMemo(() => createAvailableAssetsColumns(navigate), [navigate]);
 
-	const userBorrowCapacity = accountLiquidity?.[1] || 0n;
-
 	const { borrowedMarketsData, availableMarketsData } = useMemo(() => {
 		if (!allMarkets || marketsLoading || apyLoading || liquidityLoading || usdLoading) {
 			return { borrowedMarketsData: [], availableMarketsData: [] };
@@ -362,7 +360,6 @@ export const MarketsBorrowTable: FC = () => {
 		accountLiquidity,
 		userAddress,
 		tokenMetadata,
-		userBorrowCapacity,
 	]);
 
 	const totalBorrowedUSD = useMemo(() => {

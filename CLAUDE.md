@@ -20,28 +20,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Frontend Development
 ```bash
 # Install dependencies
-npm install
+bun install
 
 # Start development server
-npm run dev
+bun run dev
 
 # Build for production
-npm run build
+bun run build
 
 # Preview production build
-npm run preview
+bun run preview
 
 # Lint code
-npm run lint
+bun run lint
 
 # Fix linting issues
-npm run lint:fix
+bun run lint:fix
 
 # Check code formatting
-npm run prettier
+bun run prettier
 
 # Format code
-npm run prettier:fix
+bun run prettier:fix
 ```
 
 ### TypeScript Configuration

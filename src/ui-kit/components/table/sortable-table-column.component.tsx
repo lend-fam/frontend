@@ -60,7 +60,12 @@ SortableTableColumn.displayName = '<SortableTableColumn>';
 // eslint-disable-next-line react-refresh/only-export-components
 export const createSortableColumnRenderer = <C extends string | number | symbol>(column: C, label: string) => {
 	const SortableColumnRenderer = (props: TableHeadColumnRendererProps<C>) => (
-		<SortableTableColumn {...props} column={column} label={label} />
+		<SortableTableColumn
+			{...props}
+			column={column}
+			label={label}
+			onSort={props.onSort as ((column: string | number | symbol) => void) | undefined}
+		/>
 	);
 	SortableColumnRenderer.displayName = `SortableColumnRenderer(${String(column)})`;
 	return SortableColumnRenderer;
