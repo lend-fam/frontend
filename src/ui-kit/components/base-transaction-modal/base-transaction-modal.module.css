@@ -4,12 +4,10 @@
 }
 
 .section {
-	/* Flex properties moved to FlexContainer component */
 	gap: 12px;
 }
 
 .sectionHeader {
-	/* Flex properties moved to FlexContainer component */
 	gap: 8px;
 }
 
@@ -37,7 +35,6 @@
 }
 
 .inputContainer {
-	/* Flex properties moved to FlexContainer component */
 	/* TODO: Add input background color design token */
 	background: #374151;
 	/* TODO: Add input border color design token */
@@ -72,13 +69,11 @@
 }
 
 .tokenInfo {
-	/* Flex properties moved to FlexContainer component */
 	gap: 8px;
 	flex-shrink: 0;
 }
 
 .tokenIcon {
-	/* Flex properties moved to FlexContainer component */
 	width: 32px;
 	height: 32px;
 	border-radius: 50%;
@@ -105,9 +100,7 @@
 }
 
 .balanceInfo {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+	/* Layout handled by FlexContainer */
 }
 
 .usdValue {
@@ -118,7 +111,6 @@
 }
 
 .walletBalance {
-	/* Flex properties moved to FlexContainer component */
 	gap: 8px;
 	/* TODO: Add secondary text color design token */
 	color: #9ca3af;
@@ -127,7 +119,6 @@
 }
 
 .buttonGroup {
-	/* Flex properties moved to FlexContainer component */
 	gap: 8px;
 }
 
@@ -143,8 +134,6 @@
 }
 
 .insufficientBalance {
-	display: flex;
-	align-items: center;
 	gap: 6px;
 	/* TODO: Add error color design token */
 	color: #ef4444;

@@ -521,8 +521,8 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 			onClose={onClose}
 			title={`${config.type.charAt(0).toUpperCase() + config.type.slice(1)} ${cleanSymbol}`}>
 			<FlexContainer variant="column" className={styles.container}>
-				<div className={styles.section}>
-					<div className={styles.sectionHeader}>
+				<FlexContainer variant="column" className={styles.section}>
+					<FlexContainer variant="alignCenter" className={styles.sectionHeader}>
 						<label className={styles.label}>Amount</label>
 						<div className={styles.info}>
 							<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -535,9 +535,9 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 								/>
 							</svg>
 						</div>
-					</div>
+					</FlexContainer>
 
-					<div className={styles.inputContainer}>
+					<FlexContainer variant="alignCenter" className={styles.inputContainer}>
 						<input
 							type="text"
 							value={amount}
@@ -558,13 +558,13 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 							placeholder="0.00"
 							className={styles.amountInput}
 						/>
-						<div className={styles.tokenInfo}>
-							<div className={styles.tokenIcon}>
+						<FlexContainer variant="alignCenter" className={styles.tokenInfo}>
+							<FlexContainer variant="center" className={styles.tokenIcon}>
 								<div className={styles.tokenSymbol}>{cleanSymbol.charAt(0)}</div>
-							</div>
+							</FlexContainer>
 							<span className={styles.tokenName}>{cleanSymbol}</span>
-						</div>
-					</div>
+						</FlexContainer>
+					</FlexContainer>
 
 					<div className={styles.sliderContainer}>
 						<input
@@ -625,9 +625,9 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 						</div>
 					</div>
 
-					<div className={styles.balanceInfo}>
+					<FlexContainer variant="spaceBetween" className={styles.balanceInfo}>
 						{isInsufficientBalance ? (
-							<div className={styles.insufficientBalance}>
+							<FlexContainer variant="alignCenter" className={styles.insufficientBalance}>
 								<svg width="14" height="14" viewBox="0 0 16 16" fill="none">
 									<path
 										d="M8 1L1 15H15L8 1Z"
@@ -645,11 +645,11 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 									/>
 								</svg>
 								<span>Insufficient balance</span>
-							</div>
+							</FlexContainer>
 						) : (
 							<span className={styles.usdValue}>$ {usdValue}</span>
 						)}
-						<div className={styles.walletBalance}>
+						<FlexContainer variant="alignCenter" className={styles.walletBalance}>
 							<span>
 								{balanceInfo.label} {balanceInfo.value}
 							</span>
@@ -672,12 +672,12 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 									</Button>
 								)}
 							</FlexContainer>
-						</div>
-					</div>
-				</div>
+						</FlexContainer>
+					</FlexContainer>
+				</FlexContainer>
 
 				{config.requiresApproval && (
-					<div className={styles.section}>
+					<FlexContainer variant="column" className={styles.section}>
 						<h3 className={styles.sectionTitle}>Approval Settings</h3>
 						<div className={styles.approvalContainer}>
 							<div className={styles.approvalOption}>
@@ -710,11 +710,11 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 								</div>
 							</div>
 						</div>
-					</div>
+					</FlexContainer>
 				)}
 
 				{overviewRows.length > 0 && (
-					<div className={styles.section}>
+					<FlexContainer variant="column" className={styles.section}>
 						<h3 className={styles.sectionTitle}>Transaction overview</h3>
 						<div className={styles.overviewContainer}>
 							{overviewRows.map((row, index) => (
@@ -726,7 +726,7 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 								</div>
 							))}
 						</div>
-					</div>
+					</FlexContainer>
 				)}
 
 				<div className={styles.gasSection}>

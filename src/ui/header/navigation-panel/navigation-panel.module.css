@@ -21,6 +21,7 @@
 
 .link:hover {
     color: var(--color-accent-miracle-1);
+    transform: scale(1.05);
 }
 
 .link_active {
