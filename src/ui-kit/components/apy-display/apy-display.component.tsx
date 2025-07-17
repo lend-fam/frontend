@@ -17,10 +17,7 @@ export const APYDisplay = typedMemo((props: APYDisplayProps) => {
 	const theme = useTheme(css, propsTheme);
 
 	return (
-		<div 
-			{...restProps}
-			className={`${theme.container} ${className || ''}`}
-		>
+		<div {...restProps} className={`${theme.container} ${className || ''}`}>
 			<div className={theme.apy}>{apy}</div>
 			{children}
 		</div>

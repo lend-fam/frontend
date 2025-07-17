@@ -1,0 +1,86 @@
+.container {
+	padding: 0;
+}
+
+
+.metricsGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+	gap: 24px;
+	margin-bottom: 32px;
+}
+
+.metricItem {
+	text-align: center;
+}
+
+.metricLabel {
+	font-family: 'Inter', sans-serif;
+	font-size: 14px;
+	font-weight: 500;
+	color: var(--color-text-secondary);
+	margin-bottom: 8px;
+}
+
+.metricValue {
+	font-family: 'Montserrat', sans-serif;
+	font-size: 24px;
+	font-weight: 600;
+	color: var(--color-text-default);
+	margin-bottom: 8px;
+}
+
+.metricDescription {
+	font-family: 'Inter', sans-serif;
+	font-size: 12px;
+	font-weight: 400;
+	color: var(--color-text-secondary);
+	line-height: 1.4;
+}
+
+.formulaSection {
+	border-top: 1px solid var(--color-border-default);
+	padding-top: 24px;
+}
+
+
+.formulaContainer {
+	background: #f8f9fa;
+	border-radius: 8px;
+	padding: 16px;
+	margin-bottom: 12px;
+}
+
+.formula {
+	font-family: 'Monaco', 'Menlo', monospace;
+	font-size: 16px;
+	font-weight: 500;
+	color: var(--color-text-default);
+	text-align: center;
+}
+
+.formulaDescription {
+	font-family: 'Inter', sans-serif;
+	font-size: 14px;
+	font-weight: 400;
+	color: var(--color-text-secondary);
+	text-align: center;
+}
+
+.formulaDescription code {
+	font-family: 'Monaco', 'Menlo', monospace;
+	background: #f0f0f0;
+	padding: 2px 4px;
+	border-radius: 4px;
+	font-size: 12px;
+}
+
+@media (max-width: 768px) {
+	.container {
+		padding: 0;
+	}
+	
+	.metricsGrid {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}

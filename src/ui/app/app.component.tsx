@@ -11,6 +11,8 @@ import { MarketsPage } from '../dashboard-page/markets-page/markets-page.compone
 import { MarketsOverviewPage } from '../markets-overview-page';
 import { MarketDetailPage } from '../market-detail-page';
 import { FaucetPage } from '../faucet-page/faucet-page.component';
+import { CollectionsPage } from '../collections-page';
+import { CollectionDetailPage } from '../collection-detail-page';
 import { Footer } from '../footer/footer.component';
 import { wagmiConfig } from '../../config/wagmi.config';
 import { TransactionProvider } from '../../contexts/transaction.context';
@@ -38,18 +40,22 @@ export const App: FC = () => {
 						<DesignThemeProvider>
 							<TransactionProvider>
 								<div className={css.container}>
-								<Header />
-								<Routes>
-									<Route path="/" element={<LandingPage />} />
-									<Route path="/dashboard" element={<MarketsPage />} />
-									<Route path="/markets" element={<MarketsOverviewPage />} />
-									<Route path="/markets/:marketAddress" element={<MarketDetailPage />} />
-									<Route path="/collections" element={<MarketsPage />} />
-									<Route path="/profile" element={<MarketsPage />} />
-									<Route path="/faucet" element={<FaucetPage />} />
-								</Routes>
-								<Footer />
-							</div>
+									<Header />
+									<Routes>
+										<Route path="/" element={<LandingPage />} />
+										<Route path="/dashboard" element={<MarketsPage />} />
+										<Route path="/markets" element={<MarketsOverviewPage />} />
+										<Route path="/markets/:marketAddress" element={<MarketDetailPage />} />
+										<Route path="/collections" element={<CollectionsPage />} />
+										<Route
+											path="/collections/:collectionAddress"
+											element={<CollectionDetailPage />}
+										/>
+										<Route path="/profile" element={<MarketsPage />} />
+										<Route path="/faucet" element={<FaucetPage />} />
+									</Routes>
+									<Footer />
+								</div>
 								<ReactQueryDevtools initialIsOpen={false} />
 							</TransactionProvider>
 						</DesignThemeProvider>

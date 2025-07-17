@@ -3,14 +3,14 @@ import { typedMemo } from '../../utils/typed-memo.utils';
 import { useTheme } from '../../hooks/use-theme.hook';
 import css from './flex-container.module.css';
 
-export type FlexVariant = 
-	| 'center'        // Center everything
-	| 'spaceBetween'  // Space between with center alignment
-	| 'column'        // Column layout
-	| 'alignEnd'      // Align to the end horizontally
-	| 'alignCenter'   // Center align items
-	| 'columnCenter'  // Column with center alignment
-	| 'columnEnd';    // Column with end alignment
+export type FlexVariant =
+	| 'center' // Center everything
+	| 'spaceBetween' // Space between with center alignment
+	| 'column' // Column layout
+	| 'alignEnd' // Align to the end horizontally
+	| 'alignCenter' // Center align items
+	| 'columnCenter' // Column with center alignment
+	| 'columnEnd'; // Column with end alignment
 
 interface FlexContainerProps extends PropsWithChildren<HTMLAttributes<HTMLDivElement>> {
 	/** Predefined flex variant */
@@ -30,8 +30,8 @@ interface FlexContainerProps extends PropsWithChildren<HTMLAttributes<HTMLDivEle
 }
 
 export const FlexContainer = typedMemo((props: FlexContainerProps) => {
-	const { 
-		children, 
+	const {
+		children,
 		variant,
 		direction,
 		justify,
@@ -41,9 +41,9 @@ export const FlexContainer = typedMemo((props: FlexContainerProps) => {
 		theme: propsTheme,
 		className,
 		style,
-		...restProps 
+		...restProps
 	} = props;
-	
+
 	const theme = useTheme(css, propsTheme);
 
 	// Get variant class name
@@ -60,11 +60,7 @@ export const FlexContainer = typedMemo((props: FlexContainerProps) => {
 	};
 
 	return (
-		<div 
-			{...restProps}
-			className={`${theme.container} ${variantClassName} ${className || ''}`}
-			style={customStyle}
-		>
+		<div {...restProps} className={`${theme.container} ${variantClassName} ${className || ''}`} style={customStyle}>
 			{children}
 		</div>
 	);

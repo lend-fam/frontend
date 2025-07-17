@@ -15,10 +15,7 @@ export const FaucetButton: FC = () => {
 	}
 
 	return (
-		<button
-			className={css.faucetButton}
-			onClick={() => navigate('/faucet')}
-		>
+		<button className={css.faucetButton} onClick={() => navigate('/faucet')}>
 			Testnet Faucet
 		</button>
 	);

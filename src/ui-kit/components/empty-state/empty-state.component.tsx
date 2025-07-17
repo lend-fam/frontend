@@ -15,10 +15,7 @@ export const EmptyState = typedMemo((props: EmptyStateProps) => {
 	const theme = useTheme(css, propsTheme);
 
 	return (
-		<div 
-			{...restProps}
-			className={`${theme.container} ${className || ''}`}
-		>
+		<div {...restProps} className={`${theme.container} ${className || ''}`}>
 			{message}
 		</div>
 	);

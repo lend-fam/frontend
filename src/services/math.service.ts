@@ -13,11 +13,7 @@ export class MathService {
 	 * @param cacheKey - Cache key for memoization
 	 * @returns APY as formatted percentage string
 	 */
-	static calculateAPYFromBlockRate(
-		ratePerBlock: bigint,
-		cache?: Map<string, string>,
-		cacheKey?: string
-	): string {
+	static calculateAPYFromBlockRate(ratePerBlock: bigint, cache?: Map<string, string>, cacheKey?: string): string {
 		if (ratePerBlock === 0n) return '0.00';
 
 		// Check cache if provided
@@ -138,7 +134,7 @@ export class MathService {
 		yield1: string,
 		yield2: string,
 		yield1Label: T,
-		yield2Label: U
+		yield2Label: U,
 	): {
 		better: T | U | 'equal';
 		difference: string;
@@ -175,7 +171,10 @@ export class MathService {
 		const remainingLiquidity = accountLiquidity - borrowAmountUSD;
 		if (remainingLiquidity <= 0n) return 0;
 
-		return Number(formatUnits(remainingLiquidity, FORMATTING_THRESHOLDS.DEFAULT_DECIMALS)) / Number(formatUnits(borrowAmountUSD, FORMATTING_THRESHOLDS.DEFAULT_DECIMALS));
+		return (
+			Number(formatUnits(remainingLiquidity, FORMATTING_THRESHOLDS.DEFAULT_DECIMALS)) /
+			Number(formatUnits(borrowAmountUSD, FORMATTING_THRESHOLDS.DEFAULT_DECIMALS))
+		);
 	}
 
 	/**
@@ -185,7 +184,11 @@ export class MathService {
 	 * @param safetyThreshold - Safety threshold (default 1.1 = 110%)
 	 * @returns true if the borrow is safe
 	 */
-	static isBorrowSafe(accountLiquidity: bigint, borrowAmountUSD: bigint, safetyThreshold: number = SAFETY_THRESHOLDS.DEFAULT_HEALTH_FACTOR): boolean {
+	static isBorrowSafe(
+		accountLiquidity: bigint,
+		borrowAmountUSD: bigint,
+		safetyThreshold: number = SAFETY_THRESHOLDS.DEFAULT_HEALTH_FACTOR,
+	): boolean {
 		const healthFactor = this.calculateHealthFactor(accountLiquidity, borrowAmountUSD);
 		return healthFactor >= safetyThreshold;
 	}
@@ -211,7 +214,7 @@ export class MathService {
 		accountLiquidity: bigint,
 		marketLiquidity: bigint,
 		borrowCap: bigint = 0n,
-		totalBorrows: bigint = 0n
+		totalBorrows: bigint = 0n,
 	): bigint {
 		// Start with the minimum of account liquidity and market liquidity
 		let maxBorrow = accountLiquidity < marketLiquidity ? accountLiquidity : marketLiquidity;

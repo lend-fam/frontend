@@ -23,25 +23,20 @@ export const NativeYieldBadge = typedMemo((props: NativeYieldBadgeProps) => {
 						<strong>🦍</strong>
 					</div>
 					<div className={theme.description}>
-						ApeChain&apos;s built-in yield feature that automatically earns you additional APY
-						on your APE token holdings.
+						ApeChain&apos;s built-in yield feature that automatically earns you additional APY on your APE
+						token holdings.
 					</div>
 					<a
 						href="https://docs.apechain.com/apecoin-staking/native-yield/Overview"
 						target="_blank"
 						rel="noopener noreferrer"
-						className={theme.learnMoreLink}
-					>
+						className={theme.learnMoreLink}>
 						Learn more about Native Yield →
 					</a>
 				</div>
 			}
-			position="top"
-		>
-			<div 
-				{...restProps}
-				className={`${theme.badge} ${className || ''}`}
-			>
+			position="top">
+			<div {...restProps} className={`${theme.badge} ${className || ''}`}>
 				{apy} 🦍
 			</div>
 		</Tooltip>

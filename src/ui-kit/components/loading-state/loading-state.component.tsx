@@ -13,21 +13,18 @@ interface LoadingStateProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const LoadingState = typedMemo((props: LoadingStateProps) => {
-	const { 
-		title, 
-		message = 'Fetching markets from blockchain...', 
+	const {
+		title,
+		message = 'Fetching markets from blockchain...',
 		theme: propsTheme,
 		className,
-		...restProps 
+		...restProps
 	} = props;
-	
+
 	const theme = useTheme(css, propsTheme);
 
 	return (
-		<div 
-			{...restProps}
-			className={`${theme.container} ${className || ''}`}
-		>
+		<div {...restProps} className={`${theme.container} ${className || ''}`}>
 			<p className={theme.title}>{title}</p>
 			<div className={theme.message}>{message}</div>
 		</div>

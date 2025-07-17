@@ -19,7 +19,11 @@ export { SectionHeader, type SectionHeaderVariant } from './section-header/secti
 // Table components
 export { Table, type TableData, type TableColumnProps, type TableColumnRendererProps } from './table/table.component';
 export { TableColumn, type TableAlign } from './table/table-column.component';
-export { TableCellContainer, type TableCellAlignment, type TableCellDirection } from './table-cell-container/table-cell-container.component';
+export {
+	TableCellContainer,
+	type TableCellAlignment,
+	type TableCellDirection,
+} from './table-cell-container/table-cell-container.component';
 
 // Action button components
 export { ActionButtonGroup } from './action-button-group/action-button-group.component';

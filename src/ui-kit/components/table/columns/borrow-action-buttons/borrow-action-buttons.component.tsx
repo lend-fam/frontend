@@ -75,15 +75,10 @@ export const BorrowActionButtons: FC<BorrowActionButtonsProps> = ({
 							disabled={!borrowEligibility.canBorrow}
 							title={
 								borrowEligibility.canBorrow ? undefined : `Cannot borrow: ${borrowEligibility.reason}`
-							}
-						>
+							}>
 							{borrowEligibility.buttonText}
 						</Button>
-						<Button
-							variant="outline"
-							size="medium"
-							onClick={handleRepay}
-						>
+						<Button variant="outline" size="medium" onClick={handleRepay}>
 							Repay
 						</Button>
 					</>
@@ -96,15 +91,10 @@ export const BorrowActionButtons: FC<BorrowActionButtonsProps> = ({
 							disabled={!borrowEligibility.canBorrow}
 							title={
 								borrowEligibility.canBorrow ? undefined : `Cannot borrow: ${borrowEligibility.reason}`
-							}
-						>
+							}>
 							{borrowEligibility.buttonText}
 						</Button>
-						<Button
-							variant="ghost"
-							size="medium"
-							onClick={handleDetails}
-						>
+						<Button variant="ghost" size="medium" onClick={handleDetails}>
 							Details
 						</Button>
 					</>

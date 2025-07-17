@@ -159,9 +159,7 @@ export const ReserveStatusSection: FC<ReserveStatusSectionProps> = ({
 								<div className={css.progressSubtext}>
 									<div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
 										<div>Supply APY: {parseFloat(apyData.supplyAPY) || 0}%</div>
-										{hasNativeYield && nativeYieldAPY && (
-											<NativeYieldBadge apy={nativeYieldAPY} />
-										)}
+										{hasNativeYield && nativeYieldAPY && <NativeYieldBadge apy={nativeYieldAPY} />}
 									</div>
 								</div>
 							</div>

@@ -184,8 +184,7 @@ export const FaucetPage: FC = () => {
 											</svg>
 										}
 										iconPosition="right"
-										onClick={() => window.open('https://curtis.hub.caldera.xyz/', '_blank')}
-									>
+										onClick={() => window.open('https://curtis.hub.caldera.xyz/', '_blank')}>
 										Open Caldera Faucet
 									</Button>
 								</FlexContainer>
@@ -207,8 +206,7 @@ export const FaucetPage: FC = () => {
 											disabled={
 												!captchaVerified || mintingToken === 'usdc' || isPending || isConfirming
 											}
-											loading={mintingToken === 'usdc' && (isPending || isConfirming)}
-										>
+											loading={mintingToken === 'usdc' && (isPending || isConfirming)}>
 											{!captchaVerified
 												? 'Complete CAPTCHA First'
 												: mintingToken === 'usdc'
@@ -234,8 +232,7 @@ export const FaucetPage: FC = () => {
 											disabled={
 												!captchaVerified || mintingToken === 'weth' || isPending || isConfirming
 											}
-											loading={mintingToken === 'weth' && (isPending || isConfirming)}
-										>
+											loading={mintingToken === 'weth' && (isPending || isConfirming)}>
 											{!captchaVerified
 												? 'Complete CAPTCHA First'
 												: mintingToken === 'weth'
@@ -265,8 +262,7 @@ export const FaucetPage: FC = () => {
 										disabled={
 											!captchaVerified || mintingToken === 'nft' || isPending || isConfirming
 										}
-										loading={mintingToken === 'nft' && (isPending || isConfirming)}
-									>
+										loading={mintingToken === 'nft' && (isPending || isConfirming)}>
 										{!captchaVerified
 											? 'Complete CAPTCHA First'
 											: mintingToken === 'nft'

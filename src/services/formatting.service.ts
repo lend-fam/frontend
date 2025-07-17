@@ -26,14 +26,19 @@ export class FormattingService {
 	 * @param symbol - Token symbol
 	 * @returns Formatted token balance string
 	 */
-	static formatTokenBalance(balance: bigint, decimals: number = FORMATTING_THRESHOLDS.DEFAULT_DECIMALS, symbol: string = ''): string {
+	static formatTokenBalance(
+		balance: bigint,
+		decimals: number = FORMATTING_THRESHOLDS.DEFAULT_DECIMALS,
+		symbol: string = '',
+	): string {
 		const formatted = formatUnits(balance, decimals);
 		const number = parseFloat(formatted);
 
 		if (number === 0 || number < FORMATTING_THRESHOLDS.MIN_DISPLAY_VALUE) return `0 ${symbol}`.trim();
 		if (number < FORMATTING_THRESHOLDS.MIN_CURRENCY_VALUE) return `<0.01 ${symbol}`.trim();
 		if (number < 1) return `${number.toFixed(FORMATTING_THRESHOLDS.PRECISE_DECIMALS)} ${symbol}`.trim();
-		if (number < FORMATTING_THRESHOLDS.COMPACT_THRESHOLD) return `${number.toFixed(FORMATTING_THRESHOLDS.CURRENCY_DECIMALS)} ${symbol}`.trim();
+		if (number < FORMATTING_THRESHOLDS.COMPACT_THRESHOLD)
+			return `${number.toFixed(FORMATTING_THRESHOLDS.CURRENCY_DECIMALS)} ${symbol}`.trim();
 
 		const formatter = new Intl.NumberFormat('en-US', DISPLAY_FORMATS.COMPACT);
 

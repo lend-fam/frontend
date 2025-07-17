@@ -170,7 +170,7 @@ export const InterestRateModelSection: FC<InterestRateModelSectionProps> = ({ ma
 
 	return (
 		<Card style={{ minHeight: '300px' }}>
-			<SectionHeader 
+			<SectionHeader
 				title={`Interest rate model (${interestRateMetrics.modelType})`}
 				variant="main"
 				action={<button className={css.strategyButton}>Interest Rate Strategy</button>}

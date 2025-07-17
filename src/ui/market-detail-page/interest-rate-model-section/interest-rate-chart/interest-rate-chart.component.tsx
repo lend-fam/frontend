@@ -115,7 +115,6 @@ export const InterestRateChart: FC<InterestRateChartProps> = ({
 			viewBox={`0 0 ${width} ${height}`}
 			preserveAspectRatio="xMidYMid meet"
 			style={{ display: 'block', maxWidth: '100%', maxHeight: '100%' }}>
-
 			{/* Subtle grid lines - horizontal */}
 			{[dynamicMaxAPY * 0.25, dynamicMaxAPY * 0.5, dynamicMaxAPY * 0.75].map((rate) => (
 				<line

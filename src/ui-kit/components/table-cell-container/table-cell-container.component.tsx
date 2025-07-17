@@ -20,18 +20,18 @@ interface TableCellContainerProps extends PropsWithChildren<HTMLAttributes<HTMLD
 }
 
 export const TableCellContainer = typedMemo((props: TableCellContainerProps) => {
-	const { 
-		children, 
-		align = 'right', 
+	const {
+		children,
+		align = 'right',
 		direction = 'row',
 		gap,
 		padding = '0 12px',
 		theme: propsTheme,
 		className,
 		style,
-		...restProps 
+		...restProps
 	} = props;
-	
+
 	const theme = useTheme(css, propsTheme);
 
 	// Build class names based on props
@@ -39,8 +39,10 @@ export const TableCellContainer = typedMemo((props: TableCellContainerProps) => 
 		theme.container,
 		theme[direction as keyof typeof theme],
 		theme[align as keyof typeof theme],
-		className
-	].filter(Boolean).join(' ');
+		className,
+	]
+		.filter(Boolean)
+		.join(' ');
 
 	// Custom style overrides
 	const customStyle: CSSProperties = {
@@ -50,11 +52,7 @@ export const TableCellContainer = typedMemo((props: TableCellContainerProps) => 
 	};
 
 	return (
-		<div 
-			{...restProps}
-			className={containerClasses}
-			style={customStyle}
-		>
+		<div {...restProps} className={containerClasses} style={customStyle}>
 			{children}
 		</div>
 	);

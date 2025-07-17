@@ -19,16 +19,8 @@ interface SectionHeaderProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 export const SectionHeader = typedMemo((props: SectionHeaderProps) => {
-	const { 
-		title, 
-		subtitle, 
-		action, 
-		variant = 'main', 
-		theme: propsTheme, 
-		className,
-		...restProps 
-	} = props;
-	
+	const { title, subtitle, action, variant = 'main', theme: propsTheme, className, ...restProps } = props;
+
 	const theme = useTheme(css, propsTheme);
 
 	// Get variant classes

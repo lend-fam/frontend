@@ -654,11 +654,7 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 								{balanceInfo.label} {balanceInfo.value}
 							</span>
 							<FlexContainer variant="alignCenter" className={styles.buttonGroup}>
-								<Button
-									variant="outline"
-									size="small"
-									onClick={handleMaxClick}
-								>
+								<Button variant="outline" size="small" onClick={handleMaxClick}>
 									MAX
 								</Button>
 								{config.type === 'repay' && isDustAmount && (
@@ -666,8 +662,7 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 										variant="outline"
 										size="small"
 										onClick={handleCleanDust}
-										className={styles.cleanDustButton}
-									>
+										className={styles.cleanDustButton}>
 										CLEAN DUST
 									</Button>
 								)}
@@ -750,8 +745,7 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 					onClick={handleSubmit}
 					disabled={!isValidAmount || transactionState.isProcessing}
 					loading={transactionState.isProcessing}
-					fullWidth
-				>
+					fullWidth>
 					{getSubmitButtonText()}
 				</Button>
 			</FlexContainer>

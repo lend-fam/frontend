@@ -18,15 +18,8 @@ interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export const IconButton = typedMemo((props: IconButtonProps) => {
-	const { 
-		variant = 'icon',
-		size = 'medium',
-		children,
-		theme: propsTheme,
-		className,
-		...restProps 
-	} = props;
-	
+	const { variant = 'icon', size = 'medium', children, theme: propsTheme, className, ...restProps } = props;
+
 	const theme = useTheme(css, propsTheme);
 
 	// Build class names based on props
@@ -34,14 +27,13 @@ export const IconButton = typedMemo((props: IconButtonProps) => {
 		theme.button,
 		theme[variant as keyof typeof theme],
 		theme[size as keyof typeof theme],
-		className
-	].filter(Boolean).join(' ');
+		className,
+	]
+		.filter(Boolean)
+		.join(' ');
 
 	return (
-		<button 
-			{...restProps}
-			className={buttonClasses}
-		>
+		<button {...restProps} className={buttonClasses}>
 			{children}
 		</button>
 	);

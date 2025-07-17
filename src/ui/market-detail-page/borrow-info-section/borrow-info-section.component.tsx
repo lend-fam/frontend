@@ -26,7 +26,6 @@ interface BorrowInfoSectionProps {
 }
 
 export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({ symbol, marketData, apyData, liquidityData }) => {
-
 	const borrowMetrics = useMemo(() => {
 		const totalBorrowedTokens = Number(formatUnits(marketData.totalBorrows, 18));
 		const availableToBorrow = liquidityData ? Number(formatUnits(liquidityData, 18)) : 0;
@@ -119,7 +118,6 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({ symbol, marketDa
 					<div className={css.apySection}>
 						<div className={css.apyLabel}>APY, variable</div>
 						<div className={css.apyValue}>{parseFloat(apyData.borrowAPY) || 0}%</div>
-
 
 						<div className={css.apySubtext}>
 							Available:{' '}

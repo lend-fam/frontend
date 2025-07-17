@@ -25,11 +25,7 @@ export const Card = typedMemo((props: CardProps) => {
 	};
 
 	return (
-		<div 
-			{...restProps}
-			className={`${theme.container} ${className || ''}`}
-			style={cardStyle}
-		>
+		<div {...restProps} className={`${theme.container} ${className || ''}`} style={cardStyle}>
 			{children}
 		</div>
 	);

@@ -20,8 +20,7 @@ export const SignIn: FC = () => {
 									pointerEvents: 'none',
 									userSelect: 'none',
 								},
-							})}
-						>
+							})}>
 							{(() => {
 								if (!connected) {
 									return (
@@ -41,7 +40,9 @@ export const SignIn: FC = () => {
 
 								return (
 									<button onClick={openAccountModal} type="button" className={css.connectButton}>
-										{account.address ? `${account.address.slice(0, 4)}...${account.address.slice(-5)}` : account.displayName}
+										{account.address
+											? `${account.address.slice(0, 4)}...${account.address.slice(-5)}`
+											: account.displayName}
 									</button>
 								);
 							})()}
