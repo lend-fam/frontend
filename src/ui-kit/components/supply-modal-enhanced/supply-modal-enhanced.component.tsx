@@ -1,4 +1,4 @@
-import { type FC, useState, useMemo, useEffect, useCallback } from 'react';
+import { type FC, useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import type { Address } from 'viem';
 import { useAccount, useBalance, useReadContract } from 'wagmi';
 import { useQueryClient } from '@tanstack/react-query';
@@ -35,6 +35,11 @@ export const SupplyModalEnhanced: FC<SupplyModalEnhancedProps> = ({
 	const queryClient = useQueryClient();
 	const { addTransaction } = useTransactionContext();
 	const { data: tokenMetadata } = useTokenMetadata([marketAddress]);
+
+	// Slider state
+	const sliderRef = useRef<HTMLInputElement>(null);
+	const isDraggingRef = useRef(false);
+	const [sliderValue, setSliderValue] = useState(0);
 
 	const { data: underlyingTokenAddress } = useReadContract({
 		address: marketAddress,
@@ -83,6 +88,47 @@ export const SupplyModalEnhanced: FC<SupplyModalEnhancedProps> = ({
 		return amountInWei > 0n && amountInWei <= balance.value;
 	}, [amount, balance, amountInWei]);
 
+	// Slider functions
+	const calculatePercentage = useCallback(
+		(inputAmount: string): number => {
+			if (!inputAmount || !tokenDecimals || inputAmount === '0' || inputAmount === '') {
+				return 0;
+			}
+
+			try {
+				const pureNumber = parseFloat(inputAmount.replace(/,/g, ''));
+				if (isNaN(pureNumber) || !balance) return 0;
+
+				const amountInWei = parseUnits(pureNumber.toString(), tokenDecimals);
+				const maxBalance = balance.value;
+
+				if (maxBalance === 0n) return 0;
+
+				const percentage = (Number(amountInWei) / Number(maxBalance)) * 100;
+				return Math.min(100, Math.max(0, Math.round(percentage)));
+			} catch {
+				return 0;
+			}
+		},
+		[tokenDecimals, balance],
+	);
+
+	const calculateAmountFromPercentage = useCallback(
+		(percentage: number): string => {
+			if (!tokenDecimals || !balance) return '0';
+
+			const maxBalance = balance.value;
+			if (maxBalance === 0n) return '0';
+
+			const targetAmount = (maxBalance * BigInt(percentage)) / 100n;
+			const pureNumber = formatUnits(targetAmount, tokenDecimals);
+			const numericValue = parseFloat(pureNumber);
+
+			return numericValue.toFixed(Math.min(8, tokenDecimals));
+		},
+		[tokenDecimals, balance],
+	);
+
 	const tracker = useApprovalTransaction({
 		tokenAddress: underlyingTokenAddress,
 		spenderAddress: marketAddress,
@@ -106,6 +152,48 @@ export const SupplyModalEnhanced: FC<SupplyModalEnhancedProps> = ({
 			resetTracker();
 		}
 	}, [isOpen, resetTracker]);
+
+	// Slider sync effects
+	useEffect(() => {
+		if (!isDraggingRef.current) {
+			const newPercentage = calculatePercentage(amount);
+			setSliderValue(newPercentage);
+
+			if (sliderRef.current) {
+				sliderRef.current.value = newPercentage.toString();
+				sliderRef.current.style.setProperty('--fill-percent', `${newPercentage}%`);
+			}
+		}
+	}, [amount, calculatePercentage]);
+
+	useEffect(() => {
+		if (!isOpen) {
+			isDraggingRef.current = false;
+			setSliderValue(0);
+			if (sliderRef.current) {
+				sliderRef.current.value = '0';
+				sliderRef.current.style.setProperty('--fill-percent', '0%');
+			}
+		}
+	}, [isOpen]);
+
+	useEffect(() => {
+		const handleGlobalMouseUp = () => {
+			isDraggingRef.current = false;
+		};
+
+		const handleGlobalTouchEnd = () => {
+			isDraggingRef.current = false;
+		};
+
+		document.addEventListener('mouseup', handleGlobalMouseUp);
+		document.addEventListener('touchend', handleGlobalTouchEnd);
+
+		return () => {
+			document.removeEventListener('mouseup', handleGlobalMouseUp);
+			document.removeEventListener('touchend', handleGlobalTouchEnd);
+		};
+	}, []);
 
 	const handleMaxClick = () => {
 		if (balance && tokenDecimals) {
@@ -267,6 +355,67 @@ export const SupplyModalEnhanced: FC<SupplyModalEnhancedProps> = ({
 								disabled={tracker.isProcessing}>
 								MAX
 							</button>
+						</div>
+					</div>
+
+					<div className={css.sliderContainer}>
+						<input
+							ref={sliderRef}
+							type="range"
+							min="0"
+							max="100"
+							defaultValue={sliderValue}
+							style={
+								{
+									'--fill-percent': `${sliderValue}%`,
+								} as React.CSSProperties
+							}
+							onMouseDown={() => {
+								isDraggingRef.current = true;
+							}}
+							onMouseUp={() => {
+								isDraggingRef.current = false;
+							}}
+							onTouchStart={() => {
+								isDraggingRef.current = true;
+							}}
+							onTouchEnd={() => {
+								isDraggingRef.current = false;
+							}}
+							onChange={(e) => {
+								const percentage = parseInt(e.target.value);
+								setSliderValue(percentage);
+
+								if (sliderRef.current) {
+									sliderRef.current.style.setProperty('--fill-percent', `${percentage}%`);
+								}
+
+								const newAmount = calculateAmountFromPercentage(percentage);
+								setAmount(newAmount);
+							}}
+							className={css.percentageSlider}
+							disabled={tracker.isProcessing}
+						/>
+						<div className={css.sliderLabels}>
+							{[0, 25, 50, 75, 100].map((percentage) => (
+								<button
+									key={percentage}
+									type="button"
+									onClick={() => {
+										setSliderValue(percentage);
+										if (sliderRef.current) {
+											sliderRef.current.value = percentage.toString();
+											sliderRef.current.style.setProperty('--fill-percent', `${percentage}%`);
+										}
+										const newAmount =
+											percentage === 0 ? '0' : calculateAmountFromPercentage(percentage);
+										setAmount(newAmount);
+									}}
+									className={css.percentageLabel}
+									disabled={tracker.isProcessing}>
+									{percentage}%
+								</button>
+							))}
 						</div>
 					</div>
 				</div>

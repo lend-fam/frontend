@@ -1,12 +1,13 @@
-import { type FC } from 'react';
-import { useParams } from 'react-router-dom';
+import { type FC, useState } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import type { Address } from 'viem';
 import { Layout } from '../layout/layout.component';
 import { CollectionHeader } from './collection-header/collection-header.component';
 import { CollectionMetricsSection } from './collection-metrics-section/collection-metrics-section.component';
 import { VaultInfoSection } from './vault-info-section/vault-info-section.component';
 import { YieldConfigSection } from './yield-config-section/yield-config-section.component';
-import { ManagementSection } from './management-section/management-section.component';
+import { VaultFormsSection } from './vault-forms-section/vault-forms-section.component';
+import { ManagementModal } from './management-modal/management-modal.component';
 import { LoadingState } from '../../ui-kit/components/loading-state/loading-state.component';
 import { EmptyState } from '../../ui-kit/components/empty-state/empty-state.component';
 import { typedMemo } from '../../ui-kit/utils/typed-memo.utils';
@@ -76,6 +77,10 @@ const mockCollectionData: Record<string, CollectionData> = {
 
 const CollectionDetailPageComponent: FC = () => {
 	const { collectionAddress } = useParams<{ collectionAddress: string }>();
+	const [searchParams] = useSearchParams();
+	const [isManagementModalOpen, setIsManagementModalOpen] = useState(false);
+
+	const selectedVault = searchParams.get('vault') as Address | null;
 
 	if (!collectionAddress) {
 		return (
@@ -114,7 +119,10 @@ const CollectionDetailPageComponent: FC = () => {
 	return (
 		<Layout>
 			<div className={css.container}>
-				<CollectionHeader collectionData={collectionData} />
+				<CollectionHeader
+					collectionData={collectionData}
+					onManageClick={() => setIsManagementModalOpen(true)}
+				/>
 
 				<div className={css.content}>
 					<div className={css.mainContent}>
@@ -126,9 +134,15 @@ const CollectionDetailPageComponent: FC = () => {
 					</div>
 
 					<div className={css.sidebar}>
-						<ManagementSection collectionData={collectionData} />
+						<VaultFormsSection collectionData={collectionData} selectedVault={selectedVault || undefined} />
 					</div>
 				</div>
+
+				<ManagementModal
+					isOpen={isManagementModalOpen}
+					onClose={() => setIsManagementModalOpen(false)}
+					collectionData={collectionData}
+				/>
 			</div>
 		</Layout>
 	);

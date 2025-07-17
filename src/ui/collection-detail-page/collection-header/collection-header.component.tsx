@@ -7,9 +7,10 @@ import css from './collection-header.module.css';
 
 interface CollectionHeaderProps {
 	collectionData: CollectionData;
+	onManageClick?: () => void;
 }
 
-const CollectionHeaderComponent: FC<CollectionHeaderProps> = ({ collectionData }) => {
+const CollectionHeaderComponent: FC<CollectionHeaderProps> = ({ collectionData, onManageClick }) => {
 	const {
 		collectionName,
 		collectionAddress,
@@ -70,15 +71,25 @@ const CollectionHeaderComponent: FC<CollectionHeaderProps> = ({ collectionData }
 					</div>
 				</div>
 				<div className={css.tokenActions}>
-					<button
-						className={`${css.copyButton} ${isCopied ? css.copied : ''}`}
-						onClick={handleCopyAddress}
-						title={isCopied ? 'Copied!' : 'Copy collection address'}>
-						{isCopied ? '✅' : '📋'}
-					</button>
-					<button className={css.externalButton} onClick={handleOpenScanner} title="View on block explorer">
-						🔗
-					</button>
+					<div className={css.actionButtons}>
+						<button
+							className={`${css.copyButton} ${isCopied ? css.copied : ''}`}
+							onClick={handleCopyAddress}
+							title={isCopied ? 'Copied!' : 'Copy collection address'}>
+							{isCopied ? '✅' : '📋'}
+						</button>
+						<button
+							className={css.externalButton}
+							onClick={handleOpenScanner}
+							title="View on block explorer">
+							🔗
+						</button>
+					</div>
+					{onManageClick && (
+						<button className={css.manageButton} onClick={onManageClick} title="Manage collection">
+							⚙️ Manage
+						</button>
+					)}
 				</div>
 			</div>
 

@@ -1,0 +1,118 @@
+.container {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+.content {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+.vaultSelector {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.selectorLabel {
+	font-family: 'Inter', sans-serif;
+	font-size: 14px;
+	font-weight: 500;
+	color: #6B7280;
+}
+
+
+.vaultInfo {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	padding: 20px;
+	background: #F9FAFB;
+	border-radius: 8px;
+	border: 1px solid #E5E7EB;
+}
+
+.vaultName {
+	font-family: 'Inter', sans-serif;
+	font-size: 18px;
+	font-weight: 600;
+	color: #18171E;
+}
+
+.vaultStats {
+	display: flex;
+	gap: 32px;
+}
+
+.stat {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.statLabel {
+	font-family: 'Inter', sans-serif;
+	font-size: 12px;
+	font-weight: 500;
+	color: #6B7280;
+}
+
+.statValue {
+	font-family: 'Inter', sans-serif;
+	font-size: 16px;
+	font-weight: 600;
+	color: #18171E;
+}
+
+.userPosition {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	padding: 20px;
+	background: #F0F9FF;
+	border-radius: 8px;
+	border: 1px solid #E0F2FE;
+}
+
+.positionTitle {
+	font-family: 'Inter', sans-serif;
+	font-size: 16px;
+	font-weight: 600;
+	color: #18171E;
+}
+
+.positionStats {
+	display: flex;
+	gap: 32px;
+}
+
+.positionStat {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.positionLabel {
+	font-family: 'Inter', sans-serif;
+	font-size: 12px;
+	font-weight: 500;
+	color: #6B7280;
+}
+
+.positionValue {
+	font-family: 'Inter', sans-serif;
+	font-size: 16px;
+	font-weight: 600;
+	color: #18171E;
+}
+
+.actions {
+	display: flex;
+	gap: 12px;
+}
+
+.actions button {
+	flex: 1;
+}

@@ -2,55 +2,57 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
   width: 100%;
 }
 
 .section {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .sectionTitle {
-  font-size: var(--font-text-small-size);
-  font-family: var(--font-text-small-family);
-  font-weight: var(--font-text-small-bold-weight);
-  line-height: var(--font-text-small-line-height);
-  color: var(--color-text-default);
+  font-size: 18px;
+  font-family: var(--font-text-default-family);
+  font-weight: var(--font-text-default-weight);
+  color: var(--color-text-inversion);
+  margin: 0;
 }
 
 .sectionHeader {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
 }
 
 .label {
-  /* TODO: Add extra-small text design token (14px) */
-  font-size: 14px;
+  font-size: var(--font-text-small-size);
   font-family: var(--font-text-small-family);
   font-weight: var(--font-text-small-weight);
-  /* TODO: Add secondary text color design token */
-  color: #666;
+  line-height: var(--font-text-small-line-height);
+  color: #d1d5db;
 }
 
 .info {
-  /* TODO: Add muted text color design token */
-  color: #999;
+  color: #9ca3af;
   cursor: help;
 }
 
 .inputContainer {
   display: flex;
   align-items: center;
-  /* TODO: Add light input background color design token */
-  background: #f8f9fa;
-  /* TODO: Add light input border color design token */
-  border: 1px solid #e1e5e9;
-  border-radius: 8px;
+  background: #374151;
+  border: 1px solid #4b5563;
+  border-radius: 12px;
   padding: 16px;
   gap: 12px;
+  transition: border-color 0.2s;
+}
+
+.inputContainer:focus-within {
+  border-color: var(--color-accent-apechain);
 }
 
 .amountInput {
@@ -58,11 +60,15 @@
   background: transparent;
   border: none;
   outline: none;
-  /* TODO: Add medium input text design token (18px) */
-  font-size: 18px;
+  font-size: 24px;
   font-family: var(--font-text-default-family);
-  font-weight: var(--font-text-default-bold-weight);
-  color: var(--color-text-default);
+  font-weight: var(--font-text-default-weight);
+  color: var(--color-text-inversion);
+  min-width: 0;
+}
+
+.amountInput::placeholder {
+  color: #6b7280;
 }
 
 .tokenInfo {
@@ -75,28 +81,26 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  /* TODO: Add light token icon background color design token */
-  background: #e1e5e9;
+  background: #1f2937;
+  border: 1px solid #374151;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .tokenSymbol {
-  /* TODO: Add extra-small text design token (12px) */
   font-size: 12px;
   font-family: var(--font-text-small-family);
   font-weight: var(--font-text-small-bold-weight);
-  /* TODO: Add secondary text color design token */
-  color: #666;
+  color: var(--color-text-inversion);
 }
 
 .tokenName {
-  /* TODO: Add extra-small text design token (14px) */
-  font-size: 14px;
+  font-size: var(--font-text-small-size);
   font-family: var(--font-text-small-family);
   font-weight: var(--font-text-small-weight);
-  color: var(--color-text-default);
+  line-height: var(--font-text-small-line-height);
+  color: var(--color-text-inversion);
 }
 
 .balanceInfo {
@@ -107,20 +111,16 @@
 }
 
 .usdValue {
-  /* TODO: Add extra-small text design token (12px) */
-  font-size: 12px;
-  /* TODO: Add muted text color design token */
-  color: #999;
+  font-size: 14px;
+  color: #9ca3af;
 }
 
 .walletBalance {
   display: flex;
   align-items: center;
   gap: 8px;
-  /* TODO: Add extra-small text design token (12px) */
-  font-size: 12px;
-  /* TODO: Add secondary text color design token */
-  color: #666;
+  font-size: 14px;
+  color: #9ca3af;
 }
 
 .maxButton {
@@ -129,16 +129,15 @@
   border: none;
   border-radius: 4px;
   padding: 4px 8px;
-  /* TODO: Add extra-extra-small text design token (10px) */
   font-size: 10px;
   font-family: var(--font-text-small-family);
   font-weight: var(--font-text-small-bold-weight);
   cursor: pointer;
+  transition: background-color 0.2s;
 }
 
 .maxButton:hover {
-  /* TODO: Add primary button hover color design token */
-  background: #2563eb;
+  background: #1d4ed8;
 }
 
 .progressContainer {
@@ -152,9 +151,9 @@
   align-items: center;
   gap: 12px;
   padding: 12px;
-  /* TODO: Add light border color design token */
-  border: 1px solid #e1e5e9;
+  border: 1px solid #4b5563;
   border-radius: 8px;
+  background: #374151;
 }
 
 .stepIndicator {
@@ -164,7 +163,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* TODO: Add extra-small text design token (12px) */
   font-size: 12px;
   font-family: var(--font-text-small-family);
   font-weight: var(--font-text-small-bold-weight);
@@ -181,13 +179,11 @@
 }
 
 .stepIndicator.error {
-  /* TODO: Add error color design token */
   background: #ef4444;
   color: var(--color-text-inversion);
 }
 
 .stepIndicator.idle {
-  /* TODO: Add idle/neutral color design token */
   background: #6b7280;
   color: var(--color-text-inversion);
 }
@@ -198,7 +194,6 @@
 }
 
 .stepIndicator.preparing {
-  /* TODO: Add preparing/purple color design token */
   background: #8b5cf6;
   color: var(--color-text-inversion);
 }
@@ -208,23 +203,19 @@
 }
 
 .stepTitle {
-  /* TODO: Add extra-small text design token (14px) */
   font-size: 14px;
   font-family: var(--font-text-small-family);
   font-weight: var(--font-text-small-bold-weight);
-  color: var(--color-text-default);
+  color: var(--color-text-inversion);
 }
 
 .stepDescription {
-  /* TODO: Add extra-small text design token (12px) */
   font-size: 12px;
-  /* TODO: Add secondary text color design token */
-  color: #666;
+  color: #9ca3af;
   margin-top: 2px;
 }
 
 .stepError {
-  /* TODO: Add error color design token */
   color: #ef4444;
 }
 
@@ -232,6 +223,9 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
+  background: #374151;
+  border-radius: 12px;
+  padding: 16px;
 }
 
 .approvalOption {
@@ -243,32 +237,59 @@
 .approvalLabel {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   cursor: pointer;
+  font-size: 14px;
+  color: #d1d5db;
 }
 
 .approvalCheckbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 2px solid #4b5563;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  appearance: none;
+  transition: all 0.2s;
   margin: 0;
 }
 
+.approvalCheckbox:checked {
+  background: var(--color-accent-apechain);
+  border-color: var(--color-accent-apechain);
+}
+
+.approvalCheckbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--color-text-inversion);
+  font-size: 12px;
+  font-weight: bold;
+}
+
 .approvalText {
-  /* TODO: Add extra-small text design token (14px) */
   font-size: 14px;
-  color: var(--color-text-default);
+  color: var(--color-text-inversion);
 }
 
 .approvalDescription {
-  /* TODO: Add extra-small text design token (12px) */
   font-size: 12px;
-  /* TODO: Add secondary text color design token */
-  color: #666;
+  color: #9ca3af;
   margin-left: 24px;
 }
 
 .overviewContainer {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
+  background: #374151;
+  border-radius: 12px;
+  padding: 16px;
 }
 
 .overviewRow {
@@ -278,18 +299,15 @@
 }
 
 .overviewLabel {
-  /* TODO: Add extra-small text design token (14px) */
   font-size: 14px;
-  /* TODO: Add secondary text color design token */
-  color: #666;
+  color: #d1d5db;
 }
 
 .overviewValue {
-  /* TODO: Add extra-small text design token (14px) */
   font-size: 14px;
   font-family: var(--font-text-small-family);
-  font-weight: var(--font-text-small-bold-weight);
-  color: var(--color-text-default);
+  font-weight: var(--font-text-small-weight);
+  color: var(--color-text-inversion);
 }
 
 .overviewValue.enabled {
@@ -297,7 +315,6 @@
 }
 
 .overviewValue.disabled {
-  /* TODO: Add error color design token */
   color: #ef4444;
 }
 
@@ -305,22 +322,16 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px;
-  /* TODO: Add light background color design token */
-  background: #f8f9fa;
-  border-radius: 8px;
+  justify-content: center;
 }
 
 .gasIcon {
-  /* TODO: Add secondary text color design token */
-  color: #666;
+  color: #9ca3af;
 }
 
 .gasText {
-  /* TODO: Add extra-small text design token (14px) */
   font-size: 14px;
-  /* TODO: Add secondary text color design token */
-  color: #666;
+  color: #9ca3af;
 }
 
 .submitButton {
@@ -334,15 +345,122 @@
   font-weight: var(--font-text-small-bold-weight);
   cursor: pointer;
   transition: background-color 0.2s;
+  width: 100%;
 }
 
 .submitButton:hover:not(:disabled) {
-  /* TODO: Add primary button hover color design token */
-  background: #2563eb;
+  background: #1d4ed8;
 }
 
 .submitButton:disabled {
-  /* TODO: Add disabled button background color design token */
-  background: #d1d5db;
+  background: #4b5563;
   cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.sliderContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.percentageSlider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(to right, var(--color-accent-apechain) 0%, var(--color-accent-apechain) var(--fill-percent, 0%), #374151 var(--fill-percent, 0%), #374151 100%);
+  outline: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.percentageSlider::-webkit-slider-track {
+  height: 6px;
+  border-radius: 3px;
+  background: #374151;
+}
+
+.percentageSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-accent-apechain);
+  cursor: pointer;
+  border: 2px solid #1e293b;
+  transition: all 0.2s;
+}
+
+.percentageSlider::-webkit-slider-thumb:hover {
+  background: #1d4ed8;
+  transform: scale(1.1);
+}
+
+.percentageSlider::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: #374151;
+  border: none;
+}
+
+.percentageSlider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--color-accent-apechain);
+  cursor: pointer;
+  border: 2px solid #1e293b;
+  transition: all 0.2s;
+}
+
+.percentageSlider::-moz-range-thumb:hover {
+  background: #1d4ed8;
+  transform: scale(1.1);
+}
+
+.sliderLabels {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.percentageLabel {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 12px;
+  font-family: var(--font-text-small-family);
+  font-weight: var(--font-text-small-weight);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  min-width: 32px;
+  text-align: center;
+}
+
+.percentageLabel:hover {
+  background: #374151;
+  color: var(--color-accent-apechain);
+  transform: translateY(-1px);
+}
+
+.percentageLabel:active {
+  transform: translateY(0);
+  background: #4b5563;
+}
+
+.percentageLabel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.percentageLabel:disabled:hover {
+  background: none;
+  color: #9ca3af;
+  transform: none;
 }

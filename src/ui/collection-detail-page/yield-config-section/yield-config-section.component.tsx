@@ -15,7 +15,6 @@ const YieldConfigSectionComponent: FC<YieldConfigSectionProps> = ({ collectionDa
 	const { yieldSharePercentage, weightFunction } = collectionData;
 	const [nftCount, setNftCount] = useState(1);
 
-
 	// Calculate weight based on current NFT count
 	const calculateWeight = (count: number) => {
 		if (weightFunction.fnType === 'LINEAR') {

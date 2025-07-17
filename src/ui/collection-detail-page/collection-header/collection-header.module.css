@@ -51,6 +51,13 @@
 
 .tokenActions {
 	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 8px;
+}
+
+.actionButtons {
+	display: flex;
 	gap: 8px;
 }
 
@@ -78,6 +85,28 @@
 	background: rgba(76, 175, 80, 0.3);
 	transform: scale(1.1);
 	animation: copySuccess 0.3s ease-in-out;
+}
+
+.manageButton {
+	border: none;
+	background: rgba(255, 255, 255, 0.2);
+	border-radius: 8px;
+	color: var(--color-text-inversion);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	padding: 8px 12px;
+	font-family: var(--font-text-small-family);
+	font-size: var(--font-text-small-size);
+	font-weight: var(--font-text-small-weight);
+	transition: background 0.2s;
+	white-space: nowrap;
+}
+
+.manageButton:hover {
+	background: rgba(255, 255, 255, 0.3);
 }
 
 @keyframes copySuccess {
@@ -126,6 +155,15 @@
 	
 	.tokenName {
 		font-size: var(--font-heading-h5-size);
+	}
+	
+	.tokenActions {
+		align-items: center;
+	}
+	
+	.manageButton {
+		padding: 6px 10px;
+		font-size: 12px;
 	}
 	
 	.metrics {

@@ -16,17 +16,14 @@
 	font-family: var(--font-text-small-family);
 	font-weight: var(--font-text-small-weight);
 	line-height: var(--font-text-small-line-height);
-	/* TODO: Add muted text color design token */
 	color: #d1d5db;
 }
 
 .info {
-	/* TODO: Add secondary text color design token */
 	color: #9ca3af;
 }
 
 .sectionTitle {
-	/* TODO: Add heading-small design token (18px) */
 	font-size: 18px;
 	font-family: var(--font-text-default-family);
 	font-weight: var(--font-text-default-weight);
@@ -35,9 +32,7 @@
 }
 
 .inputContainer {
-	/* TODO: Add input background color design token */
 	background: #374151;
-	/* TODO: Add input border color design token */
 	border: 1px solid #4b5563;
 	border-radius: 12px;
 	padding: 16px;
@@ -46,7 +41,6 @@
 }
 
 .inputContainer:focus-within {
-	/* TODO: Add focus border color design token - could use accent-apechain */
 	border-color: var(--color-accent-apechain);
 }
 
@@ -54,7 +48,6 @@
 	background: none;
 	border: none;
 	color: var(--color-text-inversion);
-	/* TODO: Add large input text design token (24px) */
 	font-size: 24px;
 	font-family: var(--font-text-default-family);
 	font-weight: var(--font-text-default-weight);
@@ -64,7 +57,6 @@
 }
 
 .amountInput::placeholder {
-	/* TODO: Add placeholder text color design token */
 	color: #6b7280;
 }
 
@@ -77,14 +69,11 @@
 	width: 32px;
 	height: 32px;
 	border-radius: 50%;
-	/* TODO: Add token icon background color design token */
 	background: #1f2937;
-	/* TODO: Add token icon border color design token */
 	border: 1px solid #374151;
 }
 
 .tokenSymbol {
-	/* TODO: Add extra-small text design token (12px) */
 	font-size: 12px;
 	font-family: var(--font-text-small-family);
 	font-weight: var(--font-text-small-bold-weight);
@@ -104,17 +93,13 @@
 }
 
 .usdValue {
-	/* TODO: Add secondary text color design token */
 	color: #9ca3af;
-	/* TODO: Add extra-small text design token (14px) */
 	font-size: 14px;
 }
 
 .walletBalance {
 	gap: 8px;
-	/* TODO: Add secondary text color design token */
 	color: #9ca3af;
-	/* TODO: Add extra-small text design token (14px) */
 	font-size: 14px;
 }
 
@@ -135,16 +120,13 @@
 
 .insufficientBalance {
 	gap: 6px;
-	/* TODO: Add error color design token */
 	color: #ef4444;
-	/* TODO: Add extra-small text design token (14px) */
 	font-size: 14px;
 	font-family: var(--font-text-small-family);
 	font-weight: var(--font-text-small-weight);
 }
 
 .overviewContainer {
-	/* TODO: Add card background color design token */
 	background: #374151;
 	border-radius: 12px;
 	padding: 16px;
@@ -160,15 +142,12 @@
 }
 
 .overviewLabel {
-	/* TODO: Add muted text color design token */
 	color: #d1d5db;
-	/* TODO: Add extra-small text design token (14px) */
 	font-size: 14px;
 }
 
 .overviewValue {
 	color: var(--color-text-inversion);
-	/* TODO: Add extra-small text design token (14px) */
 	font-size: 14px;
 	font-family: var(--font-text-small-family);
 	font-weight: var(--font-text-small-weight);
@@ -179,7 +158,6 @@
 }
 
 .overviewValue.disabled {
-	/* TODO: Add error color design token */
 	color: #ef4444;
 }
 
@@ -191,14 +169,11 @@
 }
 
 .gasIcon {
-	/* TODO: Add secondary text color design token */
 	color: #9ca3af;
 }
 
 .gasText {
-	/* TODO: Add secondary text color design token */
 	color: #9ca3af;
-	/* TODO: Add extra-small text design token (14px) */
 	font-size: 14px;
 }
 
@@ -206,7 +181,6 @@
 
 .approvalContainer {
 	position: relative;
-	/* TODO: Add card background color design token */
 	background: #374151;
 	border-radius: 12px;
 	padding: 16px;
@@ -223,9 +197,7 @@
 	align-items: center;
 	gap: 12px;
 	cursor: pointer;
-	/* TODO: Add extra-small text design token (14px) */
 	font-size: 14px;
-	/* TODO: Add muted text color design token */
 	color: #d1d5db;
 }
 
@@ -233,7 +205,6 @@
 	width: 20px;
 	height: 20px;
 	border-radius: 4px;
-	/* TODO: Add checkbox border color design token */
 	border: 2px solid #4b5563;
 	background: transparent;
 	cursor: pointer;
@@ -254,7 +225,6 @@
 	left: 50%;
 	transform: translate(-50%, -50%);
 	color: var(--color-text-inversion);
-	/* TODO: Add extra-small text design token (12px) */
 	font-size: 12px;
 	font-weight: bold;
 }
@@ -290,7 +260,6 @@
 .requiredText {
 	color: var(--color-accent-orange);
 	font-weight: 600;
-	/* TODO: Add extra-small text design token (12px) */
 	font-size: 12px;
 }
 
@@ -305,9 +274,7 @@
 }
 
 .approvalDescription {
-	/* TODO: Add secondary text color design token */
 	color: #9ca3af;
-	/* TODO: Add extra-small text design token (12px) */
 	font-size: 12px;
 	margin-left: 32px;
 }
@@ -318,14 +285,10 @@
 	left: 0;
 	right: 0;
 	padding: 12px;
-	/* TODO: Add warning background color design token */
 	background: #fef3cd;
-	/* TODO: Add warning border color design token */
 	border: 1px solid #fbbf24;
 	border-radius: 8px;
-	/* TODO: Add warning text color design token */
 	color: #92400e;
-	/* TODO: Add extra-small text design token (13px) */
 	font-size: 13px;
 	line-height: 1.4;
 	z-index: 10;
@@ -354,7 +317,6 @@
 .percentageSlider::-webkit-slider-track {
 	height: 6px;
 	border-radius: 3px;
-	/* TODO: Add slider track background color design token */
 	background: #374151;
 }
 
@@ -366,13 +328,11 @@
 	border-radius: 50%;
 	background: var(--color-accent-apechain);
 	cursor: pointer;
-	/* TODO: Add slider thumb border color design token */
 	border: 2px solid #1e293b;
 	transition: all 0.2s;
 }
 
 .percentageSlider::-webkit-slider-thumb:hover {
-	/* TODO: Add slider thumb hover color design token */
 	background: #1d4ed8;
 	transform: scale(1.1);
 }
@@ -380,7 +340,6 @@
 .percentageSlider::-moz-range-track {
 	height: 6px;
 	border-radius: 3px;
-	/* TODO: Add slider track background color design token */
 	background: #374151;
 	border: none;
 }
@@ -391,13 +350,11 @@
 	border-radius: 50%;
 	background: var(--color-accent-apechain);
 	cursor: pointer;
-	/* TODO: Add slider thumb border color design token */
 	border: 2px solid #1e293b;
 	transition: all 0.2s;
 }
 
 .percentageSlider::-moz-range-thumb:hover {
-	/* TODO: Add slider thumb hover color design token */
 	background: #1d4ed8;
 	transform: scale(1.1);
 }
@@ -411,9 +368,7 @@
 .percentageLabel {
 	background: none;
 	border: none;
-	/* TODO: Add secondary text color design token */
 	color: #9ca3af;
-	/* TODO: Add extra-small text design token (12px) */
 	font-size: 12px;
 	font-family: var(--font-text-small-family);
 	font-weight: var(--font-text-small-weight);
@@ -426,7 +381,6 @@
 }
 
 .percentageLabel:hover {
-	/* TODO: Add button hover background color design token */
 	background: #374151;
 	color: var(--color-accent-apechain);
 	transform: translateY(-1px);
@@ -434,6 +388,5 @@
 
 .percentageLabel:active {
 	transform: translateY(0);
-	/* TODO: Add button active background color design token */
 	background: #4b5563;
 }
