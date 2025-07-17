@@ -28,6 +28,7 @@
 	font-weight: 600;
 	color: var(--color-text-default);
 	margin-bottom: 8px;
+	display: inline-block;
 }
 
 .metricDescription {
@@ -45,8 +46,6 @@
 
 
 .formulaContainer {
-	background: #f8f9fa;
-	border-radius: 8px;
 	padding: 16px;
 	margin-bottom: 12px;
 }
@@ -67,19 +66,12 @@
 	text-align: center;
 }
 
-.formulaDescription code {
-	font-family: 'Monaco', 'Menlo', monospace;
-	background: #f0f0f0;
-	padding: 2px 4px;
-	border-radius: 4px;
-	font-size: 12px;
-}
 
 @media (max-width: 768px) {
 	.container {
 		padding: 0;
 	}
-	
+
 	.metricsGrid {
 		grid-template-columns: repeat(2, 1fr);
 	}

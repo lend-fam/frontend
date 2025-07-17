@@ -225,14 +225,7 @@ const VaultInfoSectionComponent: FC<VaultInfoSectionProps> = ({ collectionData }
 	return (
 		<Card>
 			<div className={css.container}>
-				<SectionHeader
-					title="Vault Information"
-					action={
-						<Button variant="primary" size="medium">
-							Add Vault
-						</Button>
-					}
-				/>
+				<SectionHeader title="Vault Information" />
 
 				<div className={css.tableContainer}>
 					<Table data={vaultTableData} columns={vaultColumns} columnHeight="72px" columnWidth="120px" />
