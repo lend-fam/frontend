@@ -15,7 +15,7 @@
 .modal {
 	background: #2a2d3a;
 	border-radius: 16px;
-	min-width: 400px;
+	width: 480px;
 	max-width: 90vw;
 	max-height: 90vh;
 	overflow: auto;

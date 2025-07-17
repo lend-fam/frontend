@@ -182,7 +182,7 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 					disabled={shouldDisableToggle || isTogglePending || isToggleConfirming || isPendingToggle !== null}
 					aria-label={`${isEnabled ? 'Disable' : 'Enable'} collateral`}>
 					<div className={`${css.slider} ${isEnabled ? css.sliderEnabled : css.sliderDisabled}`} />
-					{borrowBalance > dustThreshold && actualIsEnabled && <div className={css.blockIcon}>⚠️</div>}
+					{borrowBalance > dustThreshold && actualIsEnabled && <div className={css.blockIcon}></div>}
 				</button>
 			</Tooltip>
 		</div>

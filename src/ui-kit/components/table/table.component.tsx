@@ -5,13 +5,23 @@ import { useTheme } from '../../hooks/use-theme.hook';
 
 import css from './table.module.css';
 
+export type SortDirection = 'asc' | 'desc' | null;
+
+export interface SortState<C extends string | number | symbol> {
+	column: C | null;
+	direction: SortDirection;
+}
+
 export type TableData<D extends object> = {
 	[K in keyof D]: D[K];
 };
 
-export interface TableHeadColumnRendererProps {
+export interface TableHeadColumnRendererProps<C extends string | number | symbol = string> {
 	align?: TableAlign;
 	style?: CSSProperties;
+	sortState?: SortState<C>;
+	onSort?: (column: C) => void;
+	sortable?: boolean;
 }
 
 export interface TableColumnRendererProps<D extends object = object> {
@@ -30,10 +40,12 @@ export interface TableColumnProps<D extends object, C extends keyof D> {
 	key: C;
 	label: string;
 	align?: TableAlign;
-	headCellRenderer?: ComponentType<TableHeadColumnRendererProps>;
+	headCellRenderer?: ComponentType<TableHeadColumnRendererProps<C>>;
 	cellRenderer?: ComponentType<TableColumnRendererProps<D>>;
 	height?: CSSProperties['height'];
 	width?: CSSProperties['width'];
+	sortable?: boolean;
+	sortKey?: string;
 }
 
 interface TableProps<D extends object, C extends keyof D> {
@@ -42,10 +54,12 @@ interface TableProps<D extends object, C extends keyof D> {
 	theme?: Partial<typeof css>;
 	columnWidth?: CSSProperties['width'];
 	columnHeight?: CSSProperties['height'];
+	sortState?: SortState<C>;
+	onSort?: (column: C) => void;
 }
 
 export const Table = typedMemo(<C extends keyof D, D extends object>(props: TableProps<D, C>) => {
-	const { columns, data, columnHeight, columnWidth } = props;
+	const { columns, data, columnHeight, columnWidth, sortState, onSort } = props;
 
 	const theme = useTheme(css, props.theme);
 
@@ -60,6 +74,9 @@ export const Table = typedMemo(<C extends keyof D, D extends object>(props: Tabl
 							key: String(column.key),
 							align: column.align || 'left',
 							style,
+							sortState,
+							onSort,
+							sortable: column.sortable,
 						});
 					}
 

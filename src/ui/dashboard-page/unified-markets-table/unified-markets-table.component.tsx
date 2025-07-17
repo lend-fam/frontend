@@ -1,7 +1,13 @@
-import { type FC, useMemo, memo } from 'react';
+import { type FC, useMemo, memo, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Address } from 'viem';
-import { Table, type TableColumnProps, type TableData } from '../../../ui-kit/components/table/table.component';
+import {
+	Table,
+	type TableColumnProps,
+	type TableData,
+	type SortState,
+} from '../../../ui-kit/components/table/table.component';
+import { createSortableColumnRenderer } from '../../../ui-kit/components/table/sortable-table-column.component';
 import { AssetsColumn } from '../../../ui-kit/components/table/columns/assets-column/assets-column.component';
 import { BalanceColumn } from '../../../ui-kit/components/table/columns/balance-column/balance-column.component';
 import { Button } from '../../../ui-kit/components/button/button.component';
@@ -31,6 +37,8 @@ type UnifiedMarketsTableData = {
 	borrowAPYValue: string;
 	nativeYieldAPY?: string;
 	hasNativeYield?: boolean;
+	totalSuppliedUSDValue: number;
+	totalBorrowedUSDValue: number;
 };
 
 type UnifiedMarketsTableColumn = 'assets' | 'totalSupplied' | 'supplyAPY' | 'totalBorrowed' | 'borrowAPY' | 'details';
@@ -42,6 +50,8 @@ const createUnifiedMarketsColumns = (
 		key: 'assets',
 		label: 'Asset',
 		width: '20%',
+		sortable: true,
+		headCellRenderer: createSortableColumnRenderer('assets', 'Asset'),
 		cellRenderer: ({ data, ...props }) => (
 			<AssetsColumn
 				{...props}
@@ -56,6 +66,8 @@ const createUnifiedMarketsColumns = (
 		label: 'Total supplied',
 		align: 'right',
 		width: '16%',
+		sortable: true,
+		headCellRenderer: createSortableColumnRenderer('totalSupplied', 'Total supplied'),
 		cellRenderer: ({ data, style }) => (
 			<div
 				style={{
@@ -78,6 +90,8 @@ const createUnifiedMarketsColumns = (
 		label: 'Supply APY',
 		align: 'right',
 		width: '12%',
+		sortable: true,
+		headCellRenderer: createSortableColumnRenderer('supplyAPY', 'Supply APY'),
 		cellRenderer: ({ data, style }) => (
 			<div
 				style={{
@@ -142,6 +156,8 @@ const createUnifiedMarketsColumns = (
 		label: 'Total borrowed',
 		align: 'right',
 		width: '16%',
+		sortable: true,
+		headCellRenderer: createSortableColumnRenderer('totalBorrowed', 'Total borrowed'),
 		cellRenderer: ({ data, style }) => (
 			<div
 				style={{
@@ -164,6 +180,8 @@ const createUnifiedMarketsColumns = (
 		label: 'Borrow APY, variable',
 		align: 'right',
 		width: '16%',
+		sortable: true,
+		headCellRenderer: createSortableColumnRenderer('borrowAPY', 'Borrow APY, variable'),
 	},
 	{
 		key: 'details',
@@ -194,6 +212,24 @@ const UnifiedMarketsTableComponent: FC = () => {
 	const { data: marketsAPY, isLoading: apyLoading } = useMarketsAPY();
 	const { data: marketTotals, isLoading: totalsLoading } = useMarketTotals();
 	const { data: nativeYieldData } = useNativeYield();
+
+	const [sortState, setSortState] = useState<SortState<UnifiedMarketsTableColumn>>({
+		column: null,
+		direction: null,
+	});
+
+	const handleSort = useCallback((column: UnifiedMarketsTableColumn) => {
+		setSortState((prev) => {
+			if (prev.column === column) {
+				const nextDirection = prev.direction === 'asc' ? 'desc' : prev.direction === 'desc' ? null : 'asc';
+				return {
+					column: nextDirection === null ? null : column,
+					direction: nextDirection,
+				};
+			}
+			return { column, direction: 'asc' };
+		});
+	}, []);
 
 	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata((allMarkets as Address[]) || []);
 
@@ -277,10 +313,12 @@ const UnifiedMarketsTableComponent: FC = () => {
 			const totalSuppliedBalance = exchangeRate > 0n ? (totalSupplyCTokens * exchangeRate) / 10n ** 18n : 0n;
 			const totalSuppliedAmount = MarketService.formatTokenBalance(totalSuppliedBalance, decimals);
 			const totalSuppliedUSD = suppliedUSDBalances?.[marketAddress] || '0';
+			const totalSuppliedUSDValue = parseFloat(totalSuppliedUSD);
 
 			const totalBorrowedBalance = marketTotalsData?.totalBorrows || 0n;
 			const totalBorrowedAmount = MarketService.formatTokenBalance(totalBorrowedBalance, decimals);
 			const totalBorrowedUSD = borrowedUSDBalances?.[marketAddress] || '0';
+			const totalBorrowedUSDValue = parseFloat(totalBorrowedUSD);
 
 			// Native yield logic for APE tokens
 			const isAPEToken = symbol === 'APE' || symbol === 'Ape';
@@ -304,6 +342,8 @@ const UnifiedMarketsTableComponent: FC = () => {
 				borrowAPYValue: borrowAPY,
 				nativeYieldAPY,
 				hasNativeYield: !!hasNativeYield,
+				totalSuppliedUSDValue,
+				totalBorrowedUSDValue,
 			};
 
 			markets.push(marketData);
@@ -325,6 +365,52 @@ const UnifiedMarketsTableComponent: FC = () => {
 		nativeYieldData,
 	]);
 
+	const sortedMarketsData = useMemo(() => {
+		if (!marketsData || !sortState.column || !sortState.direction) {
+			return marketsData;
+		}
+
+		return [...marketsData].sort((a, b) => {
+			let aValue: string | number;
+			let bValue: string | number;
+
+			switch (sortState.column) {
+				case 'assets':
+					aValue = a.symbol.toLowerCase();
+					bValue = b.symbol.toLowerCase();
+					break;
+				case 'totalSupplied':
+					aValue = a.totalSuppliedUSDValue;
+					bValue = b.totalSuppliedUSDValue;
+					break;
+				case 'supplyAPY':
+					aValue = parseFloat(a.supplyAPYValue);
+					bValue = parseFloat(b.supplyAPYValue);
+					break;
+				case 'totalBorrowed':
+					aValue = a.totalBorrowedUSDValue;
+					bValue = b.totalBorrowedUSDValue;
+					break;
+				case 'borrowAPY':
+					aValue = parseFloat(a.borrowAPYValue);
+					bValue = parseFloat(b.borrowAPYValue);
+					break;
+				default:
+					return 0;
+			}
+
+			if (typeof aValue === 'string' && typeof bValue === 'string') {
+				return sortState.direction === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+			}
+
+			if (typeof aValue === 'number' && typeof bValue === 'number') {
+				return sortState.direction === 'asc' ? aValue - bValue : bValue - aValue;
+			}
+
+			return 0;
+		});
+	}, [marketsData, sortState]);
+
 	if (
 		marketsLoading ||
 		apyLoading ||
@@ -345,11 +431,13 @@ const UnifiedMarketsTableComponent: FC = () => {
 		<div className={css.container}>
 			<p className={css.label}>All Markets</p>
 			<Table
-				data={marketsData}
+				data={sortedMarketsData}
 				columns={unifiedMarketsColumns}
 				columnHeight="72px"
 				columnWidth="120px"
 				theme={tableCss}
+				sortState={sortState}
+				onSort={handleSort}
 			/>
 		</div>
 	);
