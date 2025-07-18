@@ -4,6 +4,7 @@ import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
+import { ApolloProvider } from '@apollo/client';
 import { hashFn } from '@wagmi/core/query';
 import { Header } from '../header/header.component';
 import { LandingPage } from '../landing-page';
@@ -15,6 +16,7 @@ import { CollectionsPage } from '../collections-page';
 import { CollectionDetailPage } from '../collection-detail-page';
 import { Footer } from '../footer/footer.component';
 import { wagmiConfig } from '../../config/wagmi.config';
+import { apolloClient } from '../../config/apollo';
 import { TransactionProvider } from '../../contexts/transaction.context';
 import { DesignThemeProvider } from '../../ui-kit/providers/design-theme-provider';
 
@@ -37,28 +39,30 @@ export const App: FC = () => {
 			<WagmiProvider config={wagmiConfig}>
 				<QueryClientProvider client={queryClient}>
 					<RainbowKitProvider>
-						<DesignThemeProvider>
-							<TransactionProvider>
-								<div className={css.container}>
-									<Header />
-									<Routes>
-										<Route path="/" element={<LandingPage />} />
-										<Route path="/dashboard" element={<MarketsPage />} />
-										<Route path="/markets" element={<MarketsOverviewPage />} />
-										<Route path="/markets/:marketAddress" element={<MarketDetailPage />} />
-										<Route path="/collections" element={<CollectionsPage />} />
-										<Route
-											path="/collections/:collectionAddress"
-											element={<CollectionDetailPage />}
-										/>
-										<Route path="/profile" element={<MarketsPage />} />
-										<Route path="/faucet" element={<FaucetPage />} />
-									</Routes>
-									<Footer />
-								</div>
-								<ReactQueryDevtools initialIsOpen={false} />
-							</TransactionProvider>
-						</DesignThemeProvider>
+						<ApolloProvider client={apolloClient}>
+							<DesignThemeProvider>
+								<TransactionProvider>
+									<div className={css.container}>
+										<Header />
+										<Routes>
+											<Route path="/" element={<LandingPage />} />
+											<Route path="/dashboard" element={<MarketsPage />} />
+											<Route path="/markets" element={<MarketsOverviewPage />} />
+											<Route path="/markets/:marketAddress" element={<MarketDetailPage />} />
+											<Route path="/collections" element={<CollectionsPage />} />
+											<Route
+												path="/collections/:collectionAddress"
+												element={<CollectionDetailPage />}
+											/>
+											<Route path="/profile" element={<MarketsPage />} />
+											<Route path="/faucet" element={<FaucetPage />} />
+										</Routes>
+										<Footer />
+									</div>
+									<ReactQueryDevtools initialIsOpen={false} />
+								</TransactionProvider>
+							</DesignThemeProvider>
+						</ApolloProvider>
 					</RainbowKitProvider>
 				</QueryClientProvider>
 			</WagmiProvider>

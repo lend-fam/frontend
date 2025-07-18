@@ -15,3 +15,5 @@ export * from './use-usd-balances.hook';
 export * from './use-token-metadata.hook';
 export * from './use-ctoken-balances.hook';
 export * from './use-native-yield.hook';
+export * from './use-historical-apy.hook';
+export * from './use-apy-chart-data.hook';

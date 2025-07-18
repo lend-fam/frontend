@@ -21,7 +21,6 @@ interface InterestRateModelSectionProps {
 export const InterestRateModelSection: FC<InterestRateModelSectionProps> = ({ marketAddress, apyData }) => {
 	const { data: marketTotals } = useMarketTotals();
 
-	// Fetch interest rate model address
 	const { data: interestRateModelAddress } = useReadContracts({
 		contracts: [
 			{
@@ -37,7 +36,6 @@ export const InterestRateModelSection: FC<InterestRateModelSectionProps> = ({ ma
 
 	const irModelAddress = interestRateModelAddress?.[0]?.result as Address;
 
-	// Fetch all possible interest rate model parameters
 	const { data: irModelData } = useReadContracts({
 		contracts: [
 			{
@@ -77,7 +75,6 @@ export const InterestRateModelSection: FC<InterestRateModelSectionProps> = ({ ma
 		},
 	});
 
-	// Calculate real interest rate model metrics
 	const interestRateMetrics = useMemo(() => {
 		const marketData = marketTotals?.[marketAddress];
 		if (!marketData || !irModelData) {
@@ -92,7 +89,6 @@ export const InterestRateModelSection: FC<InterestRateModelSectionProps> = ({ ma
 			};
 		}
 
-		// Extract contract data
 		const baseRatePerBlock = irModelData[0]?.result as bigint;
 		const multiplierPerBlock = irModelData[1]?.result as bigint;
 		const contractBlocksPerYear = irModelData[2]?.result as bigint;
@@ -100,10 +96,7 @@ export const InterestRateModelSection: FC<InterestRateModelSectionProps> = ({ ma
 		const kink = irModelData[4]?.result as bigint;
 		const gapPerBlock = irModelData[5]?.result as bigint;
 
-		// Use contract blocks per year if available, otherwise fallback to constant
 		const blocksPerYear = contractBlocksPerYear ? Number(contractBlocksPerYear) : BLOCKS_PER_YEAR;
-
-		// Detect model type
 		let modelType = 'WhitePaper';
 		if (jumpMultiplierPerBlock !== undefined && kink !== undefined) {
 			if (gapPerBlock !== undefined && gapPerBlock > 0n) {
@@ -113,36 +106,29 @@ export const InterestRateModelSection: FC<InterestRateModelSectionProps> = ({ ma
 			}
 		}
 
-		// Calculate utilization rate using centralized method
 		const utilizationRate = MarketService.calculateUtilizationRate(
 			marketData.totalSupply,
 			marketData.totalBorrows,
 			marketData.exchangeRate,
 		);
 
-		// Convert contract rates to APY percentages
 		const baseRateAPY = baseRatePerBlock ? ((Number(baseRatePerBlock) * blocksPerYear) / 1e18) * 100 : 0;
 		const multiplierAPY = multiplierPerBlock ? ((Number(multiplierPerBlock) * blocksPerYear) / 1e18) * 100 : 0;
 		const jumpMultiplierAPY = jumpMultiplierPerBlock
 			? ((Number(jumpMultiplierPerBlock) * blocksPerYear) / 1e18) * 100
 			: 0;
 		const kinkUtilization = kink ? (Number(kink) / 1e18) * 100 : 80;
-
-		// Calculate rates based on model type
 		let optimalAPY: number;
 		let maxAPY: number;
 
 		if (modelType === 'WhitePaper') {
-			// Linear model: rate = baseRate + (utilization * multiplier)
-			optimalAPY = baseRateAPY + multiplierAPY; // At 100% utilization
+			optimalAPY = baseRateAPY + multiplierAPY;
 			maxAPY = optimalAPY;
 		} else {
-			// Jump rate model: different slopes before and after kink
 			optimalAPY = baseRateAPY + (kinkUtilization / 100) * multiplierAPY;
 			maxAPY = optimalAPY + ((100 - kinkUtilization) / 100) * jumpMultiplierAPY;
 		}
 
-		// Get current rates from contract data
 		const currentBorrowAPY = parseFloat(apyData.borrowAPY) || 0;
 		const currentSupplyAPY = parseFloat(apyData.supplyAPY) || 0;
 
@@ -221,12 +207,18 @@ export const InterestRateModelSection: FC<InterestRateModelSectionProps> = ({ ma
 				<div className={css.legend}>
 					<div className={css.legendItem}>
 						<span className={css.legendDot} style={{ backgroundColor: '#4CAF50' }}></span>
-						<span>Borrow APY, variable</span>
+						<span>Borrow APY curve</span>
 					</div>
 					<div className={css.legendItem}>
 						<span className={css.legendDot} style={{ backgroundColor: '#2196F3' }}></span>
-						<span>Utilization Rate</span>
+						<span>Current utilization</span>
 					</div>
+					{interestRateMetrics.modelType !== 'WhitePaper' && (
+						<div className={css.legendItem}>
+							<span className={css.legendDot} style={{ backgroundColor: '#FF9800' }}></span>
+							<span>Kink point</span>
+						</div>
+					)}
 				</div>
 			</div>
 		</Card>

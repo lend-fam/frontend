@@ -1,4 +1,14 @@
-import { type FC } from 'react';
+import { type FC, useMemo } from 'react';
+import {
+	LineChart,
+	Line,
+	XAxis,
+	YAxis,
+	CartesianGrid,
+	Tooltip,
+	ResponsiveContainer,
+	ReferenceLine,
+} from 'recharts';
 
 interface InterestRateChartProps {
 	currentRate: number;
@@ -17,69 +27,43 @@ export const InterestRateChart: FC<InterestRateChartProps> = ({
 	currentUtilization,
 	interestRateParams,
 }) => {
-	const width = 800;
-	const height = 240;
-	const padding = 50;
-
-	// Generate curve data points using real interest rate model
-	const generateCurveData = () => {
-		const points = [];
-
+	const chartData = useMemo(() => {
 		if (!interestRateParams) {
 			return [];
 		}
 
 		const { baseRateAPY, multiplierAPY, jumpMultiplierAPY, kinkUtilization, modelType } = interestRateParams;
+		const points = [];
 
-		// Calculate max rate to set proper scale
-		let maxRate;
-		if (modelType === 'WhitePaper') {
-			// For WhitePaper: max rate at 100% utilization
-			maxRate = baseRateAPY + multiplierAPY;
-		} else {
-			// For JumpRate: calculate rate at 100% utilization
-			const kink = (kinkUtilization || 80) / 100;
-			const rateAtKink = baseRateAPY + kink * multiplierAPY;
-			maxRate = rateAtKink + (1 - kink) * (jumpMultiplierAPY || 0);
-		}
-
-		// Set scale with some padding - use at least 10% to show the curve properly
-		const displayMaxAPY = Math.max(maxRate * 1.2, 10);
-
-		for (let i = 0; i <= 100; i += 2) {
-			const utilization = i / 100; // Convert to decimal
+		for (let i = 0; i <= 100; i += 1) {
+			const utilization = i / 100;
 			let rate;
 
 			if (modelType === 'WhitePaper') {
-				// Linear model: rate = baseRate + (utilization * multiplier)
 				rate = baseRateAPY + utilization * multiplierAPY;
 			} else {
-				// Jump rate model
 				const kink = (kinkUtilization || 80) / 100;
 
 				if (utilization <= kink) {
-					// Before kink: linear slope
 					rate = baseRateAPY + utilization * multiplierAPY;
 				} else {
-					// After kink: steeper slope
 					const rateAtKink = baseRateAPY + kink * multiplierAPY;
 					const excessUtilization = utilization - kink;
 					rate = rateAtKink + excessUtilization * (jumpMultiplierAPY || 0);
 				}
 			}
 
-			const x = padding + (i / 100) * (width - 2 * padding);
-			const y = height - padding - (rate / displayMaxAPY) * (height - 2 * padding);
-
-			points.push({ x, y, utilization: i, rate, maxAPY: displayMaxAPY });
+			points.push({
+				utilization: i,
+				rate: Number(rate.toFixed(3)),
+				isCurrentPosition: Math.abs(i - currentUtilization) < 0.5,
+			});
 		}
+
 		return points;
-	};
+	}, [interestRateParams, currentUtilization]);
 
-	const curveData = generateCurveData();
-
-	// Show loading state if no contract data yet
-	if (!interestRateParams || curveData.length === 0) {
+	if (!interestRateParams || chartData.length === 0) {
 		return (
 			<div
 				style={{
@@ -96,144 +80,89 @@ export const InterestRateChart: FC<InterestRateChartProps> = ({
 		);
 	}
 
-	const pathData = `M ${curveData.map((p) => `${p.x},${p.y}`).join(' L ')}`;
+	const kinkUtilization = interestRateParams.kinkUtilization || 80;
 
-	// Get dynamic scale from curve data
-	const dynamicMaxAPY = curveData.length > 0 ? curveData[0].maxAPY : 10;
-
-	// Current position - properly scaled with real contract data
-	const currentX = padding + (currentUtilization / 100) * (width - 2 * padding);
-
-	// Use real kink utilization from contract
-	const optimalUtilization = interestRateParams.kinkUtilization || 45;
-	const optimalX = padding + (optimalUtilization / 100) * (width - 2 * padding);
+	const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) => {
+		if (active && payload && payload.length) {
+			return (
+				<div
+					style={{
+						backgroundColor: 'rgba(255, 255, 255, 0.95)',
+						padding: '12px',
+						border: '1px solid #E0E0E0',
+						borderRadius: '8px',
+						boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+					}}>
+					<p style={{ margin: 0, fontWeight: 'bold' }}>Utilization: {label}%</p>
+					<p style={{ margin: '4px 0 0', color: '#4CAF50' }}>Borrow APY: {payload[0].value.toFixed(2)}%</p>
+				</div>
+			);
+		}
+		return null;
+	};
 
 	return (
-		<svg
-			width="100%"
-			height="100%"
-			viewBox={`0 0 ${width} ${height}`}
-			preserveAspectRatio="xMidYMid meet"
-			style={{ display: 'block', maxWidth: '100%', maxHeight: '100%' }}>
-			{/* Subtle grid lines - horizontal */}
-			{[dynamicMaxAPY * 0.25, dynamicMaxAPY * 0.5, dynamicMaxAPY * 0.75].map((rate) => (
-				<line
-					key={`h-${rate}`}
-					x1={padding}
-					y1={height - padding - (rate / dynamicMaxAPY) * (height - 2 * padding)}
-					x2={width - padding}
-					y2={height - padding - (rate / dynamicMaxAPY) * (height - 2 * padding)}
-					stroke="rgba(0, 0, 0, 0.1)"
-					strokeWidth={1}
-				/>
-			))}
+		<div style={{ width: '100%', height: '240px' }}>
+			<ResponsiveContainer width="100%" height="100%">
+				<LineChart data={chartData} margin={{ top: 50, right: 30, left: 20, bottom: 20 }}>
+					<CartesianGrid strokeDasharray="3 3" stroke="rgba(0, 0, 0, 0.1)" />
+					<XAxis
+						dataKey="utilization"
+						type="number"
+						domain={[0, 100]}
+						tickFormatter={(value) => `${value}%`}
+						stroke="#999"
+						fontSize={12}
+					/>
+					<YAxis tickFormatter={(value) => `${value}%`} stroke="#999" fontSize={12} />
+					<Tooltip content={<CustomTooltip />} />
 
-			{/* Interest rate curve - green to match image */}
-			<path
-				d={pathData}
-				fill="none"
-				stroke="#4CAF50"
-				strokeWidth={3}
-				strokeLinecap="round"
-				strokeLinejoin="round"
-			/>
+					<Line
+						type="monotone"
+						dataKey="rate"
+						stroke="#4CAF50"
+						strokeWidth={3}
+						dot={false}
+						activeDot={{ r: 6, fill: '#4CAF50' }}
+					/>
 
-			{/* Current position vertical line */}
-			<line
-				x1={currentX}
-				y1={padding}
-				x2={currentX}
-				y2={height - padding}
-				stroke="#2196F3"
-				strokeWidth={2}
-				strokeDasharray="5,5"
-			/>
+					<ReferenceLine
+						x={currentUtilization}
+						stroke="#2196F3"
+						strokeWidth={2}
+						strokeDasharray="5 5"
+						label={{
+							value: `Current: ${currentRate.toFixed(2)}%`,
+							position: 'top',
+							offset: 13,
+							style: {
+								fontSize: '11px',
+								fontWeight: 'bold',
+								fill: '#2196F3',
+							},
+						}}
+					/>
 
-			{/* Optimal position vertical line */}
-			<line
-				x1={optimalX}
-				y1={padding}
-				x2={optimalX}
-				y2={height - padding}
-				stroke="#2196F3"
-				strokeWidth={2}
-				strokeDasharray="5,5"
-			/>
-
-			{/* Current position label */}
-			<text x={currentX} y={padding - 30} fontSize="12" fill="#333" textAnchor="middle" fontWeight="600">
-				Current
-			</text>
-			<text x={currentX} y={padding - 15} fontSize="12" fill="#333" textAnchor="middle" fontWeight="600">
-				{currentRate.toFixed(2)}%
-			</text>
-
-			{/* Optimal position label */}
-			<text x={optimalX} y={padding - 25} fontSize="12" fill="#333" textAnchor="middle" fontWeight="600">
-				Optimal
-			</text>
-			<text x={optimalX} y={padding - 10} fontSize="12" fill="#333" textAnchor="middle" fontWeight="600">
-				{optimalUtilization.toFixed(0)}%
-			</text>
-
-			{/* X-axis labels */}
-			<text x={padding} y={height - 15} fontSize="12" fill="#999" textAnchor="middle">
-				0%
-			</text>
-			<text
-				x={padding + (25 / 100) * (width - 2 * padding)}
-				y={height - 15}
-				fontSize="12"
-				fill="#999"
-				textAnchor="middle">
-				25%
-			</text>
-			<text x={width / 2} y={height - 15} fontSize="12" fill="#999" textAnchor="middle">
-				50%
-			</text>
-			<text
-				x={padding + (75 / 100) * (width - 2 * padding)}
-				y={height - 15}
-				fontSize="12"
-				fill="#999"
-				textAnchor="middle">
-				75%
-			</text>
-			<text x={width - padding} y={height - 15} fontSize="12" fill="#999" textAnchor="middle">
-				100%
-			</text>
-
-			{/* Y-axis labels */}
-			<text x={5} y={height - padding + 4} fontSize="12" fill="#999" textAnchor="start">
-				0%
-			</text>
-			<text
-				x={5}
-				y={height - padding - 0.25 * (height - 2 * padding) + 4}
-				fontSize="12"
-				fill="#999"
-				textAnchor="start">
-				{(dynamicMaxAPY * 0.25).toFixed(1)}%
-			</text>
-			<text
-				x={5}
-				y={height - padding - 0.5 * (height - 2 * padding) + 4}
-				fontSize="12"
-				fill="#999"
-				textAnchor="start">
-				{(dynamicMaxAPY * 0.5).toFixed(1)}%
-			</text>
-			<text
-				x={5}
-				y={height - padding - 0.75 * (height - 2 * padding) + 4}
-				fontSize="12"
-				fill="#999"
-				textAnchor="start">
-				{(dynamicMaxAPY * 0.75).toFixed(1)}%
-			</text>
-			<text x={5} y={padding + 4} fontSize="12" fill="#999" textAnchor="start">
-				{dynamicMaxAPY.toFixed(1)}%
-			</text>
-		</svg>
+					{interestRateParams.modelType !== 'WhitePaper' && (
+						<ReferenceLine
+							x={kinkUtilization}
+							stroke="#FF9800"
+							strokeWidth={2}
+							strokeDasharray="3 3"
+							label={{
+								value: `Kink: ${kinkUtilization.toFixed(0)}%`,
+								position: 'top',
+								offset: 13,
+								style: {
+									fontSize: '11px',
+									fontWeight: 'bold',
+									fill: '#FF9800',
+								},
+							}}
+						/>
+					)}
+				</LineChart>
+			</ResponsiveContainer>
+		</div>
 	);
 };

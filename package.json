@@ -10,7 +10,9 @@
     "lint": "eslint .",
     "lint:fix": "eslint --fix",
     "prettier": "prettier --check './**/*.{js,mjs,cjs,ts,tsx}'",
-    "prettier:fix": "prettier --write './**/*.{js,mjs,cjs,ts,tsx}'"
+    "prettier:fix": "prettier --write './**/*.{js,mjs,cjs,ts,tsx}'",
+    "codegen": "graphql-codegen --config codegen.ts",
+    "codegen:watch": "graphql-codegen --config codegen.ts --watch"
   },
   "repository": {
     "type": "git",
@@ -23,22 +25,30 @@
   },
   "homepage": "https://github.com/lend-fam/frontend#readme",
   "dependencies": {
+    "@apollo/client": "^3.11.11",
     "@marsidev/react-turnstile": "^1.1.0",
     "@rainbow-me/rainbowkit": "^2.2.0",
     "@tanstack/react-query": "^5.64.1",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "classnames": "^2.5.1",
+    "graphql": "^16.10.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.3",
+    "recharts": "^2.12.7",
     "reset-css": "^5.0.2",
     "viem": "^2.21.66",
     "wagmi": "^2.9.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.0",
+    "@graphql-codegen/cli": "^5.0.3",
+    "@graphql-codegen/typescript": "^4.1.1",
+    "@graphql-codegen/typescript-operations": "^4.3.1",
+    "@graphql-codegen/typescript-react-apollo": "^4.3.0",
     "@tanstack/react-query-devtools": "^5.83.0",
+    "@types/node": "^22.10.7",
     "@vitejs/plugin-react": "^4.6.0",
     "eslint": "^9.30.0",
     "eslint-plugin-react": "^7.37.5",

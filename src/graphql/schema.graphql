@@ -1,0 +1,340 @@
+scalar Int8
+scalar BigInt
+scalar Bytes
+scalar Timestamp
+
+enum WeightFunctionType {
+  LINEAR
+  EXPONENTIAL
+}
+
+enum CollectionType {
+  ERC721
+  ERC1155
+}
+
+enum EpochStatus {
+  ACTIVE
+  COMPLETED
+  FAILED
+}
+
+interface Timestamped {
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  updatedAtBlock: BigInt!
+  updatedAtTimestamp: BigInt!
+}
+
+type CollectionRegistry {
+  id: ID!
+  totalCollections: BigInt!
+  totalActiveCollections: BigInt!
+  collections: [Collection!]!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  updatedAtBlock: BigInt!
+  updatedAtTimestamp: BigInt!
+}
+
+type Collection {
+  id: ID!
+  contractAddress: Bytes!
+  name: String!
+  symbol: String!
+  totalSupply: BigInt!
+  collectionType: CollectionType!
+  registry: CollectionRegistry!
+  isActive: Boolean!
+  yieldSharePercentage: BigInt!
+  weightFunctionType: WeightFunctionType!
+  weightFunctionP1: BigInt!
+  weightFunctionP2: BigInt!
+  collectionVaultSubsidies: [CollectionVaultSubsidy!]!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  updatedAtBlock: BigInt!
+  updatedAtTimestamp: BigInt!
+}
+
+type EpochManager {
+  id: ID!
+  currentEpochId: BigInt!
+  currentEpoch: Epoch!
+  epochs: [Epoch!]!
+  vault: MarketVault!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  updatedAtBlock: BigInt!
+  updatedAtTimestamp: BigInt!
+}
+
+type Epoch {
+  id: ID!
+  epochNumber: BigInt!
+  epochManager: EpochManager!
+  status: EpochStatus!
+  startTimestamp: BigInt!
+  endTimestamp: BigInt!
+  processingStartedTimestamp: BigInt
+  processingCompletedTimestamp: BigInt
+  totalYieldAvailable: BigInt!
+  totalYieldAllocated: BigInt!
+  totalYieldDistributed: BigInt!
+  remainingYield: BigInt!
+  totalSubsidiesDistributed: BigInt!
+  totalEligibleUsers: BigInt!
+  totalParticipatingCollections: BigInt!
+  processingTimeMs: BigInt
+  processingGasUsed: BigInt
+  processingTransactionCount: BigInt
+  subsidyDistributions: [SubsidyDistribution!]!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  updatedAtBlock: BigInt!
+  updatedAtTimestamp: BigInt!
+}
+
+type CTokenMarket {
+  id: ID!
+  symbol: String!
+  name: String!
+  decimals: Int!
+  totalSupply: BigInt!
+  totalBorrows: BigInt!
+  totalReserves: BigInt!
+  exchangeRate: BigInt!
+  borrowIndex: BigInt!
+  collateralFactor: BigInt!
+  reserveFactor: BigInt!
+  baseRatePerBlock: BigInt!
+  multiplierPerBlock: BigInt!
+  jumpMultiplierPerBlock: BigInt!
+  kink: BigInt!
+  vaults: [MarketVault!]!
+  accountMarkets: [AccountMarket!]!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  updatedAtBlock: BigInt!
+  updatedAtTimestamp: BigInt!
+}
+
+type Account {
+  id: ID!
+  totalSecondsClaimed: BigInt!
+  totalNFTsOwned: BigInt!
+  totalCollectionsParticipated: BigInt!
+  markets: [AccountMarket!]!
+  accountSubsidies: [AccountVaultSubsidy!]!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  updatedAtBlock: BigInt!
+  updatedAtTimestamp: BigInt!
+}
+
+type AccountMarket {
+  id: ID!
+  account: Account!
+  cTokenMarket: CTokenMarket!
+  supplyBalance: BigInt!
+  borrowBalance: BigInt!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  updatedAtBlock: BigInt!
+  updatedAtTimestamp: BigInt!
+}
+
+type MarketVault {
+  id: ID!
+  cTokenMarket: CTokenMarket!
+  totalShares: BigInt!
+  totalCTokens: BigInt!
+  globalDepositIndex: BigInt!
+  totalPrincipalDeposited: BigInt!
+  collectionRegistry: CollectionRegistry!
+  lendingManager: LendingManager!
+  debtSubsidizer: DebtSubsidizer!
+  secondsAccumulated: BigInt!
+  secondsClaimed: BigInt!
+  subsidiesAccrued: BigInt!
+  subsidiesClaimed: BigInt!
+  collectionVaultSubsidies: [CollectionVaultSubsidy!]!
+  accountVaultSubsidies: [AccountVaultSubsidy!]!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  updatedAtBlock: BigInt!
+  updatedAtTimestamp: BigInt!
+}
+
+type LendingManager {
+  id: ID!
+  totalMarketParticipants: BigInt!
+  vault: MarketVault!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  updatedAtBlock: BigInt!
+  updatedAtTimestamp: BigInt!
+}
+
+type DebtSubsidizer {
+  id: ID!
+  totalSubsidiesDistributed: BigInt!
+  subsidyDistributions: [SubsidyDistribution!]!
+  vaults: [MarketVault!]!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  updatedAtBlock: BigInt!
+  updatedAtTimestamp: BigInt!
+}
+
+type CollectionVaultSubsidy {
+  id: ID!
+  collection: Collection!
+  vault: MarketVault!
+  secondsAccumulated: BigInt!
+  secondsClaimed: BigInt!
+  subsidiesAccrued: BigInt!
+  subsidiesClaimed: BigInt!
+  accountCollectionSubsidies: [AccountCollectionSubsidy!]!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  updatedAtBlock: BigInt!
+  updatedAtTimestamp: BigInt!
+}
+
+type AccountVaultSubsidy {
+  id: ID!
+  account: Account!
+  accountMarket: AccountMarket!
+  vault: MarketVault!
+  lastEffectiveValue: BigInt!
+  secondsAccumulated: BigInt!
+  secondsClaimed: BigInt!
+  subsidiesAccrued: BigInt!
+  subsidiesClaimed: BigInt!
+  accountCollectionSubsidies: [AccountCollectionSubsidy!]!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  updatedAtBlock: BigInt!
+  updatedAtTimestamp: BigInt!
+}
+
+type AccountCollectionSubsidy {
+  id: ID!
+  account: Account!
+  collection: Collection!
+  vault: MarketVault!
+  accountVaultSubsidy: AccountVaultSubsidy!
+  collectionVaultSubsidy: CollectionVaultSubsidy!
+  lastEffectiveValue: BigInt!
+  secondsAccumulated: BigInt!
+  secondsClaimed: BigInt!
+  subsidiesAccrued: BigInt!
+  subsidiesClaimed: BigInt!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  updatedAtBlock: BigInt!
+  updatedAtTimestamp: BigInt!
+}
+
+type SubsidyDistribution {
+  id: ID!
+  epoch: Epoch!
+  debtSubsidizer: DebtSubsidizer!
+  user: Account!
+  collection: Collection!
+  vault: MarketVault!
+  subsidyAmount: BigInt!
+  borrowAmountBefore: BigInt!
+  borrowAmountAfter: BigInt!
+  nftBalance: BigInt!
+  weightedContribution: BigInt!
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+  updatedAtBlock: BigInt!
+  updatedAtTimestamp: BigInt!
+}
+
+type CTokenAPYData {
+  id: Int8!
+  timestamp: Timestamp!
+  cTokenMarket: String!
+  interval: String!
+  supplyAPY: BigInt!
+  borrowAPY: BigInt!
+  utilizationRate: BigInt!
+  totalSupply: BigInt!
+  totalBorrows: BigInt!
+  exchangeRate: BigInt!
+  baseRatePerBlock: BigInt!
+  multiplierPerBlock: BigInt!
+  jumpMultiplierPerBlock: BigInt!
+  kink: BigInt!
+  blockNumber: BigInt!
+  transactionHash: Bytes!
+}
+
+type APYStats {
+  id: Int8!
+  timestamp: Timestamp!
+  cTokenMarket: String!
+  interval: String!
+  supplyAPY_min: BigInt!
+  supplyAPY_max: BigInt!
+  supplyAPY_first: BigInt!
+  supplyAPY_last: BigInt!
+  borrowAPY_min: BigInt!
+  borrowAPY_max: BigInt!
+  borrowAPY_first: BigInt!
+  borrowAPY_last: BigInt!
+  utilizationRate_min: BigInt!
+  utilizationRate_max: BigInt!
+  utilizationRate_first: BigInt!
+  utilizationRate_last: BigInt!
+  totalSupply_min: BigInt!
+  totalSupply_max: BigInt!
+  totalSupply_first: BigInt!
+  totalSupply_last: BigInt!
+  totalBorrows_min: BigInt!
+  totalBorrows_max: BigInt!
+  totalBorrows_first: BigInt!
+  totalBorrows_last: BigInt!
+  exchangeRate_min: BigInt!
+  exchangeRate_max: BigInt!
+  exchangeRate_first: BigInt!
+  exchangeRate_last: BigInt!
+  dataPoints: BigInt!
+}
+
+type Query {
+  apyStats(
+    where: APYStatsFilter
+    orderBy: String
+    orderDirection: String
+    first: Int
+    skip: Int
+  ): [APYStats!]!
+  
+  cTokenAPYData(
+    where: CTokenAPYDataFilter
+    orderBy: String
+    orderDirection: String
+    first: Int
+    skip: Int
+  ): [CTokenAPYData!]!
+  
+  cTokenMarket(id: ID!): CTokenMarket
+}
+
+input APYStatsFilter {
+  cTokenMarket: String
+  interval: String
+  timestamp_gte: Int
+  timestamp_lte: Int
+}
+
+input CTokenAPYDataFilter {
+  cTokenMarket: String
+  timestamp_gte: Int
+  timestamp_lte: Int
+}

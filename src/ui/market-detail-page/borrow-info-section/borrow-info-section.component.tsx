@@ -1,11 +1,13 @@
-import { type FC, useMemo } from 'react';
+import { type FC, useMemo, useState } from 'react';
 import type { Address } from 'viem';
 import { formatUnits } from 'viem';
 import { ProgressCircle } from '../reserve-status-section/progress-circle/progress-circle.component';
-import { APYChart } from '../reserve-status-section/apy-chart/apy-chart.component';
+import { EnhancedAPYChartDebug } from '../reserve-status-section/apy-chart/enhanced-apy-chart-debug.component';
+import { TimeRangeSelector } from '../reserve-status-section/time-range-selector/time-range-selector.component';
 import { MarketService } from '../../../services';
 import { Card } from '../../../ui-kit/components/card/card.component';
 import { SectionHeader } from '../../../ui-kit/components/section-header/section-header.component';
+import { type TimeRange } from '../../../hooks/use-apy-chart-data.hook';
 
 import css from './borrow-info-section.module.css';
 
@@ -25,7 +27,14 @@ interface BorrowInfoSectionProps {
 	liquidityData?: bigint;
 }
 
-export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({ symbol, marketData, apyData, liquidityData }) => {
+export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({
+	symbol,
+	marketAddress,
+	marketData,
+	apyData,
+	liquidityData,
+}) => {
+	const [selectedTimeRange, setSelectedTimeRange] = useState<TimeRange>('7d');
 	const borrowMetrics = useMemo(() => {
 		const totalBorrowedTokens = Number(formatUnits(marketData.totalBorrows, 18));
 		const availableToBorrow = liquidityData ? Number(formatUnits(liquidityData, 18)) : 0;
@@ -34,9 +43,6 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({ symbol, marketDa
 				? Number(formatUnits((marketData.totalSupply * marketData.exchangeRate) / 10n ** 18n, 18))
 				: 0;
 
-		const finalTotalBorrowed = totalBorrowedTokens;
-		const finalAvailableToBorrow = availableToBorrow;
-		const finalTotalSupplied = totalSuppliedUnderlying;
 
 		const utilizationRate = MarketService.calculateUtilizationRate(
 			marketData.totalSupply,
@@ -44,14 +50,14 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({ symbol, marketDa
 			marketData.exchangeRate,
 		);
 
-		const maxBorrowCapacity = finalTotalSupplied * 0.85;
+		const maxBorrowCapacity = totalSuppliedUnderlying * 0.85;
 		const borrowProgress =
-			maxBorrowCapacity > 0 ? Math.min((finalTotalBorrowed / maxBorrowCapacity) * 100, 100) : 0;
+			maxBorrowCapacity > 0 ? Math.min((totalBorrowedTokens / maxBorrowCapacity) * 100, 100) : 0;
 
 		return {
-			totalBorrowedTokens: finalTotalBorrowed,
-			availableToBorrow: finalAvailableToBorrow,
-			totalSuppliedUnderlying: finalTotalSupplied,
+			totalBorrowedTokens,
+			availableToBorrow,
+			totalSuppliedUnderlying,
 			utilizationRate,
 			maxBorrowCapacity,
 			borrowProgress,
@@ -131,11 +137,26 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({ symbol, marketDa
 				</div>
 
 				<div className={css.chartSection}>
-					<APYChart data={borrowApyTrendData} color="#F58FC7" />
-					<div className={css.chartLegend}>
-						<span className={css.legendDot}></span>
-						<span>Borrow APY, variable</span>
+					<div
+						style={{
+							display: 'flex',
+							justifyContent: 'space-between',
+							alignItems: 'center',
+							marginBottom: '12px',
+						}}>
+						<div className={css.chartLegend}>
+							<span className={css.legendDot}></span>
+							<span>Borrow APY, variable</span>
+						</div>
+						<TimeRangeSelector selectedRange={selectedTimeRange} onRangeChange={setSelectedTimeRange} />
 					</div>
+					<EnhancedAPYChartDebug
+						cTokenMarket={marketAddress.toLowerCase()}
+						timeRange={selectedTimeRange}
+						metric="borrow"
+						color="#F58FC7"
+						fallbackData={borrowApyTrendData}
+					/>
 				</div>
 			</div>
 		</Card>
