@@ -3,15 +3,18 @@ import { gql } from '@apollo/client';
 
 const TEST_SUBGRAPH_QUERY = gql`
 	query TestSubgraph {
-		apyStats(first: 5) {
+		ctokenAPYDatas(first: 5, orderBy: "timestamp", orderDirection: "desc") {
 			id
 			timestamp
 			cTokenMarket
 			interval
-			supplyAPY_last
-			borrowAPY_last
-			utilizationRate_last
-			dataPoints
+			supplyAPY
+			borrowAPY
+			utilizationRate
+			totalSupply
+			totalBorrows
+			exchangeRate
+			blockNumber
 		}
 	}
 `;
@@ -21,14 +24,7 @@ export const useSubgraphTest = () => {
 		errorPolicy: 'all',
 	});
 
-	if (error) {
-		console.log('Subgraph Test Result:', {
-			loading,
-			error: error?.message,
-			networkError: error?.networkError,
-			graphQLErrors: error?.graphQLErrors,
-		});
-	}
+	// Debug hook - console logs removed for production
 
 	return { data, loading, error };
 };

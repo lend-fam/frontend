@@ -307,15 +307,7 @@ type APYStats {
 }
 
 type Query {
-  apyStats(
-    where: APYStatsFilter
-    orderBy: String
-    orderDirection: String
-    first: Int
-    skip: Int
-  ): [APYStats!]!
-  
-  cTokenAPYData(
+  ctokenAPYDatas(
     where: CTokenAPYDataFilter
     orderBy: String
     orderDirection: String
@@ -323,18 +315,25 @@ type Query {
     skip: Int
   ): [CTokenAPYData!]!
   
-  cTokenMarket(id: ID!): CTokenMarket
-}
-
-input APYStatsFilter {
-  cTokenMarket: String
-  interval: String
-  timestamp_gte: Int
-  timestamp_lte: Int
+  ctokenMarkets(
+    where: CTokenMarketFilter
+    orderBy: String
+    orderDirection: String
+    first: Int
+    skip: Int
+  ): [CTokenMarket!]!
+  
+  ctokenMarket(id: ID!): CTokenMarket
 }
 
 input CTokenAPYDataFilter {
   cTokenMarket: String
   timestamp_gte: Int
   timestamp_lte: Int
+}
+
+input CTokenMarketFilter {
+  id: ID
+  symbol: String
+  name: String
 }

@@ -43,7 +43,6 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({
 				? Number(formatUnits((marketData.totalSupply * marketData.exchangeRate) / 10n ** 18n, 18))
 				: 0;
 
-
 		const utilizationRate = MarketService.calculateUtilizationRate(
 			marketData.totalSupply,
 			marketData.totalBorrows,
@@ -148,7 +147,7 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({
 							<span className={css.legendDot}></span>
 							<span>Borrow APY, variable</span>
 						</div>
-						<TimeRangeSelector selectedRange={selectedTimeRange} onRangeChange={setSelectedTimeRange} />
+						<TimeRangeSelector selectedRange={selectedTimeRange} onRangeChange={setSelectedTimeRange} cTokenMarket={marketAddress.toLowerCase()} />
 					</div>
 					<EnhancedAPYChartDebug
 						cTokenMarket={marketAddress.toLowerCase()}

@@ -30,7 +30,7 @@ export const useAPYChartData = ({ cTokenMarket, timeRange, metric }: UseAPYChart
 	const chartData = useMemo(() => {
 		if (!historicalData?.length) return [];
 
-		return historicalData.map((point): APYChartDataPoint => {
+		return historicalData.map((point: any): APYChartDataPoint => {
 			const date = new Date(point.timestamp * 1000);
 			let dateString: string;
 

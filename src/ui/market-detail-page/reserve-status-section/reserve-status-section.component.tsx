@@ -38,7 +38,7 @@ export const ReserveStatusSection: FC<ReserveStatusSectionProps> = ({
 }) => {
 	const { data: nativeYieldData } = useNativeYield();
 	const [selectedTimeRange, setSelectedTimeRange] = useState<TimeRange>('7d');
-	
+
 	const supplyMetrics = useMemo(() => {
 		const totalSuppliedUnderlying =
 			marketData.exchangeRate > 0n ? (marketData.totalSupply * marketData.exchangeRate) / 10n ** 18n : 0n;
@@ -163,7 +163,7 @@ export const ReserveStatusSection: FC<ReserveStatusSectionProps> = ({
 								<span className={css.legendDot}></span>
 								<span>Supply APY</span>
 							</div>
-							<TimeRangeSelector selectedRange={selectedTimeRange} onRangeChange={setSelectedTimeRange} />
+							<TimeRangeSelector selectedRange={selectedTimeRange} onRangeChange={setSelectedTimeRange} cTokenMarket={marketAddress.toLowerCase()} />
 						</div>
 						<EnhancedAPYChartDebug
 							cTokenMarket={marketAddress.toLowerCase()}

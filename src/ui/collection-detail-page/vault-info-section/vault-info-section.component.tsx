@@ -168,7 +168,7 @@ const createVaultColumns = (): TableColumnProps<VaultData, VaultTableColumn>[] =
 		label: '',
 		width: '20%',
 		align: 'right',
-		cellRenderer: ({ data, style }) => (
+		cellRenderer: ({ style }) => (
 			<div
 				style={{
 					...style,
@@ -183,7 +183,6 @@ const createVaultColumns = (): TableColumnProps<VaultData, VaultTableColumn>[] =
 					size="medium"
 					onClick={() => {
 						// TODO: Navigate to vault detail page
-						console.log('View vault:', data.address);
 					}}>
 					View
 				</Button>
@@ -192,7 +191,6 @@ const createVaultColumns = (): TableColumnProps<VaultData, VaultTableColumn>[] =
 					size="medium"
 					onClick={() => {
 						// TODO: Manage vault
-						console.log('Manage vault:', data.address);
 					}}>
 					Manage
 				</Button>

@@ -1,14 +1,5 @@
 import { type FC, useMemo } from 'react';
-import {
-	LineChart,
-	Line,
-	XAxis,
-	YAxis,
-	CartesianGrid,
-	Tooltip,
-	ResponsiveContainer,
-	ReferenceLine,
-} from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 
 interface InterestRateChartProps {
 	currentRate: number;
@@ -82,7 +73,15 @@ export const InterestRateChart: FC<InterestRateChartProps> = ({
 
 	const kinkUtilization = interestRateParams.kinkUtilization || 80;
 
-	const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) => {
+	const CustomTooltip = ({
+		active,
+		payload,
+		label,
+	}: {
+		active?: boolean;
+		payload?: Array<{ value: number }>;
+		label?: string;
+	}) => {
 		if (active && payload && payload.length) {
 			return (
 				<div

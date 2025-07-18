@@ -21,22 +21,18 @@ const ManagementModalComponent: FC<ManagementModalProps> = ({ isOpen, onClose, c
 
 	const handleEditYieldShare = () => {
 		// TODO: Implement edit yield share functionality
-		console.log('Edit yield share');
 	};
 
 	const handleEditWeightFunction = () => {
 		// TODO: Implement edit weight function functionality
-		console.log('Edit weight function');
 	};
 
 	const handleToggleStatus = () => {
 		// TODO: Implement toggle status functionality
-		console.log('Toggle status');
 	};
 
 	const handleRemoveCollection = () => {
 		// TODO: Implement remove collection functionality
-		console.log('Remove collection');
 	};
 
 	return (

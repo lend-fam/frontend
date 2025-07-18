@@ -41,8 +41,8 @@ const CollectionHeaderComponent: FC<CollectionHeaderProps> = ({ collectionData, 
 			}
 			setIsCopied(true);
 			setTimeout(() => setIsCopied(false), 2000);
-		} catch (error) {
-			console.error('Failed to copy address:', error);
+		} catch {
+			// Silent error - user will see copy didn't work
 		}
 	}, [collectionAddress]);
 

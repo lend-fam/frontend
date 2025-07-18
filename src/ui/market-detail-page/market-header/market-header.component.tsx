@@ -48,8 +48,8 @@ export const MarketHeader: FC<MarketHeaderProps> = ({ symbol, marketAddress, mar
 			}
 			setIsCopied(true);
 			setTimeout(() => setIsCopied(false), 2000);
-		} catch (error) {
-			console.error('Failed to copy address:', error);
+		} catch {
+			// Silent error - user will see copy didn't work
 		}
 	}, [marketAddress]);
 
@@ -130,17 +130,10 @@ export const MarketHeader: FC<MarketHeaderProps> = ({ symbol, marketAddress, mar
 	);
 
 	// Format oracle price using real data or show loading/unavailable
-	console.log('Oracle Price Data:', {
-		oracleAddress,
-		oraclePrice: oraclePrice?.toString(),
-		symbol,
-	});
-
 	let formattedOraclePrice: string;
 	if (oraclePrice && oraclePrice > 0n) {
 		// Oracle prices are usually scaled by 1e18 or 1e36, check the scale
 		const priceNumber = Number(oraclePrice) / 1e18; // Try 1e18 first
-		console.log('Formatted price number:', priceNumber);
 		formattedOraclePrice = PriceService.formatUSDValue(priceNumber.toString());
 	} else {
 		formattedOraclePrice = 'Price unavailable';

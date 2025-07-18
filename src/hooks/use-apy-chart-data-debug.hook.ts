@@ -29,36 +29,43 @@ export const useAPYChartDataDebug = ({ cTokenMarket, timeRange, metric }: UseAPY
 	const chartData = useMemo(() => {
 		if (!historicalData?.length) return [];
 
-		return historicalData.map((point: { timestamp: number; supplyAPY: number; borrowAPY: number; utilizationRate: number }): APYChartDataPoint => {
-			const date = new Date(point.timestamp * 1000);
-			let dateString: string;
+		return historicalData.map(
+			(point: {
+				timestamp: number;
+				supplyAPY: number;
+				borrowAPY: number;
+				utilizationRate: number;
+			}): APYChartDataPoint => {
+				const date = new Date(point.timestamp * 1000);
+				let dateString: string;
 
-			switch (timeRange) {
-				case '24h':
-					dateString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-					break;
-				case '7d':
-					dateString = date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-					break;
-				case '30d':
-				case '90d':
-					dateString = date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-					break;
-				case '1y':
-					dateString = date.toLocaleDateString([], { month: 'short', year: '2-digit' });
-					break;
-				default:
-					dateString = date.toLocaleDateString();
-			}
+				switch (timeRange) {
+					case '24h':
+						dateString = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+						break;
+					case '7d':
+						dateString = date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+						break;
+					case '30d':
+					case '90d':
+						dateString = date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+						break;
+					case '1y':
+						dateString = date.toLocaleDateString([], { month: 'short', year: '2-digit' });
+						break;
+					default:
+						dateString = date.toLocaleDateString();
+				}
 
-			return {
-				timestamp: point.timestamp,
-				supply: point.supplyAPY,
-				borrow: point.borrowAPY,
-				utilization: point.utilizationRate,
-				date: dateString,
-			};
-		});
+				return {
+					timestamp: point.timestamp,
+					supply: point.supplyAPY,
+					borrow: point.borrowAPY,
+					utilization: point.utilizationRate,
+					date: dateString,
+				};
+			},
+		);
 	}, [historicalData, timeRange]);
 
 	const currentValue = useMemo(() => {
@@ -82,16 +89,7 @@ export const useAPYChartDataDebug = ({ cTokenMarket, timeRange, metric }: UseAPY
 		return ((latest[metric] - previous[metric]) / previous[metric]) * 100;
 	}, [chartData, metric]);
 
-	if (error || isMockData) {
-		console.log('APY Chart Data Debug:', {
-			cTokenMarket,
-			timeRange,
-			metric,
-			error: error?.message,
-			chartDataLength: chartData.length,
-			isMockData,
-		});
-	}
+	// Debug hook - console logs removed for production
 
 	return {
 		data: chartData,

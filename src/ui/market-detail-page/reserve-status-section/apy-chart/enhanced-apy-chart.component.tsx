@@ -23,6 +23,11 @@ export const EnhancedAPYChart: FC<EnhancedAPYChartProps> = typedMemo(
 			metric,
 		});
 
+		// Check if we're using mock data (indicates zero APY from subgraph)
+		const isUsingMockData = chartData.length > 0 && chartData.every(point => 
+			point.supply >= 0.03 && point.supply <= 0.07 // Mock data range
+		);
+
 		const displayData =
 			chartData.length > 0
 				? chartData
@@ -94,7 +99,23 @@ export const EnhancedAPYChart: FC<EnhancedAPYChartProps> = typedMemo(
 		};
 
 		return (
-			<div style={{ width: '100%', height: '145px' }}>
+			<div style={{ width: '100%', height: '145px', position: 'relative' }}>
+				{isUsingMockData && (
+					<div style={{
+						position: 'absolute',
+						top: '5px',
+						right: '5px',
+						background: '#fef3c7',
+						color: '#92400e',
+						padding: '2px 6px',
+						borderRadius: '4px',
+						fontSize: '10px',
+						fontWeight: 'bold',
+						zIndex: 10,
+					}}>
+						DEMO DATA
+					</div>
+				)}
 				<ResponsiveContainer width="100%" height="100%">
 					<LineChart data={displayData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
 						<CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />

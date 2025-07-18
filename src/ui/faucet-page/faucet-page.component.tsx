@@ -33,7 +33,6 @@ export const FaucetPage: FC = () => {
 		const amount = FaucetService.getTokenAmount(tokenType);
 
 		if (!tokenAddress || !amount) {
-			console.error(`Invalid token type: ${tokenType}`);
 			return;
 		}
 
@@ -46,8 +45,7 @@ export const FaucetPage: FC = () => {
 				functionName: 'mint',
 				args: [address, amount],
 			});
-		} catch (error) {
-			console.error(`Failed to mint ${tokenType}:`, error);
+		} catch {
 			setMintingToken(null);
 		}
 	};
@@ -65,8 +63,7 @@ export const FaucetPage: FC = () => {
 				functionName: 'mint',
 				args: [address],
 			});
-		} catch (error) {
-			console.error('Failed to mint NFT:', error);
+		} catch {
 			setMintingToken(null);
 		}
 	};
@@ -76,9 +73,8 @@ export const FaucetPage: FC = () => {
 		setMintingToken(null);
 	}
 
-	const handleTurnstileSuccess = (token: string) => {
+	const handleTurnstileSuccess = () => {
 		// Store token for potential backend verification
-		console.log('Turnstile verification successful:', token);
 		setCaptchaVerified(true);
 	};
 
