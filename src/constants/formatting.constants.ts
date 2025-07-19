@@ -35,23 +35,9 @@ export const SAFETY_THRESHOLDS = {
 } as const;
 
 /**
- * Native yield calculation constants
- */
-export const NATIVE_YIELD_CONSTANTS = {
-	/** Native yield APY decimal places (from contract) */
-	NATIVE_APY_DECIMALS: 9,
-	/** Native yield APY divisor (10^9) */
-	NATIVE_APY_DIVISOR: 1000000000,
-	/** Days per year for yield calculations */
-	DAYS_PER_YEAR: 365,
-} as const;
-
-/**
  * Time-related constants
  */
 export const TIME_CONSTANTS = {
-	/** Number of blocks per year (for APY calculations) */
-	BLOCKS_PER_YEAR: 2102400,
 	/** Days per year */
 	DAYS_PER_YEAR: 365,
 	/** Hours per day */
@@ -60,6 +46,18 @@ export const TIME_CONSTANTS = {
 	MINUTES_PER_HOUR: 60,
 	/** Seconds per minute */
 	SECONDS_PER_MINUTE: 60,
+} as const;
+
+/**
+ * Native yield calculation constants
+ */
+export const NATIVE_YIELD_CONSTANTS = {
+	/** Native yield APY decimal places (from contract) */
+	NATIVE_APY_DECIMALS: 9,
+	/** Native yield APY divisor (10^9) */
+	NATIVE_APY_DIVISOR: 1000000000,
+	/** Days per year for yield calculations */
+	DAYS_PER_YEAR: TIME_CONSTANTS.DAYS_PER_YEAR,
 } as const;
 
 /**

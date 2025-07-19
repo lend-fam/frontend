@@ -4,7 +4,7 @@ import { FlexContainer } from '../flex-container/flex-container.component';
 
 import css from './modal.module.css';
 
-interface ModalProps {
+export interface ModalProps {
 	isOpen: boolean;
 	onClose: () => void;
 	children: ReactNode;

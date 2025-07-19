@@ -4,7 +4,12 @@ import { gql } from '@apollo/client';
 
 const GET_CTOKEN_APY_DATA_DEBUG = gql`
 	query GetCTokenAPYDataDebug($cTokenMarket: String!) {
-		ctokenAPYDatas(where: { cTokenMarket: $cTokenMarket }, orderBy: "timestamp", orderDirection: "desc", first: 50) {
+		ctokenAPYDatas(
+			where: { cTokenMarket: $cTokenMarket }
+			orderBy: "timestamp"
+			orderDirection: "desc"
+			first: 50
+		) {
 			id
 			timestamp
 			cTokenMarket

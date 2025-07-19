@@ -24,9 +24,11 @@ export const EnhancedAPYChart: FC<EnhancedAPYChartProps> = typedMemo(
 		});
 
 		// Check if we're using mock data (indicates zero APY from subgraph)
-		const isUsingMockData = chartData.length > 0 && chartData.every(point => 
-			point.supply >= 0.03 && point.supply <= 0.07 // Mock data range
-		);
+		const isUsingMockData =
+			chartData.length > 0 &&
+			chartData.every(
+				(point) => point.supply >= 0.03 && point.supply <= 0.07, // Mock data range
+			);
 
 		const displayData =
 			chartData.length > 0
@@ -101,18 +103,19 @@ export const EnhancedAPYChart: FC<EnhancedAPYChartProps> = typedMemo(
 		return (
 			<div style={{ width: '100%', height: '145px', position: 'relative' }}>
 				{isUsingMockData && (
-					<div style={{
-						position: 'absolute',
-						top: '5px',
-						right: '5px',
-						background: '#fef3c7',
-						color: '#92400e',
-						padding: '2px 6px',
-						borderRadius: '4px',
-						fontSize: '10px',
-						fontWeight: 'bold',
-						zIndex: 10,
-					}}>
+					<div
+						style={{
+							position: 'absolute',
+							top: '5px',
+							right: '5px',
+							background: '#fef3c7',
+							color: '#92400e',
+							padding: '2px 6px',
+							borderRadius: '4px',
+							fontSize: '10px',
+							fontWeight: 'bold',
+							zIndex: 10,
+						}}>
 						DEMO DATA
 					</div>
 				)}

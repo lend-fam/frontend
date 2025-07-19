@@ -1,7 +1,7 @@
 import { memo, type JSX } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-type LinkProps = JSX.IntrinsicElements['a'] & {
+export type LinkProps = JSX.IntrinsicElements['a'] & {
 	to?: string;
 };
 

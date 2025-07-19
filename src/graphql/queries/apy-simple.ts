@@ -2,7 +2,12 @@ import { gql } from '@apollo/client';
 
 export const GET_SIMPLE_APY_STATS = gql`
 	query GetSimpleAPYStats($cTokenMarket: String!) {
-		ctokenAPYDatas(where: { cTokenMarket: $cTokenMarket }, orderBy: "timestamp", orderDirection: "desc", first: 10) {
+		ctokenAPYDatas(
+			where: { cTokenMarket: $cTokenMarket }
+			orderBy: "timestamp"
+			orderDirection: "desc"
+			first: 10
+		) {
 			id
 			timestamp
 			cTokenMarket

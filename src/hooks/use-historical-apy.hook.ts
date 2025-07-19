@@ -68,9 +68,7 @@ export const useHistoricalAPY = ({ cTokenMarket, timeRange, interval = 'hour' }:
 		);
 
 		// Check if all APY values are zero (indicating interest rate model not configured)
-		const allZeroAPY = processedData.every(point => 
-			point.supplyAPY === 0 && point.borrowAPY === 0
-		);
+		const allZeroAPY = processedData.every((point) => point.supplyAPY === 0 && point.borrowAPY === 0);
 
 		// If all APY values are zero, return mock data for demonstration
 		if (allZeroAPY && processedData.length > 0) {

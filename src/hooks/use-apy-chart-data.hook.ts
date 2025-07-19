@@ -1,6 +1,13 @@
 import { useMemo } from 'react';
 import { useHistoricalAPY, type TimeRange } from './use-historical-apy.hook';
 
+interface HistoricalDataPoint {
+	timestamp: number;
+	supply: number;
+	borrow: number;
+	utilization: number;
+}
+
 export interface APYChartDataPoint {
 	timestamp: number;
 	supply: number;
@@ -30,7 +37,7 @@ export const useAPYChartData = ({ cTokenMarket, timeRange, metric }: UseAPYChart
 	const chartData = useMemo(() => {
 		if (!historicalData?.length) return [];
 
-		return historicalData.map((point: any): APYChartDataPoint => {
+		return historicalData.map((point: HistoricalDataPoint): APYChartDataPoint => {
 			const date = new Date(point.timestamp * 1000);
 			let dateString: string;
 

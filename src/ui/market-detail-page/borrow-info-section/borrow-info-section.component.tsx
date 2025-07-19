@@ -147,7 +147,11 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({
 							<span className={css.legendDot}></span>
 							<span>Borrow APY</span>
 						</div>
-						<TimeRangeSelector selectedRange={selectedTimeRange} onRangeChange={setSelectedTimeRange} cTokenMarket={marketAddress.toLowerCase()} />
+						<TimeRangeSelector
+							selectedRange={selectedTimeRange}
+							onRangeChange={setSelectedTimeRange}
+							cTokenMarket={marketAddress.toLowerCase()}
+						/>
 					</div>
 					<EnhancedAPYChartDebug
 						cTokenMarket={marketAddress.toLowerCase()}

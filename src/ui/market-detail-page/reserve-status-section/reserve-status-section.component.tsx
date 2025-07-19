@@ -117,26 +117,26 @@ export const ReserveStatusSection: FC<ReserveStatusSectionProps> = ({
 			<div className={css.content}>
 				<div className={css.supplyStats}>
 					<div className={css.progressSection}>
-							<ProgressCircle
-								value={supplyMetrics.supplyProgress}
-								size={120}
-								strokeWidth={8}
-								color="#4CAF50"
-								showInfinity={true}
-							/>
-							<div className={css.progressDetails}>
-								<div className={css.progressValue}>
-									{MarketService.formatTokenBalance(
-										BigInt(Math.floor(supplyMetrics.currentSupplyTokens * 1e18)),
-										18,
-										symbol,
-									)}
-								</div>
-								<div className={css.progressLabel}>Total Supplied</div>
-								<div className={css.progressSubtext}>
-									Utilization: {supplyMetrics.utilizationRate.toFixed(2)}%
-								</div>
+						<ProgressCircle
+							value={supplyMetrics.supplyProgress}
+							size={120}
+							strokeWidth={8}
+							color="#4CAF50"
+							showInfinity={true}
+						/>
+						<div className={css.progressDetails}>
+							<div className={css.progressValue}>
+								{MarketService.formatTokenBalance(
+									BigInt(Math.floor(supplyMetrics.currentSupplyTokens * 1e18)),
+									18,
+									symbol,
+								)}
 							</div>
+							<div className={css.progressLabel}>Total Supplied</div>
+							<div className={css.progressSubtext}>
+								Utilization: {supplyMetrics.utilizationRate.toFixed(2)}%
+							</div>
+						</div>
 					</div>
 
 					<div className={css.apySection}>
@@ -144,7 +144,8 @@ export const ReserveStatusSection: FC<ReserveStatusSectionProps> = ({
 						<div className={css.apyValue}>{parseFloat(apyData.supplyAPY) || 0}%</div>
 						{hasNativeYield && nativeYieldAPY && <NativeYieldBadge apy={nativeYieldAPY} />}
 						<div className={css.apySubtext}>
-							Available: {MarketService.formatTokenBalance(
+							Available:{' '}
+							{MarketService.formatTokenBalance(
 								BigInt(Math.floor(supplyMetrics.availableLiquidity * 1e18)),
 								18,
 								symbol,
@@ -154,32 +155,34 @@ export const ReserveStatusSection: FC<ReserveStatusSectionProps> = ({
 				</div>
 
 				<div className={css.collateralUsage}>
-						<div className={css.collateralHeader}>
-							<SectionHeader title="Collateral usage" variant="subsection" />
-							<div className={css.collateralStatus}>
-								<span
-									className={css.statusIndicator}
-									style={{
-										background: collateralMetrics.canBeCollateral ? '#4CAF50' : '#f44336',
-									}}></span>
-								<span>{collateralMetrics.canBeCollateral ? 'Can be collateral' : 'Cannot be collateral'}</span>
-							</div>
+					<div className={css.collateralHeader}>
+						<SectionHeader title="Collateral usage" variant="subsection" />
+						<div className={css.collateralStatus}>
+							<span
+								className={css.statusIndicator}
+								style={{
+									background: collateralMetrics.canBeCollateral ? '#4CAF50' : '#f44336',
+								}}></span>
+							<span>
+								{collateralMetrics.canBeCollateral ? 'Can be collateral' : 'Cannot be collateral'}
+							</span>
 						</div>
+					</div>
 
-						<div className={css.collateralMetrics}>
-							<div className={css.metric}>
-								<span className={css.metricLabel}>Max LTV</span>
-								<span className={css.metricValue}>{collateralMetrics.maxLTV}%</span>
-							</div>
-							<div className={css.metric}>
-								<span className={css.metricLabel}>Liquidation threshold</span>
-								<span className={css.metricValue}>{collateralMetrics.liquidationThreshold}%</span>
-							</div>
-							<div className={css.metric}>
-								<span className={css.metricLabel}>Liquidation penalty</span>
-								<span className={css.metricValue}>{collateralMetrics.liquidationPenalty}%</span>
-							</div>
+					<div className={css.collateralMetrics}>
+						<div className={css.metric}>
+							<span className={css.metricLabel}>Max LTV</span>
+							<span className={css.metricValue}>{collateralMetrics.maxLTV}%</span>
 						</div>
+						<div className={css.metric}>
+							<span className={css.metricLabel}>Liquidation threshold</span>
+							<span className={css.metricValue}>{collateralMetrics.liquidationThreshold}%</span>
+						</div>
+						<div className={css.metric}>
+							<span className={css.metricLabel}>Liquidation penalty</span>
+							<span className={css.metricValue}>{collateralMetrics.liquidationPenalty}%</span>
+						</div>
+					</div>
 				</div>
 			</div>
 
@@ -195,7 +198,11 @@ export const ReserveStatusSection: FC<ReserveStatusSectionProps> = ({
 						<span className={css.legendDot}></span>
 						<span>Supply APY</span>
 					</div>
-					<TimeRangeSelector selectedRange={selectedTimeRange} onRangeChange={setSelectedTimeRange} cTokenMarket={marketAddress.toLowerCase()} />
+					<TimeRangeSelector
+						selectedRange={selectedTimeRange}
+						onRangeChange={setSelectedTimeRange}
+						cTokenMarket={marketAddress.toLowerCase()}
+					/>
 				</div>
 				<EnhancedAPYChartDebug
 					cTokenMarket={marketAddress.toLowerCase()}

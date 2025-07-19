@@ -54,7 +54,7 @@ export const useDataRange = (cTokenMarket: string) => {
 		const totalRangeDays = totalRangeSeconds / (24 * 60 * 60);
 
 		const availableRanges: string[] = [];
-		
+
 		// Check what time ranges have sufficient data
 		if (totalRangeSeconds >= 86400) availableRanges.push('24h'); // 1 day
 		if (totalRangeSeconds >= 604800) availableRanges.push('7d'); // 7 days
