@@ -103,7 +103,7 @@ export const InterestRateChart: FC<InterestRateChartProps> = ({
 	return (
 		<div style={{ width: '100%', height: '240px' }}>
 			<ResponsiveContainer width="100%" height="100%">
-				<LineChart data={chartData} margin={{ top: 50, right: 30, left: 20, bottom: 20 }}>
+				<LineChart data={chartData} margin={{ top: 50, right: 5, left: 0, bottom: 20 }}>
 					<CartesianGrid strokeDasharray="3 3" stroke="rgba(0, 0, 0, 0.1)" />
 					<XAxis
 						dataKey="utilization"

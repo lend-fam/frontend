@@ -1,24 +1,15 @@
-/* Container styles moved to Card component */
-
-/* Title styles moved to SectionHeader component */
-
 .content {
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 32px;
-}
-
-/* Section title styles moved to SectionHeader component */
-
-.supplyInfo {
-	/* Supply info styles */
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
 }
 
 .supplyStats {
 	display: flex;
 	align-items: flex-start;
+	justify-content: space-between;
 	gap: 32px;
-	margin-bottom: 32px;
+	margin-bottom: 24px;
 }
 
 .progressSection {
@@ -45,48 +36,61 @@
 
 .progressLabel {
 	font-family: var(--font-text-small-family);
-	font-size: 14px; /* Custom size for data labels */
+	font-size: 14px;
 	font-weight: var(--font-text-small-weight);
-	/* TODO: Add design token for muted text color */
 	color: #666;
 }
 
 .progressSubtext {
 	font-family: var(--font-text-small-family);
-	font-size: 12px; /* Custom size for subtext */
+	font-size: 12px;
 	font-weight: var(--font-text-small-weight);
-	/* TODO: Add design token for secondary text color */
 	color: #999;
 }
 
-.utilizationInfo {
-	margin-left: auto;
+.apySection {
+	text-align: right;
 	display: flex;
 	flex-direction: column;
 	align-items: flex-end;
 	gap: 4px;
+	min-width: 120px;
 }
 
-.utilizationValue {
-	font-family: var(--font-heading-menu-family);
-	font-size: 18px; /* Custom size for utilization display */
-	font-weight: var(--font-heading-menu-weight);
-	line-height: var(--font-heading-menu-line-height);
-	/* TODO: Add design token for success/positive color */
+.apyLabel {
+	font-family: var(--font-text-small-family);
+	font-size: 12px;
+	font-weight: var(--font-text-small-weight);
+	color: #666;
+}
+
+.apyValue {
+	font-family: var(--font-heading-h5-family);
+	font-size: var(--font-heading-h5-size);
+	font-weight: var(--font-heading-h5-weight);
+	line-height: var(--font-heading-h5-line-height);
 	color: #4CAF50;
+}
+
+.apySubtext {
+	font-family: var(--font-text-small-family);
+	font-size: 12px;
+	font-weight: var(--font-text-small-weight);
+	color: #999;
 }
 
 .chartSection {
 	/* TODO: Add design token for border color */
 	border-top: 1px solid #eee;
 	padding-top: 20px;
-	margin-top: 8px;
+	margin-top: 0;
+	grid-column: 1 / -1;
 }
 
 .chartLegend {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: 2px;
 	margin-top: 12px;
 	font-family: var(--font-text-small-family);
 	font-size: 14px; /* Custom size for legend */
@@ -103,7 +107,9 @@
 }
 
 .collateralUsage {
-	/* Collateral usage styles */
+	border-top: 1px solid #eee;
+	padding-top: 24px;
+	margin-bottom: 24px;
 }
 
 .collateralStatus {
@@ -126,23 +132,21 @@
 }
 
 .collateralMetrics {
-	display: flex;
-	flex-direction: column;
-	gap: 16px;
-	margin-left: 24px;
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: 24px;
+	margin-left: 0;
+	margin-top: 16px;
 }
 
 .metric {
 	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 12px 0;
-	/* TODO: Add design token for border color */
-	border-bottom: 1px solid #f0f0f0;
-}
-
-.metric:last-child {
-	border-bottom: none;
+	flex-direction: column;
+	gap: 4px;
+	padding: 16px;
+	border: 1px solid #f0f0f0;
+	border-radius: 8px;
+	background: #fafafa;
 }
 
 .metricLabel {
@@ -180,5 +184,16 @@
 	.progressDetails {
 		min-width: auto;
 		flex: 1;
+	}
+	
+	.apySection {
+		text-align: left;
+		align-self: stretch;
+		align-items: flex-start;
+		min-width: auto;
+	}
+	
+	.collateralMetrics {
+		grid-template-columns: 1fr;
 	}
 }

@@ -115,11 +115,8 @@ export const ReserveStatusSection: FC<ReserveStatusSectionProps> = ({
 			<SectionHeader title="Reserve status & configuration" variant="main" />
 
 			<div className={css.content}>
-				<div className={css.supplyInfo}>
-					<SectionHeader title="Supply info" variant="subsection" />
-
-					<div className={css.supplyStats}>
-						<div className={css.progressSection}>
+				<div className={css.supplyStats}>
+					<div className={css.progressSection}>
 							<ProgressCircle
 								value={supplyMetrics.supplyProgress}
 								size={120}
@@ -137,80 +134,74 @@ export const ReserveStatusSection: FC<ReserveStatusSectionProps> = ({
 								</div>
 								<div className={css.progressLabel}>Total Supplied</div>
 								<div className={css.progressSubtext}>
-									<div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-										<div>Supply APY: {parseFloat(apyData.supplyAPY) || 0}%</div>
-										{hasNativeYield && nativeYieldAPY && <NativeYieldBadge apy={nativeYieldAPY} />}
-									</div>
+									Utilization: {supplyMetrics.utilizationRate.toFixed(2)}%
 								</div>
 							</div>
-						</div>
-
-						<div className={css.utilizationInfo}>
-							<div className={css.utilizationValue}>{supplyMetrics.utilizationRate.toFixed(2)}%</div>
-							<div className={css.progressLabel}>Utilization Rate</div>
-						</div>
 					</div>
 
-					<div className={css.chartSection}>
-						<div
-							style={{
-								display: 'flex',
-								justifyContent: 'space-between',
-								alignItems: 'center',
-								marginBottom: '12px',
-							}}>
-							<div className={css.chartLegend}>
-								<span className={css.legendDot}></span>
-								<span>Supply APY</span>
-							</div>
-							<TimeRangeSelector selectedRange={selectedTimeRange} onRangeChange={setSelectedTimeRange} cTokenMarket={marketAddress.toLowerCase()} />
+					<div className={css.apySection}>
+						<div className={css.apyLabel}>APY</div>
+						<div className={css.apyValue}>{parseFloat(apyData.supplyAPY) || 0}%</div>
+						{hasNativeYield && nativeYieldAPY && <NativeYieldBadge apy={nativeYieldAPY} />}
+						<div className={css.apySubtext}>
+							Available: {MarketService.formatTokenBalance(
+								BigInt(Math.floor(supplyMetrics.availableLiquidity * 1e18)),
+								18,
+								symbol,
+							)}
 						</div>
-						<EnhancedAPYChartDebug
-							cTokenMarket={marketAddress.toLowerCase()}
-							timeRange={selectedTimeRange}
-							metric="supply"
-							color="#4CAF50"
-							fallbackData={apyTrendData}
-						/>
 					</div>
 				</div>
 
 				<div className={css.collateralUsage}>
-					<SectionHeader title="Collateral usage" variant="subsection" />
-					<div className={css.collateralStatus}>
-						<span
-							className={css.statusIndicator}
-							style={{
-								background: collateralMetrics.canBeCollateral ? '#4CAF50' : '#f44336',
-							}}></span>
-						<span>{collateralMetrics.canBeCollateral ? 'Can be collateral' : 'Cannot be collateral'}</span>
-					</div>
+						<SectionHeader title="Collateral usage" variant="subsection" />
+						<div className={css.collateralStatus}>
+							<span
+								className={css.statusIndicator}
+								style={{
+									background: collateralMetrics.canBeCollateral ? '#4CAF50' : '#f44336',
+								}}></span>
+							<span>{collateralMetrics.canBeCollateral ? 'Can be collateral' : 'Cannot be collateral'}</span>
+						</div>
 
-					<div className={css.collateralMetrics}>
-						<div className={css.metric}>
-							<span className={css.metricLabel}>Max LTV</span>
-							<span className={css.metricValue}>{collateralMetrics.maxLTV}%</span>
+						<div className={css.collateralMetrics}>
+							<div className={css.metric}>
+								<span className={css.metricLabel}>Max LTV</span>
+								<span className={css.metricValue}>{collateralMetrics.maxLTV}%</span>
+							</div>
+							<div className={css.metric}>
+								<span className={css.metricLabel}>Liquidation threshold</span>
+								<span className={css.metricValue}>{collateralMetrics.liquidationThreshold}%</span>
+							</div>
+							<div className={css.metric}>
+								<span className={css.metricLabel}>Liquidation penalty</span>
+								<span className={css.metricValue}>{collateralMetrics.liquidationPenalty}%</span>
+							</div>
 						</div>
-						<div className={css.metric}>
-							<span className={css.metricLabel}>Liquidation threshold</span>
-							<span className={css.metricValue}>{collateralMetrics.liquidationThreshold}%</span>
-						</div>
-						<div className={css.metric}>
-							<span className={css.metricLabel}>Liquidation penalty</span>
-							<span className={css.metricValue}>{collateralMetrics.liquidationPenalty}%</span>
-						</div>
-						<div className={css.metric}>
-							<span className={css.metricLabel}>Available Liquidity</span>
-							<span className={css.metricValue}>
-								{MarketService.formatTokenBalance(
-									BigInt(Math.floor(supplyMetrics.availableLiquidity * 1e18)),
-									18,
-									symbol,
-								)}
-							</span>
-						</div>
-					</div>
 				</div>
+			</div>
+
+			<div className={css.chartSection}>
+				<div
+					style={{
+						display: 'flex',
+						justifyContent: 'space-between',
+						alignItems: 'center',
+						marginBottom: '12px',
+					}}>
+					<div className={css.chartLegend}>
+						<span className={css.legendDot}></span>
+						<span>Supply APY</span>
+					</div>
+					<TimeRangeSelector selectedRange={selectedTimeRange} onRangeChange={setSelectedTimeRange} cTokenMarket={marketAddress.toLowerCase()} />
+				</div>
+				<EnhancedAPYChartDebug
+					cTokenMarket={marketAddress.toLowerCase()}
+					timeRange={selectedTimeRange}
+					metric="supply"
+					color="#4CAF50"
+					fallbackData={apyTrendData}
+				/>
 			</div>
 		</Card>
 	);

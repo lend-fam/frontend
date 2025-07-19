@@ -161,13 +161,12 @@ export const InterestRateModelSection: FC<InterestRateModelSectionProps> = ({ ma
 				variant="main"
 				action={<button className={css.strategyButton}>Interest Rate Strategy</button>}
 			/>
-			<div className={css.utilizationInfo}>
-				<span className={css.utilizationLabel}>Utilization Rate</span>
-				<span className={css.utilizationValue}>{interestRateMetrics.utilizationRate.toFixed(2)}%</span>
-			</div>
-
 			<div className={css.content}>
 				<div className={css.rateInfo}>
+					<div className={css.utilizationRate}>
+						<span className={css.rateLabel}>Utilization Rate</span>
+						<span className={css.rateValue}>{interestRateMetrics.utilizationRate.toFixed(2)}%</span>
+					</div>
 					<div className={css.currentRate}>
 						<span className={css.rateLabel}>Current Borrow APY</span>
 						<span className={css.rateValue}>{interestRateMetrics.currentBorrowAPY.toFixed(2)}%</span>

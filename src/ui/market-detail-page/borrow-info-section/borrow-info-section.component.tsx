@@ -121,7 +121,7 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({
 					</div>
 
 					<div className={css.apySection}>
-						<div className={css.apyLabel}>APY, variable</div>
+						<div className={css.apyLabel}>APY</div>
 						<div className={css.apyValue}>{parseFloat(apyData.borrowAPY) || 0}%</div>
 
 						<div className={css.apySubtext}>
@@ -145,7 +145,7 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({
 						}}>
 						<div className={css.chartLegend}>
 							<span className={css.legendDot}></span>
-							<span>Borrow APY, variable</span>
+							<span>Borrow APY</span>
 						</div>
 						<TimeRangeSelector selectedRange={selectedTimeRange} onRangeChange={setSelectedTimeRange} cTokenMarket={marketAddress.toLowerCase()} />
 					</div>
