@@ -154,14 +154,16 @@ export const ReserveStatusSection: FC<ReserveStatusSectionProps> = ({
 				</div>
 
 				<div className={css.collateralUsage}>
-						<SectionHeader title="Collateral usage" variant="subsection" />
-						<div className={css.collateralStatus}>
-							<span
-								className={css.statusIndicator}
-								style={{
-									background: collateralMetrics.canBeCollateral ? '#4CAF50' : '#f44336',
-								}}></span>
-							<span>{collateralMetrics.canBeCollateral ? 'Can be collateral' : 'Cannot be collateral'}</span>
+						<div className={css.collateralHeader}>
+							<SectionHeader title="Collateral usage" variant="subsection" />
+							<div className={css.collateralStatus}>
+								<span
+									className={css.statusIndicator}
+									style={{
+										background: collateralMetrics.canBeCollateral ? '#4CAF50' : '#f44336',
+									}}></span>
+								<span>{collateralMetrics.canBeCollateral ? 'Can be collateral' : 'Cannot be collateral'}</span>
+							</div>
 						</div>
 
 						<div className={css.collateralMetrics}>
