@@ -22,10 +22,10 @@ export const FaucetPage: FC = () => {
 	const { showToast } = useToastContext();
 
 	const { writeContract, data: hash, isPending, error, reset } = useWriteContract();
-	const { 
-		isLoading: isConfirming, 
+	const {
+		isLoading: isConfirming,
 		isSuccess: isConfirmed,
-		error: confirmError 
+		error: confirmError,
 	} = useWaitForTransactionReceipt({
 		hash,
 	});
@@ -33,73 +33,77 @@ export const FaucetPage: FC = () => {
 	const isTestnet = chainId === apeChainTestnet.id;
 
 	// Check claim status for all tokens
+	const usdcAddress = FaucetService.getTokenAddress('usdc');
+	const wethAddress = FaucetService.getTokenAddress('weth');
+	const daiAddress = FaucetService.getTokenAddress('dai');
+
 	const { data: claimData, refetch: refetchClaimData } = useReadContracts({
 		contracts: [
 			// USDC
 			{
-				address: FaucetService.getTokenAddress('usdc'),
+				address: usdcAddress!,
 				abi: TEST_TOKEN_ABI,
 				functionName: 'lastClaim',
-				args: [address],
+				args: [address!],
 			},
 			{
-				address: FaucetService.getTokenAddress('usdc'),
+				address: usdcAddress!,
 				abi: TEST_TOKEN_ABI,
 				functionName: 'FAUCET_COOLDOWN',
 			},
 			// WETH
 			{
-				address: FaucetService.getTokenAddress('weth'),
+				address: wethAddress!,
 				abi: TEST_TOKEN_ABI,
 				functionName: 'lastClaim',
-				args: [address],
+				args: [address!],
 			},
 			{
-				address: FaucetService.getTokenAddress('weth'),
+				address: wethAddress!,
 				abi: TEST_TOKEN_ABI,
 				functionName: 'FAUCET_COOLDOWN',
 			},
 			// DAI
 			{
-				address: FaucetService.getTokenAddress('dai'),
+				address: daiAddress!,
 				abi: TEST_TOKEN_ABI,
 				functionName: 'lastClaim',
-				args: [address],
+				args: [address!],
 			},
 			{
-				address: FaucetService.getTokenAddress('dai'),
+				address: daiAddress!,
 				abi: TEST_TOKEN_ABI,
 				functionName: 'FAUCET_COOLDOWN',
 			},
 		],
 		query: {
-			enabled: !!address && isTestnet,
+			enabled: !!address && isTestnet && !!usdcAddress && !!wethAddress && !!daiAddress,
 		},
 	});
 
 	// Helper function to check if a token can be claimed
 	const canClaimToken = (tokenIndex: number): { canClaim: boolean; timeRemaining?: number } => {
 		if (!claimData || !address) return { canClaim: true };
-		
+
 		const lastClaimData = claimData[tokenIndex * 2]; // lastClaim
 		const cooldownData = claimData[tokenIndex * 2 + 1]; // FAUCET_COOLDOWN
-		
+
 		if (!lastClaimData?.result || !cooldownData?.result) return { canClaim: true };
-		
+
 		const lastClaim = Number(lastClaimData.result);
 		const cooldown = Number(cooldownData.result);
-		
+
 		if (lastClaim === 0) return { canClaim: true }; // Never claimed
-		
+
 		const currentTime = Math.floor(Date.now() / 1000);
 		const timeSinceLastClaim = currentTime - lastClaim;
-		
+
 		if (timeSinceLastClaim >= cooldown) {
 			return { canClaim: true };
 		} else {
-			return { 
-				canClaim: false, 
-				timeRemaining: cooldown - timeSinceLastClaim 
+			return {
+				canClaim: false,
+				timeRemaining: cooldown - timeSinceLastClaim,
 			};
 		}
 	};
@@ -114,7 +118,7 @@ export const FaucetPage: FC = () => {
 		const days = Math.floor(seconds / (24 * 60 * 60));
 		const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60));
 		const minutes = Math.floor((seconds % (60 * 60)) / 60);
-		
+
 		if (days > 0) {
 			return `${days}d ${hours}h`;
 		} else if (hours > 0) {
@@ -180,25 +184,25 @@ export const FaucetPage: FC = () => {
 			refetchClaimData();
 			setMintingToken(null);
 		}
-		
+
 		// Handle transaction cancellation or failure
 		if (error && mintingToken) {
 			// Check if error is user cancellation
-			const isCancelled = error.message?.includes('User rejected') || 
-							   error.message?.includes('user rejected') ||
-							   error.message?.includes('cancelled') ||
-							   error.name === 'UserRejectedRequestError';
-			
+			const isCancelled =
+				error.message?.includes('User rejected') ||
+				error.message?.includes('user rejected') ||
+				error.message?.includes('cancelled');
+
 			if (isCancelled) {
 				showToast('Transaction was cancelled', 'warning', 3000);
 			} else {
 				showToast(getErrorMessage(error), 'error', 5000);
 			}
-			
+
 			// Reset minting state on any error
 			setMintingToken(null);
 		}
-		
+
 		// Handle confirmation errors (e.g., transaction reverted)
 		if (confirmError && mintingToken) {
 			showToast('Transaction failed during confirmation', 'error', 5000);
@@ -226,22 +230,22 @@ export const FaucetPage: FC = () => {
 	};
 
 	const getErrorMessage = (error: Error | null) => {
-		if (!error) return null;
-		
+		if (!error) return '';
+
 		const message = error.message || error.toString();
-		
+
 		if (message.includes('User rejected') || message.includes('user rejected')) {
 			return 'Transaction was cancelled by user';
 		}
-		
+
 		if (message.includes('insufficient funds')) {
 			return 'Insufficient funds for gas fees';
 		}
-		
+
 		if (message.includes('execution reverted')) {
 			return 'Transaction failed - you may have already claimed recently (7-day cooldown)';
 		}
-		
+
 		return `Transaction failed: ${message}`;
 	};
 
@@ -352,8 +356,8 @@ export const FaucetPage: FC = () => {
 										<div className={css.tokenInfo}>
 											<h4>Test USDC</h4>
 											<p>
-												{!usdcStatus.canClaim && usdcStatus.timeRemaining 
-													? `Cooldown: ${formatTimeRemaining(usdcStatus.timeRemaining)}` 
+												{!usdcStatus.canClaim && usdcStatus.timeRemaining
+													? `Cooldown: ${formatTimeRemaining(usdcStatus.timeRemaining)}`
 													: '100 USDC per claim'}
 											</p>
 										</div>
@@ -363,10 +367,10 @@ export const FaucetPage: FC = () => {
 											className={css.mintButton}
 											onClick={() => handleMintTestToken('usdc')}
 											disabled={
-												!captchaVerified || 
-												!usdcStatus.canClaim || 
-												mintingToken === 'usdc' || 
-												isPending || 
+												!captchaVerified ||
+												!usdcStatus.canClaim ||
+												mintingToken === 'usdc' ||
+												isPending ||
 												isConfirming
 											}
 											loading={mintingToken === 'usdc' && (isPending || isConfirming)}>
@@ -388,8 +392,8 @@ export const FaucetPage: FC = () => {
 										<div className={css.tokenInfo}>
 											<h4>Test WETH</h4>
 											<p>
-												{!wethStatus.canClaim && wethStatus.timeRemaining 
-													? `Cooldown: ${formatTimeRemaining(wethStatus.timeRemaining)}` 
+												{!wethStatus.canClaim && wethStatus.timeRemaining
+													? `Cooldown: ${formatTimeRemaining(wethStatus.timeRemaining)}`
 													: '100 WETH per claim'}
 											</p>
 										</div>
@@ -399,10 +403,10 @@ export const FaucetPage: FC = () => {
 											className={css.mintButton}
 											onClick={() => handleMintTestToken('weth')}
 											disabled={
-												!captchaVerified || 
-												!wethStatus.canClaim || 
-												mintingToken === 'weth' || 
-												isPending || 
+												!captchaVerified ||
+												!wethStatus.canClaim ||
+												mintingToken === 'weth' ||
+												isPending ||
 												isConfirming
 											}
 											loading={mintingToken === 'weth' && (isPending || isConfirming)}>
@@ -424,8 +428,8 @@ export const FaucetPage: FC = () => {
 										<div className={css.tokenInfo}>
 											<h4>Test DAI</h4>
 											<p>
-												{!daiStatus.canClaim && daiStatus.timeRemaining 
-													? `Cooldown: ${formatTimeRemaining(daiStatus.timeRemaining)}` 
+												{!daiStatus.canClaim && daiStatus.timeRemaining
+													? `Cooldown: ${formatTimeRemaining(daiStatus.timeRemaining)}`
 													: '100 DAI per claim'}
 											</p>
 										</div>
@@ -435,10 +439,10 @@ export const FaucetPage: FC = () => {
 											className={css.mintButton}
 											onClick={() => handleMintTestToken('dai')}
 											disabled={
-												!captchaVerified || 
-												!daiStatus.canClaim || 
-												mintingToken === 'dai' || 
-												isPending || 
+												!captchaVerified ||
+												!daiStatus.canClaim ||
+												mintingToken === 'dai' ||
+												isPending ||
 												isConfirming
 											}
 											loading={mintingToken === 'dai' && (isPending || isConfirming)}>
@@ -519,7 +523,9 @@ export const FaucetPage: FC = () => {
 								<div className={css.pendingMessage}>
 									<p>
 										<strong>
-											{isPending ? 'Waiting for wallet confirmation...' : 'Transaction confirming...'}
+											{isPending
+												? 'Waiting for wallet confirmation...'
+												: 'Transaction confirming...'}
 										</strong>
 										{isPending && ' Please confirm the transaction in your wallet.'}
 										{isConfirming && ' Please wait while the transaction is processed.'}
