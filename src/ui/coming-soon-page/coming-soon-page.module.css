@@ -35,9 +35,11 @@
 }
 
 .comingSoon {
-	font-size: 5rem;
-	font-weight: 400;
-	color: #000000;
+	font-family: var(--font-heading-title-family);
+	color: var(--color-text-default);
+	font-size: var(--font-heading-title-size);
+	font-weight: var(--font-heading-title-weight);
+	line-height: var(--font-heading-title-line-height);
 	margin-bottom: 1.5rem;
 }
 
