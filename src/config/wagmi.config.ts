@@ -1,40 +1,41 @@
-import { getDefaultConfig } from '@rainbow-me/rainbowkit';
-import { defineChain } from 'viem';
-// import {
-// 	rainbowWallet,
-// 	coinbaseWallet,
-// 	metaMaskWallet,
-// 	walletConnectWallet,
-// } from '@rainbow-me/rainbowkit/wallets';
-// import { glyphWalletRK } from '@use-glyph/sdk-react';
+import { connectorsForWallets } from '@rainbow-me/rainbowkit';
+import { createConfig } from 'wagmi';
+import { defineChain, http, Transport } from 'viem';
+import {
+	rainbowWallet,
+	coinbaseWallet,
+	metaMaskWallet,
+	// walletConnectWallet,
+} from '@rainbow-me/rainbowkit/wallets';
+import { glyphWalletRK, glyphConnectorDetails } from '@use-glyph/sdk-react';
 
-// export const apeChainMainnet = defineChain({
-// 	id: 33139,
-// 	name: 'ApeChain',
-// 	nativeCurrency: {
-// 		decimals: 18,
-// 		name: 'ApeCoin',
-// 		symbol: 'APE',
-// 	},
-// 	rpcUrls: {
-// 		default: {
-// 			http: [
-// 				import.meta.env.VITE_APECHAIN_CURTIS_RPC_HTTP || 'https://curtis.rpc.caldera.xyz/http',
-// 				import.meta.env.VITE_APECHAIN_MAINNET_RPC_HTTP || 'https://rpc.apechain.com/http',
-// 			],
-// 			webSocket: [
-// 				import.meta.env.VITE_APECHAIN_CURTIS_RPC_WS || 'wss://curtis.rpc.caldera.xyz/ws',
-// 				import.meta.env.VITE_APECHAIN_MAINNET_RPC_WS || 'wss://rpc.apechain.com/ws',
-// 			],
-// 		},
-// 	},
-// 	blockExplorers: {
-// 		default: {
-// 			name: 'ApeScan',
-// 			url: import.meta.env.VITE_APECHAIN_MAINNET_BLOCK_EXPLORER || 'https://apescan.io',
-// 		},
-// 	},
-// });
+export const apeChainMainnet = defineChain({
+	id: 33139,
+	name: 'ApeChain',
+	nativeCurrency: {
+		decimals: 18,
+		name: 'ApeCoin',
+		symbol: 'APE',
+	},
+	rpcUrls: {
+		default: {
+			http: [
+				import.meta.env.VITE_APECHAIN_CURTIS_RPC_HTTP || 'https://curtis.rpc.caldera.xyz/http',
+				import.meta.env.VITE_APECHAIN_MAINNET_RPC_HTTP || 'https://rpc.apechain.com/http',
+			],
+			webSocket: [
+				import.meta.env.VITE_APECHAIN_CURTIS_RPC_WS || 'wss://curtis.rpc.caldera.xyz/ws',
+				import.meta.env.VITE_APECHAIN_MAINNET_RPC_WS || 'wss://rpc.apechain.com/ws',
+			],
+		},
+	},
+	blockExplorers: {
+		default: {
+			name: 'ApeScan',
+			url: import.meta.env.VITE_APECHAIN_MAINNET_BLOCK_EXPLORER || 'https://apescan.io',
+		},
+	},
+});
 
 export const apeChainTestnet = defineChain({
 	id: 33111,
@@ -59,33 +60,43 @@ export const apeChainTestnet = defineChain({
 	testnet: true,
 });
 
-// const connectors = connectorsForWallets(
-// 	[
-// 		{
-// 			groupName: 'Popular',
-// 			wallets: [glyphWalletRK, rainbowWallet, coinbaseWallet, metaMaskWallet],
-// 		},
-// 		{
-// 			groupName: 'Other',
-// 			wallets: [walletConnectWallet],
-// 		},
-// 	],
-// 	{
-// 		appName: 'lend.fam',
-// 		projectId: 'YOUR_PROJECT_ID',
-// 	}
-// );
+const supportedChains: [typeof apeChainMainnet, typeof apeChainTestnet] = [apeChainMainnet, apeChainTestnet];
 
-export const wagmiConfig = getDefaultConfig({
-	appName: 'lend.fam',
-	projectId: 'YOUR_PROJECT_ID',
-	chains: [apeChainTestnet],
-	ssr: false,
-	// connectors,
+const connectors = connectorsForWallets(
+	[
+		{
+			groupName: glyphConnectorDetails.name,
+			wallets: [glyphWalletRK],
+		},
+		{
+			groupName: 'Popular',
+			wallets: [rainbowWallet, coinbaseWallet, metaMaskWallet],
+		},
+		// {
+		// 	groupName: 'Other',
+		// 	wallets: [walletConnectWallet],
+		// },
+	],
+	{
+		appName: 'lend.fam',
+		projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'YOUR_WALLETCONNECT_PROJECT_ID',
+	},
+);
+
+export const wagmiConfig = createConfig({
+	chains: supportedChains,
+	transports: supportedChains.reduce(
+		(acc, chain) => {
+			acc[chain.id] = http();
+			return acc;
+		},
+		{} as Record<number, Transport>,
+	),
+	connectors,
 });
 
 export const chains = {
-	// mainnet: apeChainMainnet,
+	mainnet: apeChainMainnet,
 	testnet: apeChainTestnet,
 };
 

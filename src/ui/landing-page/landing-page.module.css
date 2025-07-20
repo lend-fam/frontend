@@ -169,6 +169,8 @@
 .sloganImage {
 	width: 236px;
 	height: auto;
+	display: block;
+	margin: 0 auto;
 }
 
 /* Section Container */
@@ -218,7 +220,7 @@
 	z-index: 1;
 }
 
-.about > * {
+.about>* {
 	position: relative;
 	z-index: 2;
 }
@@ -487,13 +489,13 @@
 	.navContent {
 		padding: 8px 40px;
 	}
-	
+
 	.heroCard {
 		max-width: 90%;
 		height: auto;
 		padding: 60px 30px;
 	}
-	
+
 	.heroLogo {
 		width: 90%;
 		max-width: 600px;
@@ -504,49 +506,49 @@
 	.navContent {
 		padding: 8px 30px;
 	}
-	
+
 	.navMenu {
 		gap: 24px;
 	}
-	
+
 	.navLink {
 		font-size: 18px;
 	}
-	
+
 	.sectionTitle {
 		font-size: 36px;
 		margin-bottom: 60px;
 	}
-	
+
 	.heroTitle {
 		font-size: 28px;
 	}
-	
+
 	.heroSubtitle {
 		font-size: 20px;
 	}
-	
+
 	.aboutContent {
 		margin-top: 40px;
 		flex-direction: column;
 		align-items: center;
 	}
-	
+
 	.aboutBox {
 		width: 100%;
 		max-width: 600px;
 	}
-	
+
 	.howDiagram {
 		max-width: 90%;
 	}
-	
+
 	.whenContent,
 	.whoContent {
 		grid-template-columns: 1fr;
 		gap: 30px;
 	}
-	
+
 	.whenBox {
 		min-height: 250px;
 	}
@@ -559,103 +561,103 @@
 		padding: 20px 30px;
 		height: auto;
 	}
-	
+
 	.navMenu {
 		flex-wrap: wrap;
 		justify-content: center;
 		gap: 16px;
 	}
-	
+
 	.navLink {
 		font-size: 16px;
 	}
-	
+
 	.socialIcon img {
 		width: 36px;
 		height: 36px;
 	}
-	
+
 	.hero {
 		height: auto;
 		padding: 40px 0;
 	}
-	
+
 	.heroCard {
 		margin: 20px auto;
 		padding: 40px 20px;
 		height: auto;
 	}
-	
+
 	.heroLogo {
 		width: 100%;
 		max-width: 400px;
 		margin-bottom: 30px;
 	}
-	
+
 	.heroTitle {
 		font-size: 24px;
 	}
-	
+
 	.heroSubtitle {
 		font-size: 18px;
 	}
-	
+
 	.sloganImage {
 		width: 180px;
 	}
-	
+
 	.sectionTitle,
 	.howTitle {
 		font-size: 28px;
 		margin-bottom: 40px;
 	}
-	
+
 	.about,
 	.how,
 	.when,
 	.who {
 		padding: 80px 0;
 	}
-	
+
 	.aboutText {
 		font-size: 18px;
 	}
-	
+
 	.aboutBox,
 	.whenBox,
 	.teamMemberBox {
 		padding: 40px 30px;
 	}
-	
+
 	.teamMemberBox {
 		min-height: 300px;
 	}
-	
+
 	.memberImageContainer {
 		width: 100px;
 		height: 100px;
 	}
-	
-	
+
+
 	.whenYear {
 		font-size: 36px;
 	}
-	
+
 	.whenStage {
 		font-size: 20px;
 	}
-	
+
 	.whenBox {
 		min-height: 200px;
 		padding: 30px 20px;
 	}
-	
+
 	.whenStageHeader {
 		flex-wrap: wrap;
 		gap: 8px;
 		margin-bottom: 20px;
 	}
-	
+
 	.whenStageOne,
 	.whenYearOne,
 	.whenStageTwo,
@@ -663,19 +665,19 @@
 		font-size: 14px;
 		padding: 6px 12px;
 	}
-	
+
 	.whenFeatureText {
 		font-size: 14px;
 	}
-	
+
 	.whenFeature {
 		gap: 8px;
 	}
-	
+
 	.memberHandle {
 		font-size: 20px;
 	}
-	
+
 	.memberTitle {
 		font-size: 16px;
 	}
@@ -776,20 +778,20 @@
 	.footerTitle {
 		font-size: 36px;
 	}
-	
+
 	.footerSubtitle {
 		font-size: 20px;
 	}
-	
+
 	.footerText {
 		font-size: 16px;
 	}
-	
+
 	.footerSocialIcon {
 		width: 50px;
 		height: 50px;
 	}
-	
+
 	.footerIcon {
 		width: 20px;
 		height: 20px;
@@ -800,28 +802,28 @@
 	.footer {
 		padding: 60px 0;
 	}
-	
+
 	.footerMain {
 		gap: 20px;
 	}
-	
+
 	.footerTitle {
 		font-size: 28px;
 	}
-	
+
 	.footerSubtitle {
 		font-size: 18px;
 	}
-	
+
 	.footerText {
 		font-size: 14px;
 	}
-	
+
 	.footerSocialIcon {
 		width: 44px;
 		height: 44px;
 	}
-	
+
 	.footerIcon {
 		width: 18px;
 		height: 18px;
@@ -832,50 +834,50 @@
 	.navContent {
 		padding: 15px 20px;
 	}
-	
+
 	.heroCard {
 		padding: 30px 15px;
 	}
-	
+
 	.heroLogo {
 		max-width: 300px;
 		margin-bottom: 20px;
 	}
-	
+
 	.heroTitle {
 		font-size: 20px;
 	}
-	
+
 	.heroSubtitle {
 		font-size: 16px;
 	}
-	
+
 	.sloganImage {
 		width: 150px;
 	}
-	
+
 	.sectionTitle,
 	.howTitle {
 		font-size: 24px;
 	}
-	
+
 	.aboutText {
 		font-size: 16px;
 	}
-	
+
 	.aboutBox,
 	.whenBox,
 	.teamMemberBox {
 		padding: 30px 20px;
 	}
-	
+
 	.teamMemberBox {
 		min-height: 250px;
 	}
-	
+
 	.memberImageContainer {
 		width: 80px;
 		height: 80px;
 	}
-	
+
 }

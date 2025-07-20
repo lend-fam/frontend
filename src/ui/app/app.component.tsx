@@ -1,4 +1,4 @@
-import { type FC } from 'react';
+import { type FC, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -6,7 +6,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { ApolloProvider } from '@apollo/client';
 import { hashFn } from '@wagmi/core/query';
-// import { GlyphProvider, StrategyType, WalletClientType } from '@use-glyph/sdk-react';
+import { GlyphProvider, StrategyType, WalletClientType } from '@use-glyph/sdk-react';
 import { Header } from '../header/header.component';
 import { LandingPage } from '../landing-page';
 import { MarketsPage } from '../dashboard-page/markets-page/markets-page.component';
@@ -56,25 +56,50 @@ const AppContent: FC = () => {
 };
 
 export const App: FC = () => {
+	// Suppress Glyph SDK debug logs
+	useEffect(() => {
+		if (import.meta.env.PROD || import.meta.env.VITE_GLYPH_DEBUG !== 'true') {
+			const originalLog = console.log;
+			console.log = (...args: unknown[]) => {
+				const message = args.join(' ');
+				// Filter out Glyph SDK debug messages
+				if (
+					message.includes('[GlyphWidget/') ||
+					message.includes('PrivyWalletProvider.request') ||
+					message.includes('[Glyph')
+				) {
+					return;
+				}
+				originalLog.apply(console, args);
+			};
+
+			// Cleanup on unmount
+			return () => {
+				console.log = originalLog;
+			};
+		}
+	}, []);
+
 	return (
 		<BrowserRouter>
 			<WagmiProvider config={wagmiConfig}>
 				<QueryClientProvider client={queryClient}>
 					<RainbowKitProvider>
-						{/* <GlyphProvider
-							strategy={StrategyType.PRIVY}
-						> */}
-						<ApolloProvider client={apolloClient}>
-							<DesignThemeProvider>
-								<ToastProvider>
-									<TransactionProvider>
-										<AppContent />
-										<ReactQueryDevtools initialIsOpen={false} />
-									</TransactionProvider>
-								</ToastProvider>
-							</DesignThemeProvider>
-						</ApolloProvider>
-						{/* </GlyphProvider> */}
+						<GlyphProvider
+							strategy={StrategyType.EIP1193}
+							walletClientType={WalletClientType.RAINBOWKIT}
+							askForSignature={false}>
+							<ApolloProvider client={apolloClient}>
+								<DesignThemeProvider>
+									<ToastProvider>
+										<TransactionProvider>
+											<AppContent />
+											<ReactQueryDevtools initialIsOpen={false} />
+										</TransactionProvider>
+									</ToastProvider>
+								</DesignThemeProvider>
+							</ApolloProvider>
+						</GlyphProvider>
 					</RainbowKitProvider>
 				</QueryClientProvider>
 			</WagmiProvider>

@@ -27,20 +27,20 @@
   "dependencies": {
     "@apollo/client": "^3.11.11",
     "@marsidev/react-turnstile": "^1.1.0",
-    "@rainbow-me/rainbowkit": "^2.2.0",
-    "@tanstack/react-query": "^5.64.1",
-    "@types/react": "^19.1.8",
-    "@types/react-dom": "^19.1.6",
+    "@rainbow-me/rainbowkit": "^2.2.8",
+    "@tanstack/react-query": "^5.76.0",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
     "@use-glyph/sdk-react": "^1.0.21",
     "classnames": "^2.5.1",
     "graphql": "^16.10.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-router-dom": "^7.6.3",
     "recharts": "^2.12.7",
     "reset-css": "^5.0.2",
-    "viem": "^2.21.66",
-    "wagmi": "^2.9.0"
+    "viem": "^2.29.2",
+    "wagmi": "^2.15.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.0",
