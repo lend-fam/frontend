@@ -1,6 +1,6 @@
 import type { FC } from 'react';
-import { useState } from 'react';
-import { useAccount, useChainId, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useState, useEffect } from 'react';
+import { useAccount, useChainId, useWriteContract, useWaitForTransactionReceipt, useReadContracts } from 'wagmi';
 import { apeChainTestnet } from '../../config/wagmi.config';
 import { Layout } from '../layout/layout.component';
 import { FaucetService } from '../../services/faucet.service';
@@ -10,6 +10,7 @@ import { TurnstileComponent } from '../../ui-kit/components/turnstile';
 import { Button } from '../../ui-kit/components/button/button.component';
 import { Card } from '../../ui-kit/components/card/card.component';
 import { FlexContainer } from '../../ui-kit/components/flex-container/flex-container.component';
+import { useToastContext } from '../../hooks/use-toast-context.hook';
 
 import css from './faucet-page.module.css';
 
@@ -18,60 +19,192 @@ export const FaucetPage: FC = () => {
 	const chainId = useChainId();
 	const [mintingToken, setMintingToken] = useState<string | null>(null);
 	const [captchaVerified, setCaptchaVerified] = useState(false);
+	const { showToast } = useToastContext();
 
-	const { writeContract, data: hash, isPending, error } = useWriteContract();
-	const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+	const { writeContract, data: hash, isPending, error, reset } = useWriteContract();
+	const { 
+		isLoading: isConfirming, 
+		isSuccess: isConfirmed,
+		error: confirmError 
+	} = useWaitForTransactionReceipt({
 		hash,
 	});
 
 	const isTestnet = chainId === apeChainTestnet.id;
 
+	// Check claim status for all tokens
+	const { data: claimData, refetch: refetchClaimData } = useReadContracts({
+		contracts: [
+			// USDC
+			{
+				address: FaucetService.getTokenAddress('usdc'),
+				abi: TEST_TOKEN_ABI,
+				functionName: 'lastClaim',
+				args: [address],
+			},
+			{
+				address: FaucetService.getTokenAddress('usdc'),
+				abi: TEST_TOKEN_ABI,
+				functionName: 'FAUCET_COOLDOWN',
+			},
+			// WETH
+			{
+				address: FaucetService.getTokenAddress('weth'),
+				abi: TEST_TOKEN_ABI,
+				functionName: 'lastClaim',
+				args: [address],
+			},
+			{
+				address: FaucetService.getTokenAddress('weth'),
+				abi: TEST_TOKEN_ABI,
+				functionName: 'FAUCET_COOLDOWN',
+			},
+			// DAI
+			{
+				address: FaucetService.getTokenAddress('dai'),
+				abi: TEST_TOKEN_ABI,
+				functionName: 'lastClaim',
+				args: [address],
+			},
+			{
+				address: FaucetService.getTokenAddress('dai'),
+				abi: TEST_TOKEN_ABI,
+				functionName: 'FAUCET_COOLDOWN',
+			},
+		],
+		query: {
+			enabled: !!address && isTestnet,
+		},
+	});
+
+	// Helper function to check if a token can be claimed
+	const canClaimToken = (tokenIndex: number): { canClaim: boolean; timeRemaining?: number } => {
+		if (!claimData || !address) return { canClaim: true };
+		
+		const lastClaimData = claimData[tokenIndex * 2]; // lastClaim
+		const cooldownData = claimData[tokenIndex * 2 + 1]; // FAUCET_COOLDOWN
+		
+		if (!lastClaimData?.result || !cooldownData?.result) return { canClaim: true };
+		
+		const lastClaim = Number(lastClaimData.result);
+		const cooldown = Number(cooldownData.result);
+		
+		if (lastClaim === 0) return { canClaim: true }; // Never claimed
+		
+		const currentTime = Math.floor(Date.now() / 1000);
+		const timeSinceLastClaim = currentTime - lastClaim;
+		
+		if (timeSinceLastClaim >= cooldown) {
+			return { canClaim: true };
+		} else {
+			return { 
+				canClaim: false, 
+				timeRemaining: cooldown - timeSinceLastClaim 
+			};
+		}
+	};
+
+	// Get claim status for each token
+	const usdcStatus = canClaimToken(0);
+	const wethStatus = canClaimToken(1);
+	const daiStatus = canClaimToken(2);
+
+	// Helper function to format time remaining
+	const formatTimeRemaining = (seconds: number): string => {
+		const days = Math.floor(seconds / (24 * 60 * 60));
+		const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60));
+		const minutes = Math.floor((seconds % (60 * 60)) / 60);
+		
+		if (days > 0) {
+			return `${days}d ${hours}h`;
+		} else if (hours > 0) {
+			return `${hours}h ${minutes}m`;
+		} else {
+			return `${minutes}m`;
+		}
+	};
+
 	const handleMintTestToken = async (tokenType: string) => {
 		if (!address || !isConnected || !captchaVerified) return;
 
 		const tokenAddress = FaucetService.getTokenAddress(tokenType);
-		const amount = FaucetService.getTokenAmount(tokenType);
 
-		if (!tokenAddress || !amount) {
+		if (!tokenAddress) {
 			return;
 		}
 
+		// Reset any previous errors
+		reset();
 		setMintingToken(tokenType);
 
 		try {
 			await writeContract({
 				address: tokenAddress,
 				abi: TEST_TOKEN_ABI,
-				functionName: 'mint',
-				args: [address, amount],
+				functionName: 'faucet',
+				args: [],
 			});
-		} catch {
+		} catch (err) {
+			console.error('Transaction failed or was cancelled:', err);
 			setMintingToken(null);
 		}
 	};
 
-	const handleMintTestNFT = async () => {
+	const handleMintTestNFT = async (nftType: string) => {
 		if (!address || !isConnected || !captchaVerified) return;
 
-		const nftAddress = FaucetService.getNftAddress();
-		setMintingToken('nft');
+		const nftAddress = FaucetService.getNftAddress(nftType);
+		if (!nftAddress) return;
+
+		// Reset any previous errors
+		reset();
+		setMintingToken(nftType);
 
 		try {
 			await writeContract({
 				address: nftAddress,
 				abi: TEST_NFT_ABI,
-				functionName: 'mint',
-				args: [address],
+				functionName: 'faucet',
+				args: [],
 			});
-		} catch {
+		} catch (err) {
+			console.error('Transaction failed or was cancelled:', err);
 			setMintingToken(null);
 		}
 	};
 
-	// Reset minting state when transaction is confirmed
-	if (isConfirmed && mintingToken) {
-		setMintingToken(null);
-	}
+	// Handle transaction state changes
+	useEffect(() => {
+		if (isConfirmed && mintingToken) {
+			// Refetch claim data after successful transaction
+			refetchClaimData();
+			setMintingToken(null);
+		}
+		
+		// Handle transaction cancellation or failure
+		if (error && mintingToken) {
+			// Check if error is user cancellation
+			const isCancelled = error.message?.includes('User rejected') || 
+							   error.message?.includes('user rejected') ||
+							   error.message?.includes('cancelled') ||
+							   error.name === 'UserRejectedRequestError';
+			
+			if (isCancelled) {
+				showToast('Transaction was cancelled', 'warning', 3000);
+			} else {
+				showToast(getErrorMessage(error), 'error', 5000);
+			}
+			
+			// Reset minting state on any error
+			setMintingToken(null);
+		}
+		
+		// Handle confirmation errors (e.g., transaction reverted)
+		if (confirmError && mintingToken) {
+			showToast('Transaction failed during confirmation', 'error', 5000);
+			setMintingToken(null);
+		}
+	}, [isConfirmed, error, confirmError, mintingToken, showToast, refetchClaimData]);
 
 	const handleTurnstileSuccess = () => {
 		// Store token for potential backend verification
@@ -84,6 +217,32 @@ export const FaucetPage: FC = () => {
 
 	const handleTurnstileExpire = () => {
 		setCaptchaVerified(false);
+	};
+
+	const handleCancelTransaction = () => {
+		// Reset all transaction states
+		reset();
+		setMintingToken(null);
+	};
+
+	const getErrorMessage = (error: Error | null) => {
+		if (!error) return null;
+		
+		const message = error.message || error.toString();
+		
+		if (message.includes('User rejected') || message.includes('user rejected')) {
+			return 'Transaction was cancelled by user';
+		}
+		
+		if (message.includes('insufficient funds')) {
+			return 'Insufficient funds for gas fees';
+		}
+		
+		if (message.includes('execution reverted')) {
+			return 'Transaction failed - you may have already claimed recently (7-day cooldown)';
+		}
+		
+		return `Transaction failed: ${message}`;
 	};
 
 	if (!isTestnet) {
@@ -192,7 +351,11 @@ export const FaucetPage: FC = () => {
 									<div className={css.tokenCard}>
 										<div className={css.tokenInfo}>
 											<h4>Test USDC</h4>
-											<p>Stablecoin for testing</p>
+											<p>
+												{!usdcStatus.canClaim && usdcStatus.timeRemaining 
+													? `Cooldown: ${formatTimeRemaining(usdcStatus.timeRemaining)}` 
+													: '100 USDC per claim'}
+											</p>
 										</div>
 										<Button
 											variant="secondary"
@@ -200,25 +363,35 @@ export const FaucetPage: FC = () => {
 											className={css.mintButton}
 											onClick={() => handleMintTestToken('usdc')}
 											disabled={
-												!captchaVerified || mintingToken === 'usdc' || isPending || isConfirming
+												!captchaVerified || 
+												!usdcStatus.canClaim || 
+												mintingToken === 'usdc' || 
+												isPending || 
+												isConfirming
 											}
 											loading={mintingToken === 'usdc' && (isPending || isConfirming)}>
 											{!captchaVerified
 												? 'Complete CAPTCHA First'
-												: mintingToken === 'usdc'
-													? isPending
-														? 'Confirm in wallet...'
-														: isConfirming
-															? 'Confirming...'
-															: 'Minting...'
-													: 'Mint 10000 USDC'}
+												: !usdcStatus.canClaim
+													? 'Cooldown Active'
+													: mintingToken === 'usdc'
+														? isPending
+															? 'Confirm in wallet...'
+															: isConfirming
+																? 'Confirming...'
+																: 'Claiming...'
+														: 'Claim USDC'}
 										</Button>
 									</div>
 
 									<div className={css.tokenCard}>
 										<div className={css.tokenInfo}>
 											<h4>Test WETH</h4>
-											<p>Wrapped ETH for testing</p>
+											<p>
+												{!wethStatus.canClaim && wethStatus.timeRemaining 
+													? `Cooldown: ${formatTimeRemaining(wethStatus.timeRemaining)}` 
+													: '100 WETH per claim'}
+											</p>
 										</div>
 										<Button
 											variant="secondary"
@@ -226,18 +399,60 @@ export const FaucetPage: FC = () => {
 											className={css.mintButton}
 											onClick={() => handleMintTestToken('weth')}
 											disabled={
-												!captchaVerified || mintingToken === 'weth' || isPending || isConfirming
+												!captchaVerified || 
+												!wethStatus.canClaim || 
+												mintingToken === 'weth' || 
+												isPending || 
+												isConfirming
 											}
 											loading={mintingToken === 'weth' && (isPending || isConfirming)}>
 											{!captchaVerified
 												? 'Complete CAPTCHA First'
-												: mintingToken === 'weth'
-													? isPending
-														? 'Confirm in wallet...'
-														: isConfirming
-															? 'Confirming...'
-															: 'Minting...'
-													: 'Mint 10 WETH'}
+												: !wethStatus.canClaim
+													? 'Cooldown Active'
+													: mintingToken === 'weth'
+														? isPending
+															? 'Confirm in wallet...'
+															: isConfirming
+																? 'Confirming...'
+																: 'Claiming...'
+														: 'Claim WETH'}
+										</Button>
+									</div>
+
+									<div className={css.tokenCard}>
+										<div className={css.tokenInfo}>
+											<h4>Test DAI</h4>
+											<p>
+												{!daiStatus.canClaim && daiStatus.timeRemaining 
+													? `Cooldown: ${formatTimeRemaining(daiStatus.timeRemaining)}` 
+													: '100 DAI per claim'}
+											</p>
+										</div>
+										<Button
+											variant="secondary"
+											size="medium"
+											className={css.mintButton}
+											onClick={() => handleMintTestToken('dai')}
+											disabled={
+												!captchaVerified || 
+												!daiStatus.canClaim || 
+												mintingToken === 'dai' || 
+												isPending || 
+												isConfirming
+											}
+											loading={mintingToken === 'dai' && (isPending || isConfirming)}>
+											{!captchaVerified
+												? 'Complete CAPTCHA First'
+												: !daiStatus.canClaim
+													? 'Cooldown Active'
+													: mintingToken === 'dai'
+														? isPending
+															? 'Confirm in wallet...'
+															: isConfirming
+																? 'Confirming...'
+																: 'Claiming...'
+														: 'Claim DAI'}
 										</Button>
 									</div>
 								</div>
@@ -245,56 +460,92 @@ export const FaucetPage: FC = () => {
 
 							<div className={css.mintSection}>
 								<h3>Test NFTs</h3>
-								<div className={css.nftCard}>
-									<div className={css.tokenInfo}>
-										<h4>Test Collection NFT</h4>
-										<p>NFT for testing collection-backed lending</p>
+								<div className={css.tokenGrid}>
+									<div className={css.tokenCard}>
+										<div className={css.tokenInfo}>
+											<h4>Mock BAYC</h4>
+											<p>Bored Ape test NFT</p>
+										</div>
+										<Button
+											variant="secondary"
+											size="medium"
+											className={css.mintButton}
+											onClick={() => handleMintTestNFT('bayc')}
+											disabled={
+												!captchaVerified || mintingToken === 'bayc' || isPending || isConfirming
+											}
+											loading={mintingToken === 'bayc' && (isPending || isConfirming)}>
+											{!captchaVerified
+												? 'Complete CAPTCHA First'
+												: mintingToken === 'bayc'
+													? isPending
+														? 'Confirm in wallet...'
+														: isConfirming
+															? 'Confirming...'
+															: 'Claiming...'
+													: 'Claim BAYC NFT'}
+										</Button>
 									</div>
-									<Button
-										variant="secondary"
-										size="medium"
-										className={css.mintButton}
-										onClick={handleMintTestNFT}
-										disabled={
-											!captchaVerified || mintingToken === 'nft' || isPending || isConfirming
-										}
-										loading={mintingToken === 'nft' && (isPending || isConfirming)}>
-										{!captchaVerified
-											? 'Complete CAPTCHA First'
-											: mintingToken === 'nft'
-												? isPending
-													? 'Confirm in wallet...'
-													: isConfirming
-														? 'Confirming...'
-														: 'Minting...'
-												: 'Mint Test NFT'}
-									</Button>
+
+									<div className={css.tokenCard}>
+										<div className={css.tokenInfo}>
+											<h4>Mock CryptoPunk</h4>
+											<p>CryptoPunk test NFT</p>
+										</div>
+										<Button
+											variant="secondary"
+											size="medium"
+											className={css.mintButton}
+											onClick={() => handleMintTestNFT('punk')}
+											disabled={
+												!captchaVerified || mintingToken === 'punk' || isPending || isConfirming
+											}
+											loading={mintingToken === 'punk' && (isPending || isConfirming)}>
+											{!captchaVerified
+												? 'Complete CAPTCHA First'
+												: mintingToken === 'punk'
+													? isPending
+														? 'Confirm in wallet...'
+														: isConfirming
+															? 'Confirming...'
+															: 'Claiming...'
+													: 'Claim PUNK NFT'}
+										</Button>
+									</div>
 								</div>
 							</div>
 
-							{error && (
-								<div className={css.errorMessage}>
+							{mintingToken && (isPending || isConfirming) && (
+								<div className={css.pendingMessage}>
 									<p>
-										<strong>Error:</strong> {error.message}
+										<strong>
+											{isPending ? 'Waiting for wallet confirmation...' : 'Transaction confirming...'}
+										</strong>
+										{isPending && ' Please confirm the transaction in your wallet.'}
+										{isConfirming && ' Please wait while the transaction is processed.'}
 									</p>
+									{isPending && (
+										<Button
+											variant="secondary"
+											size="small"
+											onClick={handleCancelTransaction}
+											className={css.cancelButton}>
+											Cancel
+										</Button>
+									)}
 								</div>
 							)}
 
-							{isConfirmed && (
+							{isConfirmed && hash && (
 								<div className={css.successMessage}>
 									<p>
-										<strong>Success!</strong> Transaction confirmed!
+										<a
+											href={`https://curtis.apescan.io/tx/${hash}`}
+											target="_blank"
+											rel="noopener noreferrer">
+											View transaction on ApeScan
+										</a>
 									</p>
-									{hash && (
-										<p>
-											<a
-												href={`https://curtis.apescan.io/tx/${hash}`}
-												target="_blank"
-												rel="noopener noreferrer">
-												View on ApeScan
-											</a>
-										</p>
-									)}
 								</div>
 							)}
 

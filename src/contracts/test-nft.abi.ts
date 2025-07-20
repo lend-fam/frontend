@@ -1,5 +1,12 @@
 export const TEST_NFT_ABI = [
 	{
+		inputs: [],
+		name: 'faucet',
+		outputs: [],
+		stateMutability: 'nonpayable',
+		type: 'function',
+	},
+	{
 		inputs: [
 			{
 				internalType: 'address',

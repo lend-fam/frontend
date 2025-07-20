@@ -9,9 +9,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - DO NOT WASTE TOKENS, be succinct and concise.
 
 ## Memories
-- Always use contect7 mcp for getting docs
+- Always use context7 mcp for getting docs
 - NEVER hardcode dynamic values
-- Do not use run dev directly it is infinit command
+- Do not use run dev directly it is infinite command
 - Use websocket for live interactions with chain node
 - Use cast to interact with blockchain
 
@@ -42,6 +42,12 @@ bun run prettier
 
 # Format code
 bun run prettier:fix
+
+# GraphQL code generation
+bun run codegen
+
+# Watch mode for GraphQL codegen
+bun run codegen:watch
 ```
 
 ### TypeScript Configuration
@@ -55,11 +61,15 @@ bun run prettier:fix
 This is a React + TypeScript frontend application built with Vite for the lend.fam MVP platform. The application serves as the user interface for an NFT collection-backed lending protocol.
 
 ### Key Technologies
-- **React 19** with TypeScript for component development
-- **Vite** for build tooling and development server
+- **React 18.3.1** with TypeScript for component development
+- **Vite 7.0.0** for build tooling and development server
 - **CSS Modules** with automatic type generation for styling
-- **Wagmi + RainbowKit** for Web3 wallet connection and management
-- **Viem** for low-level Web3 operations
+- **Wagmi 2.15.2 + RainbowKit 2.2.8** for Web3 wallet connection and management
+- **Viem 2.29.2** for low-level Web3 operations
+- **Apollo Client 3.11.11** for GraphQL data management
+- **React Query 5.76.0** (via @tanstack/react-query) for caching and synchronization
+- **Recharts 2.12.7** for data visualization and charting
+- **React Router DOM 7.6.3** for navigation
 - **ESLint + Prettier** for code quality
 
 ### Architecture Patterns
@@ -74,6 +84,8 @@ This is a React + TypeScript frontend application built with Vite for the lend.f
 - **Wagmi Configuration**: Configured for ApeChain mainnet and testnet with fallback RPC endpoints
 - **RainbowKit Integration**: Provides wallet connection UI and state management
 - **React Query**: Powers wagmi's caching and synchronization
+- **Apollo Client**: GraphQL client for subgraph data queries with automatic code generation
+- **Multi-wallet Support**: MetaMask, Coinbase Wallet, Rainbow, and Glyph wallet integrations
 
 #### UI Structure (`src/ui/`)
 - **App Component**: Main application shell with provider initialization
@@ -138,6 +150,10 @@ VITE_APECHAIN_CURTIS_RPC_WS=wss://curtis.rpc.caldera.xyz/ws
 
 # Cloudflare Turnstile (for testnet faucet)
 VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key_here
+
+# GraphQL & Integrations
+VITE_GRAPHQL_ENDPOINT=<subgraph_endpoint>
+VITE_WALLETCONNECT_PROJECT_ID=<walletconnect_project_id>
 ```
 
 ### Chain Configuration
@@ -162,6 +178,9 @@ VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key_here
 - **APY calculations**: Annual Percentage Yield computed from block rates using `BLOCKS_PER_YEAR` constant
 - **Balance formatting**: Context-aware token display with compact notation for large amounts
 - **Contract interactions**: Standardized patterns for mint/redeem/borrow/repay operations
+- **Optimized queries**: Use specialized optimized hooks (e.g., `use-market-data-optimized`) for performance-critical operations
+- **Health factor monitoring**: Real-time liquidation risk calculations with safety buffers
+- **Multi-data source**: Combine on-chain contract data with GraphQL subgraph historical data
 
 ### Component Architecture
 - **UI Kit separation**: Reusable components in `src/ui-kit/`, feature-specific in `src/ui/`
@@ -173,15 +192,31 @@ VITE_TURNSTILE_SITE_KEY=your_turnstile_site_key_here
 
 ### Custom Hooks Architecture
 - **Market data management**: Dedicated hooks for market data, user positions, liquidity calculations
-- **Transaction state**: `useTransactionFlow` hook manages approval/execution lifecycle
+- **Transaction state**: `useTransactionFlow` hook manages approval/execution lifecycle  
 - **Account queries**: Specialized hooks for balance tracking, collateral status, portfolio metrics
 - **Query optimization**: Consistent use of `enabled` conditions to prevent unnecessary calls
+- **Performance-optimized variants**: Optimized hooks (`*-optimized.hook.ts`) for high-frequency operations
+- **Historical data**: Chart and APY historical data hooks with debugging variants
+- **Toast system**: Global notification management with clipboard integration
+- **Token metadata**: Centralized token information and balance tracking
+- **Market events**: Real-time market event monitoring and processing
+- **Borrow eligibility**: Complex calculations for lending protocol rules
 
 ### Service Layer Design
 - **MarketService**: APY calculations, balance formatting, collateral eligibility checks
 - **TokenService**: Token metadata management and balance conversions
 - **PriceService**: USD value calculations and price formatting
+- **HealthFactorService**: Liquidation risk calculations and collateral management
+- **FormattingService**: Token balance and USD value formatting with compact notation
+- **MathService**: Financial calculations and borrow safety checks
 - **Pure functions**: All service methods are static for predictable behavior
+
+### GraphQL Architecture
+- **Code Generation**: Automatic TypeScript types and hooks from GraphQL schema
+- **Apollo Client**: Centralized GraphQL state management with caching
+- **Schema-driven Development**: `src/graphql/schema.graphql` defines data contracts
+- **Generated Hooks**: Type-safe React hooks for all GraphQL operations
+- **Scalar Mapping**: Custom scalar types (BigInt, Bytes, Timestamp) mapped to TypeScript types
 
 ### Component Composition Patterns
 - **Generic Table**: Type-safe column definitions with custom cell/header renderers
