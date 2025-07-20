@@ -1,5 +1,12 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { defineChain } from 'viem';
+// import {
+// 	rainbowWallet,
+// 	coinbaseWallet,
+// 	metaMaskWallet,
+// 	walletConnectWallet,
+// } from '@rainbow-me/rainbowkit/wallets';
+// import { glyphWalletRK } from '@use-glyph/sdk-react';
 
 // export const apeChainMainnet = defineChain({
 // 	id: 33139,
@@ -52,11 +59,29 @@ export const apeChainTestnet = defineChain({
 	testnet: true,
 });
 
+// const connectors = connectorsForWallets(
+// 	[
+// 		{
+// 			groupName: 'Popular',
+// 			wallets: [glyphWalletRK, rainbowWallet, coinbaseWallet, metaMaskWallet],
+// 		},
+// 		{
+// 			groupName: 'Other',
+// 			wallets: [walletConnectWallet],
+// 		},
+// 	],
+// 	{
+// 		appName: 'lend.fam',
+// 		projectId: 'YOUR_PROJECT_ID',
+// 	}
+// );
+
 export const wagmiConfig = getDefaultConfig({
 	appName: 'lend.fam',
 	projectId: 'YOUR_PROJECT_ID',
 	chains: [apeChainTestnet],
 	ssr: false,
+	// connectors,
 });
 
 export const chains = {

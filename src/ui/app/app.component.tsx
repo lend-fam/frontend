@@ -6,6 +6,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { ApolloProvider } from '@apollo/client';
 import { hashFn } from '@wagmi/core/query';
+// import { GlyphProvider, StrategyType, WalletClientType } from '@use-glyph/sdk-react';
 import { Header } from '../header/header.component';
 import { LandingPage } from '../landing-page';
 import { MarketsPage } from '../dashboard-page/markets-page/markets-page.component';
@@ -24,6 +25,7 @@ import css from './app.module.css';
 import '../../assets/fonts/fonts.css';
 import '../../styles/design-tokens.css';
 import '@rainbow-me/rainbowkit/styles.css';
+import '@use-glyph/sdk-react/style.css';
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -39,6 +41,9 @@ export const App: FC = () => {
 			<WagmiProvider config={wagmiConfig}>
 				<QueryClientProvider client={queryClient}>
 					<RainbowKitProvider>
+						{/* <GlyphProvider
+							strategy={StrategyType.PRIVY}
+						> */}
 						<ApolloProvider client={apolloClient}>
 							<DesignThemeProvider>
 								<TransactionProvider>
@@ -63,6 +68,7 @@ export const App: FC = () => {
 								</TransactionProvider>
 							</DesignThemeProvider>
 						</ApolloProvider>
+						{/* </GlyphProvider> */}
 					</RainbowKitProvider>
 				</QueryClientProvider>
 			</WagmiProvider>

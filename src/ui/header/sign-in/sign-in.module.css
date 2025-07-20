@@ -27,3 +27,34 @@
 .connectButton:focus {
     outline: none;
 }
+
+.buttonGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+}
+
+.glyphButton {
+    background: var(--color-accent-blue, #4fc3f7);
+    color: var(--color-white);
+    border: none;
+    border-radius: 18px;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    box-sizing: border-box;
+    min-width: 133px;
+    text-align: center;
+}
+
+.glyphButton:hover {
+    transform: scale(1.05);
+    background: var(--color-accent-blue-dark, #29b6f6);
+}
+
+.glyphButton:focus {
+    outline: none;
+}
