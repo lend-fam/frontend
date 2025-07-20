@@ -1,0 +1,38 @@
+.container {
+	display: flex;
+	align-items: center;
+	min-width: 120px;
+}
+
+.chainSwitchWrapper {
+	width: 100%;
+}
+
+/* Header-specific compact styling - override default dropdown styles */
+.chainSwitchWrapper button {
+	padding: 8px 12px !important;
+	min-height: 36px !important;
+	font-size: 13px !important;
+	border-radius: 6px !important;
+}
+
+.chainSwitchWrapper button:hover {
+	background: #FAFAFA !important;
+}
+
+/* Hide description in selected state for compact header view */
+.chainSwitchWrapper div[class*="selectedDescription"] {
+	display: none !important;
+}
+
+/* Ensure proper text styling */
+.chainSwitchWrapper div[class*="selectedLabel"] {
+	font-size: 13px !important;
+	font-weight: 500 !important;
+}
+
+/* Arrow styling */
+.chainSwitchWrapper div[class*="arrow"] svg {
+	width: 12px !important;
+	height: 12px !important;
+}

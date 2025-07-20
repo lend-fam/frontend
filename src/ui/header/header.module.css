@@ -18,4 +18,6 @@
 
 .controls {
     /* Flex properties moved to FlexContainer component */
+    gap: 20px;
+    align-items: center;
 }

@@ -163,6 +163,29 @@
 	color: #3B82F6;
 }
 
+.optionDisabled {
+	cursor: not-allowed !important;
+	opacity: 0.5;
+}
+
+.optionDisabled:hover {
+	background: transparent !important;
+}
+
+.optionDisabled .optionLabel {
+	color: #9CA3AF !important;
+}
+
+.disabledTooltip {
+	font-family: 'Inter', sans-serif;
+	font-size: 11px;
+	color: #6B7280;
+	font-style: italic;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
 /* Scrollbar styling */
 .menu::-webkit-scrollbar {
 	width: 6px;

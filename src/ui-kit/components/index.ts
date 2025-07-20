@@ -7,6 +7,7 @@ export { APYDisplay } from './apy-display';
 export { Badge, type BadgeVariant, type BadgeSize } from './badge';
 export { Button, type ButtonProps, type ButtonVariant, type ButtonSize } from './button';
 export { Card } from './card';
+export { ChainSwitch } from './chain-switch';
 export { Dropdown, type DropdownOption } from './dropdown';
 export { EmptyState } from './empty-state';
 export { FlexContainer, type FlexVariant } from './flex-container';

@@ -2,9 +2,10 @@ import type { FC } from 'react';
 import { useLocation } from 'react-router-dom';
 import { NavigationPanel } from './navigation-panel/navigation-panel.component';
 import { Logo } from './logo/logo.component';
-import { SocialNetwork } from './social-network/social-network.component';
+// import { SocialNetwork } from './social-network/social-network.component';
 import { SignIn } from './sign-in/sign-in.component';
 import { FlexContainer } from '../../ui-kit/components/flex-container/flex-container.component';
+import { ChainSwitch } from '../../ui-kit';
 
 import css from './header.module.css';
 
@@ -26,7 +27,8 @@ export const Header: FC = () => {
 					<NavigationPanel />
 				</FlexContainer>
 				<FlexContainer variant="alignCenter" className={css.controls}>
-					<SocialNetwork />
+					{/* <SocialNetwork /> */}
+					<ChainSwitch />
 					<SignIn />
 				</FlexContainer>
 			</FlexContainer>

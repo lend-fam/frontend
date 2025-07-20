@@ -20,12 +20,12 @@ export const apeChainMainnet = defineChain({
 	rpcUrls: {
 		default: {
 			http: [
-				import.meta.env.VITE_APECHAIN_CURTIS_RPC_HTTP || 'https://curtis.rpc.caldera.xyz/http',
 				import.meta.env.VITE_APECHAIN_MAINNET_RPC_HTTP || 'https://rpc.apechain.com/http',
+				import.meta.env.VITE_APECHAIN_CURTIS_RPC_HTTP || 'https://curtis.rpc.caldera.xyz/http',
 			],
 			webSocket: [
-				import.meta.env.VITE_APECHAIN_CURTIS_RPC_WS || 'wss://curtis.rpc.caldera.xyz/ws',
 				import.meta.env.VITE_APECHAIN_MAINNET_RPC_WS || 'wss://rpc.apechain.com/ws',
+				import.meta.env.VITE_APECHAIN_CURTIS_RPC_WS || 'wss://curtis.rpc.caldera.xyz/ws',
 			],
 		},
 	},
@@ -39,7 +39,7 @@ export const apeChainMainnet = defineChain({
 
 export const apeChainTestnet = defineChain({
 	id: 33111,
-	name: 'ApeChain Testnet',
+	name: 'Curtis',
 	nativeCurrency: {
 		decimals: 18,
 		name: 'ApeCoin',
@@ -60,7 +60,7 @@ export const apeChainTestnet = defineChain({
 	testnet: true,
 });
 
-const supportedChains: [typeof apeChainMainnet, typeof apeChainTestnet] = [apeChainMainnet, apeChainTestnet];
+const supportedChains: [typeof apeChainTestnet, typeof apeChainMainnet] = [apeChainTestnet, apeChainMainnet];
 
 const connectors = connectorsForWallets(
 	[
@@ -95,9 +95,21 @@ export const wagmiConfig = createConfig({
 	connectors,
 });
 
-export const chains = {
-	mainnet: apeChainMainnet,
-	testnet: apeChainTestnet,
+// Export supported chains for dynamic access
+export const chains = supportedChains;
+
+// Legacy named exports for backward compatibility
+export const namedChains = {
+	ApeChain: apeChainMainnet,
+	Curtis: apeChainTestnet,
+};
+
+export const getChainDisplayName = (chainId: number): string => {
+	const chain = chains.find((c) => c.id === chainId);
+	if (!chain) return 'Unknown';
+
+	// Use the actual chain name from configuration
+	return chain.name;
 };
 
 export const getBlockExplorerUrl = (chainId: number): string => {

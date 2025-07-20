@@ -7,6 +7,8 @@ interface DropdownOption {
 	value: string;
 	label: string;
 	description?: string;
+	disabled?: boolean;
+	tooltip?: string;
 }
 
 interface DropdownProps {
@@ -48,9 +50,11 @@ const DropdownComponent: FC<DropdownProps> = ({
 		}
 	};
 
-	const handleSelect = (optionValue: string) => {
-		onChange(optionValue);
-		setIsOpen(false);
+	const handleSelect = (optionValue: string, optionDisabled?: boolean) => {
+		if (!optionDisabled) {
+			onChange(optionValue);
+			setIsOpen(false);
+		}
 	};
 
 	return (
@@ -91,15 +95,20 @@ const DropdownComponent: FC<DropdownProps> = ({
 						<button
 							key={option.value}
 							type="button"
-							className={`${css.option} ${option.value === value ? css.selected : ''}`}
-							onClick={() => handleSelect(option.value)}>
+							className={`${css.option} ${option.value === value ? css.selected : ''} ${option.disabled ? css.optionDisabled : ''}`}
+							onClick={() => handleSelect(option.value, option.disabled)}
+							disabled={option.disabled}
+							title={option.disabled ? option.tooltip : undefined}>
 							<div className={css.optionContent}>
 								<div className={css.optionLabel}>{option.label}</div>
 								{option.description && (
 									<div className={css.optionDescription}>{option.description}</div>
 								)}
+								{option.disabled && option.tooltip && (
+									<div className={css.disabledTooltip}>{option.tooltip}</div>
+								)}
 							</div>
-							{option.value === value && (
+							{option.value === value && !option.disabled && (
 								<div className={css.checkmark}>
 									<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
 										<path

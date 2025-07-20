@@ -11,7 +11,7 @@ export function getLensAddress(chainId?: number): Address {
 	if (chainId === 33111) {
 		return import.meta.env.VITE_APECHAIN_CURTIS_COMPOUND_LENS_ADDRESS as Address;
 	}
-	return import.meta.env.VITE_APECHAIN_CURTIS_COMPOUND_LENS_ADDRESS as Address;
+	return import.meta.env.VITE_APECHAIN_MAINNET_COMPOUND_LENS_ADDRESS as Address;
 }
 
 export const CONTRACTS = {
