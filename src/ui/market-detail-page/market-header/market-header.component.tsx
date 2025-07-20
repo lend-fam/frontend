@@ -1,11 +1,12 @@
 import { type FC, useCallback } from 'react';
 import type { Address } from 'viem';
-import { useReadContracts, useChainId } from 'wagmi';
-import { COMPTROLLER_ABI, PRICE_ORACLE_ABI, getComptrollerAddress } from '../../../contracts';
+import { useChainId } from 'wagmi';
+import { PRICE_ORACLE_ABI } from '../../../contracts';
 import { getBlockExplorerUrl } from '../../../config/wagmi.config';
 // import { Icon } from '../../../ui-kit/components/icon/icon.component';
 import { MarketService, PriceService } from '../../../services';
 import { useUSDBalances, useClipboard } from '../../../hooks';
+import { useTypedReadContracts, useTypedOracleAddress } from '../../../hooks/use-typed-contracts';
 
 import css from './market-header.module.css';
 
@@ -42,25 +43,12 @@ export const MarketHeader: FC<MarketHeaderProps> = ({ symbol, marketAddress, mar
 	}, [marketAddress, chainId]);
 
 	// Fetch oracle address and then oracle price
-	const { data: oracleData } = useReadContracts({
+	const { data: oracleAddress } = useTypedOracleAddress(chainId);
+
+	const { extractBigInt } = useTypedReadContracts({
 		contracts: [
 			{
-				address: getComptrollerAddress(chainId),
-				abi: COMPTROLLER_ABI,
-				functionName: 'oracle',
-			},
-		],
-		query: {
-			staleTime: 300000, // 5 minutes
-		},
-	});
-
-	const oracleAddress = oracleData?.[0]?.result as Address;
-
-	const { data: priceData } = useReadContracts({
-		contracts: [
-			{
-				address: oracleAddress,
+				address: oracleAddress!,
 				abi: PRICE_ORACLE_ABI,
 				functionName: 'getUnderlyingPrice',
 				args: [marketAddress],
@@ -72,7 +60,7 @@ export const MarketHeader: FC<MarketHeaderProps> = ({ symbol, marketAddress, mar
 		},
 	});
 
-	const oraclePrice = priceData?.[0]?.result as bigint;
+	const oraclePrice = extractBigInt(0);
 
 	// Calculate total supplied in underlying tokens
 	const totalSuppliedUnderlying =

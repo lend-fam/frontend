@@ -1,27 +1,20 @@
 import { formatUnits, type Address } from 'viem';
-import { useReadContract, useReadContracts, useChainId } from 'wagmi';
-import { COMPTROLLER_ABI, PRICE_ORACLE_ABI, getComptrollerAddress } from '../contracts';
+import { useReadContracts, useChainId } from 'wagmi';
+import { PRICE_ORACLE_ABI } from '../contracts';
 import { FormattingService } from './formatting.service';
 import { FALLBACK_PRICES, FORMATTING_THRESHOLDS } from '../constants';
+import { useTypedOracleAddress } from '../hooks/use-typed-contracts';
 
 export function usePriceOracle() {
 	const chainId = useChainId();
-
-	return useReadContract({
-		address: getComptrollerAddress(chainId),
-		abi: COMPTROLLER_ABI,
-		functionName: 'oracle',
-		query: {
-			staleTime: 5 * 60 * 1000,
-		},
-	});
+	return useTypedOracleAddress(chainId);
 }
 
 export function useTokenPrices(marketAddresses: Address[]) {
 	const { data: oracleAddress } = usePriceOracle();
 
 	const priceContracts = marketAddresses.map((marketAddress) => ({
-		address: oracleAddress as Address,
+		address: oracleAddress!,
 		abi: PRICE_ORACLE_ABI,
 		functionName: 'getUnderlyingPrice',
 		args: [marketAddress],
