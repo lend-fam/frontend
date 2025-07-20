@@ -15,6 +15,7 @@ import { MarketDetailPage } from '../market-detail-page';
 import { FaucetPage } from '../faucet-page/faucet-page.component';
 import { CollectionsPage } from '../collections-page';
 import { CollectionDetailPage } from '../collection-detail-page';
+import { ComingSoonPage } from '../coming-soon-page';
 import { Footer } from '../footer/footer.component';
 import { wagmiConfig } from '../../config/wagmi.config';
 import { apolloClient } from '../../config/apollo';
@@ -45,9 +46,42 @@ const AppContent: FC = () => {
 				<Route path="/dashboard" element={<MarketsPage />} />
 				<Route path="/markets" element={<MarketsOverviewPage />} />
 				<Route path="/markets/:marketAddress" element={<MarketDetailPage />} />
-				<Route path="/collections" element={<CollectionsPage />} />
-				<Route path="/collections/:collectionAddress" element={<CollectionDetailPage />} />
-				<Route path="/profile" element={<MarketsPage />} />
+				<Route
+					path="/collections"
+					element={
+						import.meta.env.MODE === 'prod' ? (
+							<ComingSoonPage
+								title="Collections"
+								description="Explore NFT collections and their lending opportunities"
+							/>
+						) : (
+							<CollectionsPage />
+						)
+					}
+				/>
+				<Route
+					path="/collections/:collectionAddress"
+					element={
+						import.meta.env.MODE === 'prod' ? (
+							<ComingSoonPage
+								title="Collection Details"
+								description="View detailed information about this NFT collection"
+							/>
+						) : (
+							<CollectionDetailPage />
+						)
+					}
+				/>
+				<Route
+					path="/profile"
+					element={
+						import.meta.env.MODE === 'prod' ? (
+							<ComingSoonPage title="Profile" description="Manage your lending portfolio and settings" />
+						) : (
+							<MarketsPage />
+						)
+					}
+				/>
 				<Route path="/faucet" element={<FaucetPage />} />
 			</Routes>
 			<Footer />

@@ -1,0 +1,76 @@
+.container {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 60vh;
+	padding: 2rem;
+}
+
+.content {
+	background: var(--color-white);
+	border-radius: 16px;
+	border: 2px solid var(--color-dark);
+	padding: 6rem 4rem;
+	text-align: center;
+	max-width: 1200px;
+	width: 100%;
+	min-height: 600px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-bottom: 1rem;
+	color: var(--text-primary);
+}
+
+.description {
+	font-size: 1.125rem;
+	margin-bottom: 2rem;
+	color: var(--text-secondary);
+	line-height: 1.6;
+}
+
+.comingSoon {
+	font-size: 5rem;
+	font-weight: 400;
+	color: #000000;
+	margin-bottom: 1.5rem;
+}
+
+.subtitle {
+	font-size: 1.25rem;
+	color: #6b7280;
+	margin-bottom: 3rem;
+	font-weight: 400;
+}
+
+.socialsContainer {
+	margin-top: 2rem;
+}
+
+.followText {
+	font-size: 1.125rem;
+	color: #374151;
+	margin-bottom: 1.5rem;
+	font-weight: 500;
+}
+
+.socialButtons {
+	display: flex;
+	align-items: center;
+	gap: 32px;
+	justify-content: center;
+}
+
+.socialButton {
+	transition: transform 0.3s ease;
+	transform: scale(1.5);
+}
+
+.socialButton:hover {
+	transform: scale(1.6);
+}
