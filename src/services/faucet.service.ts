@@ -37,7 +37,7 @@ export class FaucetService {
 		}
 	}
 
-	static getTokenAddress(tokenType: string): Address | null {
+	static getTokenAddress(tokenType: string): Address | undefined {
 		switch (tokenType.toLowerCase()) {
 			case 'usdc':
 				return TESTNET_CONTRACTS.TEST_USDC;
@@ -46,11 +46,11 @@ export class FaucetService {
 			case 'dai':
 				return TESTNET_CONTRACTS.TEST_DAI;
 			default:
-				return null;
+				return undefined;
 		}
 	}
 
-	static getNftAddress(nftType?: string): Address | null {
+	static getNftAddress(nftType?: string): Address | undefined {
 		switch (nftType?.toLowerCase()) {
 			case 'bayc':
 			case 'bored_ape':
