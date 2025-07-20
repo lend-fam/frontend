@@ -1,6 +1,7 @@
-import { type FC, useCallback, useState } from 'react';
+import { type FC, useCallback } from 'react';
 import { Badge } from '../../../ui-kit/components/badge/badge.component';
 import { typedMemo } from '../../../ui-kit/utils/typed-memo.utils';
+import { useClipboard } from '../../../hooks/use-clipboard.hook';
 import type { CollectionData } from '../collection-detail-page.component';
 
 import css from './collection-header.module.css';
@@ -21,30 +22,13 @@ const CollectionHeaderComponent: FC<CollectionHeaderProps> = ({ collectionData, 
 		createdAt,
 	} = collectionData;
 
-	const [isCopied, setIsCopied] = useState(false);
+	const { isCopied, copyToClipboard } = useClipboard({
+		successMessage: `${collectionName} address copied`,
+	});
 
 	const handleCopyAddress = useCallback(async () => {
-		try {
-			if (navigator.clipboard && navigator.clipboard.writeText) {
-				await navigator.clipboard.writeText(collectionAddress);
-			} else {
-				const textArea = document.createElement('textarea');
-				textArea.value = collectionAddress;
-				textArea.style.position = 'fixed';
-				textArea.style.left = '-999999px';
-				textArea.style.top = '-999999px';
-				document.body.appendChild(textArea);
-				textArea.focus();
-				textArea.select();
-				document.execCommand('copy');
-				document.body.removeChild(textArea);
-			}
-			setIsCopied(true);
-			setTimeout(() => setIsCopied(false), 2000);
-		} catch {
-			// Silent error - user will see copy didn't work
-		}
-	}, [collectionAddress]);
+		await copyToClipboard(collectionAddress);
+	}, [collectionAddress, copyToClipboard]);
 
 	const handleOpenScanner = useCallback(() => {
 		// TODO: Add block explorer URL for collections

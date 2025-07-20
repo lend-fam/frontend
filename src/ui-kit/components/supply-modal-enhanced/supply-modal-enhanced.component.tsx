@@ -8,6 +8,7 @@ import { Modal } from '../modal/modal.component';
 import { CTOKEN_ABI, ERC20_ABI } from '../../../contracts';
 import { TokenService, MarketService } from '../../../services';
 import { useApprovalTransaction, useTransactionContext, useTokenMetadata } from '../../../hooks';
+import { useToastContext } from '../../../hooks/use-toast-context.hook';
 
 import css from './supply-modal-enhanced.module.css';
 
@@ -35,6 +36,7 @@ export const SupplyModalEnhanced: FC<SupplyModalEnhancedProps> = ({
 	const queryClient = useQueryClient();
 	const { addTransaction } = useTransactionContext();
 	const { data: tokenMetadata } = useTokenMetadata([marketAddress]);
+	const { showError } = useToastContext();
 
 	// Slider state
 	const sliderRef = useRef<HTMLInputElement>(null);
@@ -139,7 +141,7 @@ export const SupplyModalEnhanced: FC<SupplyModalEnhancedProps> = ({
 			onClose();
 		},
 		onError: (error) => {
-			alert(`Transaction failed: ${error.message}`);
+			showError(`Transaction failed: ${error.message}`);
 		},
 	});
 

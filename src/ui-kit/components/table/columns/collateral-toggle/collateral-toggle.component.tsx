@@ -8,6 +8,7 @@ import { useIsCollateralEnabled } from '../../../../../hooks/use-collateral-stat
 import { useUserMarkets } from '../../../../../hooks/use-market-core.hook';
 import { useUserMarketPosition } from '../../../../../hooks/use-user-positions.hook';
 import { Tooltip } from '../../../tooltip/tooltip.component';
+import { useToastContext } from '../../../../../hooks/use-toast-context.hook';
 
 import css from './collateral-toggle.module.css';
 
@@ -28,6 +29,7 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 	const queryClient = useQueryClient();
 	const { address: userAddress } = useAccount();
 	const comptrollerAddress = getComptrollerAddress(chainId);
+	const { showError } = useToastContext();
 	const { writeContract: toggleCollateral, data: toggleHash, isPending: isTogglePending } = useWriteContract();
 	const {
 		isLoading: isToggleConfirming,
@@ -69,7 +71,7 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 			setIsPendingToggle(newPendingState);
 
 			if (isEnabled && borrowBalance > dustThreshold) {
-				alert(
+				showError(
 					`Cannot disable collateral: You have ${formatUnits(borrowBalance, 18)} tokens borrowed in this market. Please repay your borrows first.`,
 				);
 				setIsPendingToggle(null);
@@ -101,6 +103,7 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 		toggleCollateral,
 		borrowBalance,
 		dustThreshold,
+		showError,
 	]);
 
 	const { refetch: manualRefetch } = useReadContract({
@@ -122,7 +125,7 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 				const wasDisabling = isPendingToggle === false;
 
 				if (wasDisabling && stillInArray) {
-					alert(
+					showError(
 						'Cannot disable collateral: You may have outstanding borrows in this market. Please repay your borrows first.',
 					);
 				}
@@ -144,13 +147,14 @@ export const CollateralToggle: FC<CollateralToggleProps> = ({
 		userMarketsQueryKey,
 		isPendingToggle,
 		userAddress,
+		showError,
 	]);
 
 	useEffect(() => {
 		if (isToggleError) {
-			alert('Collateral toggle failed. Please try again.');
+			showError('Collateral toggle failed. Please try again.');
 		}
-	}, [isToggleError]);
+	}, [isToggleError, showError]);
 
 	if (!isEligible) {
 		return <div className={css.notEligible}>—</div>;

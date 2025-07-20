@@ -1,11 +1,11 @@
-import { type FC, useCallback, useState } from 'react';
+import { type FC, useCallback } from 'react';
 import type { Address } from 'viem';
 import { useReadContracts, useChainId } from 'wagmi';
 import { COMPTROLLER_ABI, PRICE_ORACLE_ABI, getComptrollerAddress } from '../../../contracts';
 import { getBlockExplorerUrl } from '../../../config/wagmi.config';
 // import { Icon } from '../../../ui-kit/components/icon/icon.component';
 import { MarketService, PriceService } from '../../../services';
-import { useUSDBalances } from '../../../hooks';
+import { useUSDBalances, useClipboard } from '../../../hooks';
 
 import css from './market-header.module.css';
 
@@ -27,31 +27,13 @@ interface MarketHeaderProps {
 
 export const MarketHeader: FC<MarketHeaderProps> = ({ symbol, marketAddress, marketData, liquidityData }) => {
 	const chainId = useChainId();
-	const [isCopied, setIsCopied] = useState(false);
+	const { isCopied, copyToClipboard } = useClipboard({
+		successMessage: `${symbol} contract address copied`,
+	});
 
 	const handleCopyAddress = useCallback(async () => {
-		try {
-			if (navigator.clipboard && navigator.clipboard.writeText) {
-				await navigator.clipboard.writeText(marketAddress);
-			} else {
-				// Fallback for browsers without clipboard API
-				const textArea = document.createElement('textarea');
-				textArea.value = marketAddress;
-				textArea.style.position = 'fixed';
-				textArea.style.left = '-999999px';
-				textArea.style.top = '-999999px';
-				document.body.appendChild(textArea);
-				textArea.focus();
-				textArea.select();
-				document.execCommand('copy');
-				document.body.removeChild(textArea);
-			}
-			setIsCopied(true);
-			setTimeout(() => setIsCopied(false), 2000);
-		} catch {
-			// Silent error - user will see copy didn't work
-		}
-	}, [marketAddress]);
+		await copyToClipboard(marketAddress);
+	}, [marketAddress, copyToClipboard]);
 
 	const handleOpenScanner = useCallback(() => {
 		const baseUrl = getBlockExplorerUrl(chainId);

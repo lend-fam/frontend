@@ -7,6 +7,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { CTOKEN_ABI, ERC20_ABI } from '../../../contracts';
 import { useAccountLiquidity } from '../../../hooks/use-account-liquidity.hook';
 import { useMarketWalletBalances } from '../../../hooks/use-market-wallet-balances.hook';
+import { useToastContext } from '../../../hooks/use-toast-context.hook';
 import type {
 	TransactionConfig,
 	TransactionState,
@@ -60,6 +61,7 @@ export const useTransactionFlow = ({
 	const { address } = useAccount();
 	const lastSuccessTimeRef = useRef<number>(0);
 	const queryClient = useQueryClient();
+	const { showError } = useToastContext();
 
 	const {
 		data: marketBalances,
@@ -516,16 +518,16 @@ export const useTransactionFlow = ({
 	useEffect(() => {
 		if (isApproveError) {
 			setHasAutoProceeded(false);
-			alert('Token approval failed. Please try again.');
+			showError('Token approval failed. Please try again.');
 		}
-	}, [isApproveError, config.type]);
+	}, [isApproveError, showError]);
 
 	useEffect(() => {
 		if (isTransactionError) {
 			setHasAutoProceeded(false);
-			alert(`${config.type} transaction failed. Please try again.`);
+			showError(`${config.type} transaction failed. Please try again.`);
 		}
-	}, [isTransactionError, config.type]);
+	}, [isTransactionError, config.type, showError]);
 
 	const handleMaxClick = () => {
 		const decimals = isNativeToken ? 18 : tokenDecimals || 18;

@@ -19,6 +19,7 @@ import { Footer } from '../footer/footer.component';
 import { wagmiConfig } from '../../config/wagmi.config';
 import { apolloClient } from '../../config/apollo';
 import { TransactionProvider } from '../../contexts/transaction.context';
+import { ToastProvider } from '../../contexts/toast.provider';
 import { DesignThemeProvider } from '../../ui-kit/providers/design-theme-provider';
 
 import css from './app.module.css';
@@ -35,6 +36,25 @@ const queryClient = new QueryClient({
 	},
 });
 
+const AppContent: FC = () => {
+	return (
+		<div className={css.container}>
+			<Header />
+			<Routes>
+				<Route path="/" element={<LandingPage />} />
+				<Route path="/dashboard" element={<MarketsPage />} />
+				<Route path="/markets" element={<MarketsOverviewPage />} />
+				<Route path="/markets/:marketAddress" element={<MarketDetailPage />} />
+				<Route path="/collections" element={<CollectionsPage />} />
+				<Route path="/collections/:collectionAddress" element={<CollectionDetailPage />} />
+				<Route path="/profile" element={<MarketsPage />} />
+				<Route path="/faucet" element={<FaucetPage />} />
+			</Routes>
+			<Footer />
+		</div>
+	);
+};
+
 export const App: FC = () => {
 	return (
 		<BrowserRouter>
@@ -46,26 +66,12 @@ export const App: FC = () => {
 						> */}
 						<ApolloProvider client={apolloClient}>
 							<DesignThemeProvider>
-								<TransactionProvider>
-									<div className={css.container}>
-										<Header />
-										<Routes>
-											<Route path="/" element={<LandingPage />} />
-											<Route path="/dashboard" element={<MarketsPage />} />
-											<Route path="/markets" element={<MarketsOverviewPage />} />
-											<Route path="/markets/:marketAddress" element={<MarketDetailPage />} />
-											<Route path="/collections" element={<CollectionsPage />} />
-											<Route
-												path="/collections/:collectionAddress"
-												element={<CollectionDetailPage />}
-											/>
-											<Route path="/profile" element={<MarketsPage />} />
-											<Route path="/faucet" element={<FaucetPage />} />
-										</Routes>
-										<Footer />
-									</div>
-									<ReactQueryDevtools initialIsOpen={false} />
-								</TransactionProvider>
+								<ToastProvider>
+									<TransactionProvider>
+										<AppContent />
+										<ReactQueryDevtools initialIsOpen={false} />
+									</TransactionProvider>
+								</ToastProvider>
 							</DesignThemeProvider>
 						</ApolloProvider>
 						{/* </GlyphProvider> */}
