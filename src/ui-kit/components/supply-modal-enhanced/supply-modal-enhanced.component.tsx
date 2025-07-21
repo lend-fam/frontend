@@ -3,6 +3,7 @@ import type { Address } from 'viem';
 import { useAccount, useBalance, useReadContract } from 'wagmi';
 import { useQueryClient } from '@tanstack/react-query';
 import { parseUnits, formatUnits, maxUint256 } from 'viem';
+import { Checkbox } from '../checkbox/checkbox.component';
 
 import { Modal } from '../modal/modal.component';
 import { CTOKEN_ABI, ERC20_ABI } from '../../../contracts';
@@ -427,7 +428,7 @@ export const SupplyModalEnhanced: FC<SupplyModalEnhancedProps> = ({
 					<div className={css.approvalContainer}>
 						<div className={css.approvalOption}>
 							<label className={css.approvalLabel}>
-								<input
+								<Checkbox
 									type="checkbox"
 									checked={useMaxApproval}
 									onChange={(e) => {

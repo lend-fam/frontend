@@ -23,6 +23,7 @@ import {
 import { useMarketsDataOptimized } from '../../../hooks/use-market-data-optimized.hook';
 import { useTokenMetadata, type TokenMetadata } from '../../../hooks/use-token-metadata.hook';
 import { MarketService, TokenService } from '../../../services';
+import { Checkbox } from '../../../ui-kit/components/checkbox/checkbox.component';
 
 import css from './markets-supply-table.module.css';
 import tableCss from '../../../ui-kit/themes/market-table.module.css';
@@ -562,7 +563,7 @@ export const MarketsSupplyTable: FC = () => {
 					<div className={css.assetsToSupplyHeader}>
 						<p className={css.sectionHeader}>Assets to Supply</p>
 						<label className={css.filterCheckbox}>
-							<input
+							<Checkbox
 								type="checkbox"
 								checked={showZeroBalance}
 								onChange={(e) => setShowZeroBalance(e.target.checked)}

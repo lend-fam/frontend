@@ -1,6 +1,7 @@
 import { type FC } from 'react';
 import { typedMemo } from '../../../utils/typed-memo.utils';
 import { useTheme } from '../../../hooks/use-theme.hook';
+import { Checkbox } from '../../checkbox/checkbox.component';
 
 import css from './approval-settings.module.css';
 
@@ -29,7 +30,7 @@ const ApprovalSettingsComponent: FC<ApprovalSettingsProps> = ({
 			<div className={theme.approvalContainer}>
 				<div className={theme.approvalOption}>
 					<label className={theme.approvalLabel}>
-						<input
+						<Checkbox
 							type="checkbox"
 							checked={useMaxApproval}
 							onChange={(e) => onToggle(e.target.checked)}
