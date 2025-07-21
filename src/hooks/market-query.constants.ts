@@ -1,30 +1,42 @@
 export const MARKET_QUERY_CONFIG = {
 	MARKET_INFO: {
-		staleTime: 60000,
-		refetchInterval: 60000,
+		staleTime: 300_000, // 5 minutes - Market info changes rarely
+		refetchInterval: 300_000,
 	},
 
 	MARKET_RATES: {
-		staleTime: 30000,
-		refetchInterval: 30000,
+		staleTime: 60_000, // 1 minute - Rates update more frequently
+		refetchInterval: 120_000, // 2 minutes
 	},
 
 	USER_POSITIONS: {
-		staleTime: 10000,
-		refetchInterval: 10000,
+		staleTime: 30_000, // 30 seconds - User data should be fresh
+		refetchInterval: 60_000, // 1 minute
 	},
 
 	ACCOUNT_LIQUIDITY: {
-		staleTime: 5000,
-		refetchInterval: 10000,
-		refetchOnWindowFocus: true,
-		retry: 3,
-		retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 3000),
+		staleTime: 30_000, // 30 seconds - Critical for UI but not real-time
+		refetchInterval: 60_000, // 1 minute
+		refetchOnWindowFocus: false, // Disable aggressive focus refetching
+		retry: 2, // Reduce retries
+		retryDelay: (attemptIndex: number) => Math.min(1000 * 2 ** attemptIndex, 2000),
 	},
 
 	MARKET_LIQUIDITY: {
-		staleTime: 30000,
-		refetchInterval: 30000,
+		staleTime: 120_000, // 2 minutes - Liquidity changes slowly
+		refetchInterval: 180_000, // 3 minutes
+	},
+
+	WALLET_BALANCES: {
+		staleTime: 60_000, // 1 minute - Wallet balances don't change frequently
+		refetchOnWindowFocus: false, // Prevent aggressive refetching on focus
+		refetchOnMount: false, // Prevent refetch on component remount
+	},
+
+	TOKEN_METADATA: {
+		staleTime: 300_000, // 5 minutes - Token metadata is static
+		refetchInterval: false, // Never auto-refetch metadata
+		refetchOnWindowFocus: false,
 	},
 } as const;
 

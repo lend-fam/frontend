@@ -21,10 +21,7 @@ const GET_DATA_RANGE = gql`
 			timestamp
 		}
 		# Get total count to check data density
-		totalCount: ctokenAPYDatas(
-			where: { cTokenMarket: $cTokenMarket }
-			first: 1000
-		) {
+		totalCount: ctokenAPYDatas(where: { cTokenMarket: $cTokenMarket }, first: 1000) {
 			id
 		}
 	}
@@ -92,19 +89,19 @@ export const useDataRange = (cTokenMarket: string) => {
 		ranges.forEach((range) => {
 			// Check both time span and data density
 			const hasEnoughTime = totalRangeSeconds >= range.seconds;
-			
+
 			// Minimum data points required for each range (to ensure chart quality)
 			const minDataPoints: Record<string, number> = {
-				'24h': 3,   // At least 3 points for 24h
-				'7d': 5,    // At least 5 points for 7d
-				'30d': 8,   // At least 8 points for 30d
-				'90d': 10,  // At least 10 points for 90d
-				'1y': 15,   // At least 15 points for 1y
+				'24h': 3, // At least 3 points for 24h
+				'7d': 5, // At least 5 points for 7d
+				'30d': 8, // At least 8 points for 30d
+				'90d': 10, // At least 10 points for 90d
+				'1y': 15, // At least 15 points for 1y
 			};
-			
+
 			const hasEnoughData = totalDataPoints >= (minDataPoints[range.name] || 3);
 			const isAvailable = hasEnoughTime && hasEnoughData;
-			
+
 			console.log(`DataRange ${cTokenMarket} - ${range.name}:`, {
 				requiredSeconds: range.seconds,
 				requiredDays: range.days,
@@ -117,7 +114,7 @@ export const useDataRange = (cTokenMarket: string) => {
 				isAvailable,
 				threshold: `${(range.seconds / 86400).toFixed(1)} days (80% of ${range.label})`,
 			});
-			
+
 			if (isAvailable) {
 				availableRanges.push(range.name);
 			}

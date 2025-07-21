@@ -2,6 +2,7 @@ import { useReadContracts } from 'wagmi';
 import type { Address } from 'viem';
 import { CTOKEN_ABI } from '../contracts/ctoken.abi';
 import { ERC20_ABI } from '../contracts/erc20.abi';
+import { MARKET_QUERY_CONFIG } from './market-query.constants';
 
 export interface TokenMetadata {
 	name: string;
@@ -40,6 +41,7 @@ export function useTokenMetadata(marketAddresses: Address[]) {
 		contracts: ctokenContracts,
 		query: {
 			enabled: marketAddresses.length > 0,
+			...MARKET_QUERY_CONFIG.TOKEN_METADATA,
 		},
 	});
 
@@ -81,6 +83,7 @@ export function useTokenMetadata(marketAddresses: Address[]) {
 		contracts: underlyingContracts,
 		query: {
 			enabled: underlyingAddresses.length > 0,
+			...MARKET_QUERY_CONFIG.TOKEN_METADATA,
 		},
 	});
 

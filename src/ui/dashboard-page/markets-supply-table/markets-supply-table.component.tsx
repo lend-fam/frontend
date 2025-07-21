@@ -16,11 +16,11 @@ import {
 	useAllMarkets,
 	useUserMarkets,
 	useUserSupplyPositions,
-	useMarketsAPY,
 	useUSDBalances,
 	useMarketWalletBalances,
 	useNativeYield,
 } from '../../../hooks';
+import { useMarketsDataOptimized } from '../../../hooks/use-market-data-optimized.hook';
 import { useTokenMetadata, type TokenMetadata } from '../../../hooks/use-token-metadata.hook';
 import { MarketService, TokenService } from '../../../services';
 
@@ -357,7 +357,7 @@ export const MarketsSupplyTable: FC = () => {
 	const navigate = useNavigate();
 	const { address: userAddress } = useAccount();
 	const { data: allMarkets, isLoading: marketsLoading } = useAllMarkets();
-	const { data: marketsAPY, isLoading: apyLoading } = useMarketsAPY();
+	const { data: optimizedMarketData, isLoading: optimizedDataLoading } = useMarketsDataOptimized();
 	const { data: userSupplyPositions, isLoading: positionsLoading } = useUserSupplyPositions(userAddress);
 	const { data: userMarkets } = useUserMarkets(userAddress);
 	const { data: nativeYieldData } = useNativeYield();
@@ -412,7 +412,7 @@ export const MarketsSupplyTable: FC = () => {
 	);
 
 	const { suppliedMarketsData, availableMarketsData } = useMemo(() => {
-		if (!allMarkets || marketsLoading || apyLoading) {
+		if (!allMarkets || marketsLoading || optimizedDataLoading) {
 			return { suppliedMarketsData: [], availableMarketsData: [] };
 		}
 
@@ -423,7 +423,7 @@ export const MarketsSupplyTable: FC = () => {
 			const marketAddress = allMarkets[i];
 			const metadata = tokenMetadata?.[marketAddress];
 			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
-			const apyData = marketsAPY?.[marketAddress];
+			const apyData = optimizedMarketData?.apyData?.[marketAddress];
 			const baseAPY = parseFloat(apyData?.supplyAPY || '0.00');
 			const userPosition = userSupplyPositions?.[marketAddress];
 			const hasSupplied = userPosition?.hasSupplied || false;
@@ -479,8 +479,8 @@ export const MarketsSupplyTable: FC = () => {
 	}, [
 		allMarkets,
 		marketsLoading,
-		apyLoading,
-		marketsAPY,
+		optimizedDataLoading,
+		optimizedMarketData,
 		userSupplyPositions,
 		userMarkets,
 		marketBalances,
@@ -494,7 +494,7 @@ export const MarketsSupplyTable: FC = () => {
 		if (showZeroBalance) {
 			return availableMarketsData;
 		}
-		return availableMarketsData.filter((market) => market.tokenAmount !== '0');
+		return availableMarketsData.filter((market) => market.walletBalance > 0n);
 	}, [availableMarketsData, showZeroBalance]);
 
 	const totalSuppliedUSD = useMemo(() => {
@@ -505,7 +505,7 @@ export const MarketsSupplyTable: FC = () => {
 
 	if (
 		marketsLoading ||
-		apyLoading ||
+		optimizedDataLoading ||
 		positionsLoading ||
 		usdLoading ||
 		walletBalancesLoading ||
@@ -514,8 +514,21 @@ export const MarketsSupplyTable: FC = () => {
 	) {
 		return (
 			<div className={css.container}>
-				<p className={css.label}>Supply Markets</p>
-				<div>Fetching markets from blockchain...</div>
+				<div className={css.headerSection}>
+					<h2 className={css.label}>Supply Markets</h2>
+					<p className={css.totalValue}>Loading...</p>
+				</div>
+				<div className={css.loadingSkeleton}>
+					{[...Array(3)].map((_, i) => (
+						<div key={i} className={css.skeletonRow}>
+							<div className={css.skeletonCell}></div>
+							<div className={css.skeletonCell}></div>
+							<div className={css.skeletonCell}></div>
+							<div className={css.skeletonCell}></div>
+							<div className={css.skeletonCell}></div>
+						</div>
+					))}
+				</div>
 			</div>
 		);
 	}

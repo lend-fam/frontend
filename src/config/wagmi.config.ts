@@ -87,7 +87,11 @@ export const wagmiConfig = createConfig({
 	chains: supportedChains,
 	transports: supportedChains.reduce(
 		(acc, chain) => {
-			acc[chain.id] = http();
+			acc[chain.id] = http(undefined, {
+				timeout: 5_000,
+				retryCount: 2,
+				retryDelay: 1_000,
+			});
 			return acc;
 		},
 		{} as Record<number, Transport>,

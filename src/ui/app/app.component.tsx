@@ -33,6 +33,9 @@ const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
 			queryKeyHashFn: hashFn,
+			staleTime: 30_000, // 30 seconds default
+			refetchOnWindowFocus: false, // Reduce aggressive refetching
+			retry: 2,
 		},
 	},
 });

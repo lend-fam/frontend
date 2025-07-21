@@ -63,28 +63,26 @@ export const useHistoricalAPYFixed = ({ cTokenMarket, timeRange, interval = 'hou
 			timeRange,
 		});
 
-		const processedData = data.ctokenAPYDatas.map(
-			(stat): HistoricalAPYData => {
-				// Parse raw values from subgraph
-				const rawSupplyAPY = parseFloat(stat.supplyAPY);
-				const rawBorrowAPY = parseFloat(stat.borrowAPY);
-				const rawUtilizationRate = parseFloat(stat.utilizationRate);
-				const rawExchangeRate = parseFloat(stat.exchangeRate);
-				const rawTimestamp = parseInt(stat.timestamp.toString());
+		const processedData = data.ctokenAPYDatas.map((stat): HistoricalAPYData => {
+			// Parse raw values from subgraph
+			const rawSupplyAPY = parseFloat(stat.supplyAPY);
+			const rawBorrowAPY = parseFloat(stat.borrowAPY);
+			const rawUtilizationRate = parseFloat(stat.utilizationRate);
+			const rawExchangeRate = parseFloat(stat.exchangeRate);
+			const rawTimestamp = parseInt(stat.timestamp.toString());
 
-				// Apply correct scaling based on subgraph analysis:
-				// - APY values are stored with PERCENTAGE_SCALE (10^4) in subgraph
-				// - Utilization and exchange rates use MANTISSA_SCALE (10^18)  
-				// - Timestamps are stored as microseconds, convert to seconds
-				return {
-					timestamp: rawTimestamp / 1000000, // Convert microseconds to seconds
-					supplyAPY: rawSupplyAPY / 1e4, // Convert from percentage scale (10^4) to decimal
-					borrowAPY: rawBorrowAPY / 1e4, // Convert from percentage scale (10^4) to decimal
-					utilizationRate: rawUtilizationRate / 1e18, // Convert from mantissa scale
-					exchangeRate: rawExchangeRate / 1e18, // Convert from mantissa scale
-				};
-			},
-		);
+			// Apply correct scaling based on subgraph analysis:
+			// - APY values are stored with PERCENTAGE_SCALE (10^4) in subgraph
+			// - Utilization and exchange rates use MANTISSA_SCALE (10^18)
+			// - Timestamps are stored as microseconds, convert to seconds
+			return {
+				timestamp: rawTimestamp / 1000000, // Convert microseconds to seconds
+				supplyAPY: rawSupplyAPY / 1e4, // Convert from percentage scale (10^4) to decimal
+				borrowAPY: rawBorrowAPY / 1e4, // Convert from percentage scale (10^4) to decimal
+				utilizationRate: rawUtilizationRate / 1e18, // Convert from mantissa scale
+				exchangeRate: rawExchangeRate / 1e18, // Convert from mantissa scale
+			};
+		});
 
 		// Debug log processed data
 		console.log(`Processed APY Data for ${cTokenMarket}:`, {
@@ -95,13 +93,13 @@ export const useHistoricalAPYFixed = ({ cTokenMarket, timeRange, interval = 'hou
 		});
 
 		// Only use mock data if all APY values are exactly zero
-		const allZeroAPY = processedData.every((point) => 
-			point.supplyAPY === 0 && point.borrowAPY === 0
-		);
+		const allZeroAPY = processedData.every((point) => point.supplyAPY === 0 && point.borrowAPY === 0);
 
 		// Only return mock data if all APY values are exactly zero
 		if (allZeroAPY && processedData.length > 0) {
-			console.warn(`All APY values are zero for ${cTokenMarket} - using mock data. Check interest rate model configuration.`);
+			console.warn(
+				`All APY values are zero for ${cTokenMarket} - using mock data. Check interest rate model configuration.`,
+			);
 			return generateMockAPYData(timeRange);
 		}
 
@@ -135,7 +133,7 @@ export const useLatestAPYStatsFixed = (cTokenMarket: string) => {
 		}
 
 		const stats = data.ctokenAPYDatas[0];
-		
+
 		// Parse and convert values using correct scaling
 		const rawSupplyAPY = parseFloat(stats.supplyAPY);
 		const rawBorrowAPY = parseFloat(stats.borrowAPY);
@@ -144,7 +142,7 @@ export const useLatestAPYStatsFixed = (cTokenMarket: string) => {
 		const rawTimestamp = parseInt(stats.timestamp.toString());
 
 		const processedStats = {
-			timestamp: rawTimestamp / 1000000, // Convert microseconds to seconds  
+			timestamp: rawTimestamp / 1000000, // Convert microseconds to seconds
 			supplyAPY: rawSupplyAPY / 1e4, // Convert from percentage scale (10^4) to decimal
 			borrowAPY: rawBorrowAPY / 1e4, // Convert from percentage scale (10^4) to decimal
 			utilizationRate: rawUtilizationRate / 1e18, // Convert from mantissa scale
@@ -158,7 +156,9 @@ export const useLatestAPYStatsFixed = (cTokenMarket: string) => {
 
 		// Only use mock data if both APY values are exactly zero
 		if (processedStats.supplyAPY === 0 && processedStats.borrowAPY === 0) {
-			console.warn(`Latest APY values are zero for ${cTokenMarket} - using mock data. Check interest rate model configuration.`);
+			console.warn(
+				`Latest APY values are zero for ${cTokenMarket} - using mock data. Check interest rate model configuration.`,
+			);
 			return {
 				timestamp: processedStats.timestamp,
 				supplyAPY: 0.05,

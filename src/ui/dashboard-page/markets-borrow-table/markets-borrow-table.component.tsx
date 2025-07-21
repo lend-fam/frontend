@@ -11,14 +11,8 @@ import {
 	BalanceColumn,
 	BorrowActionButtons,
 } from '../../../ui-kit';
-import {
-	useAllMarkets,
-	useMarketsAPY,
-	useUserBorrowPositions,
-	useMarketsAvailableLiquidity,
-	useUSDBalances,
-	useAccountLiquidity,
-} from '../../../hooks';
+import { useAllMarkets, useUserBorrowPositions, useUSDBalances, useAccountLiquidity } from '../../../hooks';
+import { useMarketsDataOptimized } from '../../../hooks/use-market-data-optimized.hook';
 import { useTokenMetadata } from '../../../hooks/use-token-metadata.hook';
 import { TokenService, MarketService } from '../../../services';
 
@@ -210,15 +204,14 @@ export const MarketsBorrowTable: FC = () => {
 	const navigate = useNavigate();
 	const { address: userAddress } = useAccount();
 	const { data: allMarkets, isLoading: marketsLoading } = useAllMarkets();
-	const { data: marketsAPY, isLoading: apyLoading } = useMarketsAPY();
+	const { data: optimizedMarketData, isLoading: optimizedDataLoading } = useMarketsDataOptimized();
 	const { data: userBorrowPositions, isLoading: positionsLoading } = useUserBorrowPositions(userAddress);
-	const { data: availableLiquidity, isLoading: liquidityLoading } = useMarketsAvailableLiquidity();
 	const { data: accountLiquidity } = useAccountLiquidity(userAddress);
 
 	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata((allMarkets as Address[]) || []);
 
 	const balanceData = useMemo(() => {
-		if (!allMarkets || !userBorrowPositions || !availableLiquidity) return [];
+		if (!allMarkets || !userBorrowPositions || !optimizedMarketData?.liquidityData) return [];
 
 		const balances: Array<{ marketAddress: Address; balance: bigint; symbol: string; decimals: number }> = [];
 
@@ -237,7 +230,7 @@ export const MarketsBorrowTable: FC = () => {
 					decimals,
 				});
 			} else {
-				const availableCash = availableLiquidity[marketAddress] || 0n;
+				const availableCash = optimizedMarketData?.liquidityData?.[marketAddress] || 0n;
 
 				if (accountLiquidity && userAddress) {
 					const [, liquidity] = accountLiquidity as [bigint, bigint, bigint];
@@ -269,7 +262,14 @@ export const MarketsBorrowTable: FC = () => {
 		});
 
 		return balances;
-	}, [allMarkets, userBorrowPositions, availableLiquidity, accountLiquidity, userAddress, tokenMetadata]);
+	}, [
+		allMarkets,
+		userBorrowPositions,
+		optimizedMarketData?.liquidityData,
+		accountLiquidity,
+		userAddress,
+		tokenMetadata,
+	]);
 
 	const { data: usdBalances, isLoading: usdLoading } = useUSDBalances(balanceData);
 
@@ -277,7 +277,7 @@ export const MarketsBorrowTable: FC = () => {
 	const availableAssetsColumns = useMemo(() => createAvailableAssetsColumns(navigate), [navigate]);
 
 	const { borrowedMarketsData, availableMarketsData } = useMemo(() => {
-		if (!allMarkets || marketsLoading || apyLoading || liquidityLoading || usdLoading) {
+		if (!allMarkets || marketsLoading || optimizedDataLoading || usdLoading) {
 			return { borrowedMarketsData: [], availableMarketsData: [] };
 		}
 
@@ -288,12 +288,12 @@ export const MarketsBorrowTable: FC = () => {
 			const marketAddress = allMarkets[i];
 			const metadata = tokenMetadata?.[marketAddress];
 			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
-			const apyData = marketsAPY?.[marketAddress];
+			const apyData = optimizedMarketData?.apyData?.[marketAddress];
 			const baseAPY = parseFloat(apyData?.borrowAPY || '0.00');
 			const userPosition = userBorrowPositions?.[marketAddress];
 			const hasBorrowed = userPosition?.hasBorrowed || false;
 
-			const availableCash = availableLiquidity?.[marketAddress] || 0n;
+			const availableCash = optimizedMarketData?.liquidityData?.[marketAddress] || 0n;
 
 			const decimals = metadata?.underlyingDecimals ?? 18;
 			let availableAmount: string;
@@ -350,12 +350,10 @@ export const MarketsBorrowTable: FC = () => {
 	}, [
 		allMarkets,
 		marketsLoading,
-		apyLoading,
-		liquidityLoading,
+		optimizedDataLoading,
 		usdLoading,
-		marketsAPY,
+		optimizedMarketData,
 		userBorrowPositions,
-		availableLiquidity,
 		usdBalances,
 		accountLiquidity,
 		userAddress,
@@ -370,17 +368,28 @@ export const MarketsBorrowTable: FC = () => {
 
 	if (
 		marketsLoading ||
-		apyLoading ||
+		optimizedDataLoading ||
 		positionsLoading ||
-		liquidityLoading ||
 		usdLoading ||
 		tokenMetadataLoading ||
 		!allMarkets
 	) {
 		return (
 			<div className={css.container}>
-				<p className={css.label}>Borrow Markets</p>
-				<div>Fetching markets from blockchain...</div>
+				<div className={css.headerSection}>
+					<h2 className={css.label}>Borrow Markets</h2>
+					<p className={css.totalValue}>Loading...</p>
+				</div>
+				<div className={css.loadingSkeleton}>
+					{[...Array(3)].map((_, i) => (
+						<div key={i} className={css.skeletonRow}>
+							<div className={css.skeletonCell}></div>
+							<div className={css.skeletonCell}></div>
+							<div className={css.skeletonCell}></div>
+							<div className={css.skeletonCell}></div>
+						</div>
+					))}
+				</div>
 			</div>
 		);
 	}

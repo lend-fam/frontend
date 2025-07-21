@@ -34,17 +34,17 @@ function generateMockAPYData(timeRange: TimeRange): HistoricalAPYData[] {
 export const useHistoricalAPY = ({ cTokenMarket, timeRange, interval = 'hour' }: UseHistoricalAPYOptions) => {
 	const timeRangeMap = useMemo(() => {
 		const now = Math.floor(Date.now() / 1000);
-		
+
 		// Conservative time ranges - only go back as far as we're confident we have data
 		// Using 90% of the full range to ensure data availability
 		const ranges = {
-			'24h': { from: now - (86400 * 0.9), interval: 'hour' },
-			'7d': { from: now - (604800 * 0.9), interval: 'hour' },
-			'30d': { from: now - (2592000 * 0.9), interval: 'day' },
-			'90d': { from: now - (7776000 * 0.9), interval: 'day' },
-			'1y': { from: now - (31536000 * 0.9), interval: 'day' },
+			'24h': { from: now - 86400 * 0.9, interval: 'hour' },
+			'7d': { from: now - 604800 * 0.9, interval: 'hour' },
+			'30d': { from: now - 2592000 * 0.9, interval: 'day' },
+			'90d': { from: now - 7776000 * 0.9, interval: 'day' },
+			'1y': { from: now - 31536000 * 0.9, interval: 'day' },
 		};
-		
+
 		console.log(`Historical APY Query for ${cTokenMarket} - ${timeRange}:`, {
 			from: ranges[timeRange]?.from,
 			to: now,
@@ -52,7 +52,7 @@ export const useHistoricalAPY = ({ cTokenMarket, timeRange, interval = 'hour' }:
 			toDate: new Date(now * 1000).toISOString(),
 			lookbackHours: ((now - ranges[timeRange]?.from) / 3600).toFixed(1),
 		});
-		
+
 		return ranges[timeRange];
 	}, [timeRange, cTokenMarket]);
 
@@ -82,9 +82,15 @@ export const useHistoricalAPY = ({ cTokenMarket, timeRange, interval = 'hour' }:
 		// Check data quality and provide appropriate fallback
 		console.log(`Historical APY Data Quality for ${cTokenMarket} - ${timeRange}:`, {
 			requestedDataPoints: processedData.length,
-			hasNonZeroData: processedData.some(p => p.supplyAPY > 0 || p.borrowAPY > 0),
-			averageSupplyAPY: processedData.length > 0 ? (processedData.reduce((sum, p) => sum + p.supplyAPY, 0) / processedData.length).toFixed(4) : 0,
-			averageBorrowAPY: processedData.length > 0 ? (processedData.reduce((sum, p) => sum + p.borrowAPY, 0) / processedData.length).toFixed(4) : 0,
+			hasNonZeroData: processedData.some((p) => p.supplyAPY > 0 || p.borrowAPY > 0),
+			averageSupplyAPY:
+				processedData.length > 0
+					? (processedData.reduce((sum, p) => sum + p.supplyAPY, 0) / processedData.length).toFixed(4)
+					: 0,
+			averageBorrowAPY:
+				processedData.length > 0
+					? (processedData.reduce((sum, p) => sum + p.borrowAPY, 0) / processedData.length).toFixed(4)
+					: 0,
 		});
 
 		// Only use mock data if we have no data or all APY values are exactly zero
@@ -98,7 +104,7 @@ export const useHistoricalAPY = ({ cTokenMarket, timeRange, interval = 'hour' }:
 		}
 
 		return processedData;
-	}, [data, timeRange]);
+	}, [data, timeRange, cTokenMarket]);
 
 	return {
 		data: historicalData,

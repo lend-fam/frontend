@@ -73,7 +73,7 @@ export const useHistoricalAPYDebug = ({ cTokenMarket, timeRange }: UseHistorical
 					utilizationRate: parseFloat(apyData.utilizationRate) / 1e18, // Utilization uses MANTISSA_SCALE
 					exchangeRate: parseFloat(apyData.exchangeRate) / 1e18, // Exchange rate uses MANTISSA_SCALE
 				};
-				
+
 				// Log first item for debugging
 				if (apyData === data.ctokenAPYDatas[0]) {
 					console.log(`Debug APY Hook - Transformation for ${cTokenMarket}:`, {
@@ -81,15 +81,19 @@ export const useHistoricalAPYDebug = ({ cTokenMarket, timeRange }: UseHistorical
 						processed: result,
 					});
 				}
-				
+
 				return result;
 			},
 		);
 
 		console.log(`Debug APY Hook - Final processed data for ${cTokenMarket}:`, {
 			processedCount: processed.length,
-			averageSupplyAPY: processed.reduce((sum: number, p: any) => sum + p.supplyAPY, 0) / processed.length,
-			averageBorrowAPY: processed.reduce((sum: number, p: any) => sum + p.borrowAPY, 0) / processed.length,
+			averageSupplyAPY:
+				processed.reduce((sum: number, p: { supplyAPY: number; borrowAPY: number }) => sum + p.supplyAPY, 0) /
+				processed.length,
+			averageBorrowAPY:
+				processed.reduce((sum: number, p: { supplyAPY: number; borrowAPY: number }) => sum + p.borrowAPY, 0) /
+				processed.length,
 		});
 
 		return processed;

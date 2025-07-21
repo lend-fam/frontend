@@ -26,15 +26,15 @@ export const TimeRangeSelector: FC<TimeRangeSelectorProps> = typedMemo(
 				{timeRanges.map((range) => {
 					const isAvailable = dataRangeInfo.isRangeAvailable(range.value);
 					const isDisabled = !loading && !isAvailable;
-					
+
 					// Create informative tooltip
 					const getTooltip = () => {
 						if (loading) return 'Checking data availability...';
 						if (isAvailable) return `${range.label} data available`;
-						
+
 						const { totalRangeDays, totalDataPoints } = dataRangeInfo;
 						if (totalRangeDays === 0) return 'No historical data available';
-						
+
 						return `Insufficient data for ${range.label} (${totalRangeDays.toFixed(1)} days, ${totalDataPoints} points available)`;
 					};
 

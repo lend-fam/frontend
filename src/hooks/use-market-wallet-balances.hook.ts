@@ -2,6 +2,7 @@ import { useReadContracts, useAccount, useBalance } from 'wagmi';
 import type { Address } from 'viem';
 import { useMemo } from 'react';
 import { isAddressEqual, zeroAddress } from 'viem';
+import { MARKET_QUERY_CONFIG } from './market-query.constants';
 
 const CTOKEN_ABI = [
 	{
@@ -26,6 +27,7 @@ export function useMarketWalletBalances(marketAddresses: Address[]) {
 		contracts,
 		query: {
 			enabled: marketAddresses.length > 0,
+			...MARKET_QUERY_CONFIG.TOKEN_METADATA,
 		},
 	});
 	const underlyingTokens = useMemo(() => {
@@ -72,6 +74,7 @@ export function useMarketWalletBalances(marketAddresses: Address[]) {
 		contracts: balanceContracts,
 		query: {
 			enabled: !!userAddress && uniqueUnderlyingTokens.length > 0,
+			...MARKET_QUERY_CONFIG.WALLET_BALANCES,
 		},
 	});
 
@@ -79,9 +82,7 @@ export function useMarketWalletBalances(marketAddresses: Address[]) {
 		address: userAddress,
 		query: {
 			enabled: !!userAddress && underlyingTokens.nativeTokenMarkets.length > 0,
-			staleTime: 5000,
-			refetchOnWindowFocus: true,
-			refetchOnMount: true,
+			...MARKET_QUERY_CONFIG.WALLET_BALANCES,
 		},
 	});
 

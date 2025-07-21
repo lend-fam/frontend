@@ -13,7 +13,8 @@ import { AssetsColumn } from '../../../ui-kit/components/table/columns/assets-co
 import { BalanceColumn } from '../../../ui-kit/components/table/columns/balance-column/balance-column.component';
 import { Button } from '../../../ui-kit/components/button/button.component';
 import { Tooltip } from '../../../ui-kit/components/tooltip/tooltip.component';
-import { useAllMarkets, useMarketsAPY, useMarketTotals, useUSDBalances } from '../../../hooks';
+import { useAllMarkets, useMarketTotals, useUSDBalances } from '../../../hooks';
+import { useMarketsDataOptimized } from '../../../hooks/use-market-data-optimized.hook';
 import { useNativeYield } from '../../../hooks/use-native-yield.hook';
 import { useTokenMetadata } from '../../../hooks/use-token-metadata.hook';
 import { TokenService, MarketService } from '../../../services';
@@ -220,7 +221,7 @@ const createUnifiedMarketsColumns = (
 const UnifiedMarketsTableComponent: FC = () => {
 	const navigate = useNavigate();
 	const { data: allMarkets, isLoading: marketsLoading } = useAllMarkets();
-	const { data: marketsAPY, isLoading: apyLoading } = useMarketsAPY();
+	const { data: optimizedMarketData, isLoading: optimizedDataLoading } = useMarketsDataOptimized();
 	const { data: marketTotals, isLoading: totalsLoading } = useMarketTotals();
 	const { data: nativeYieldData } = useNativeYield();
 
@@ -295,7 +296,7 @@ const UnifiedMarketsTableComponent: FC = () => {
 		if (
 			!allMarkets ||
 			marketsLoading ||
-			apyLoading ||
+			optimizedDataLoading ||
 			totalsLoading ||
 			suppliedUSDLoading ||
 			borrowedUSDLoading ||
@@ -312,7 +313,7 @@ const UnifiedMarketsTableComponent: FC = () => {
 			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
 			const symbol = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
 
-			const apyData = marketsAPY?.[marketAddress];
+			const apyData = optimizedMarketData?.apyData?.[marketAddress];
 			const supplyAPY = apyData?.supplyAPY || '0.00';
 			const borrowAPY = apyData?.borrowAPY || '0.00';
 
@@ -364,11 +365,11 @@ const UnifiedMarketsTableComponent: FC = () => {
 	}, [
 		allMarkets,
 		marketsLoading,
-		apyLoading,
+		optimizedDataLoading,
 		totalsLoading,
 		suppliedUSDLoading,
 		borrowedUSDLoading,
-		marketsAPY,
+		optimizedMarketData,
 		marketTotals,
 		suppliedUSDBalances,
 		borrowedUSDBalances,
@@ -424,7 +425,7 @@ const UnifiedMarketsTableComponent: FC = () => {
 
 	if (
 		marketsLoading ||
-		apyLoading ||
+		optimizedDataLoading ||
 		totalsLoading ||
 		suppliedUSDLoading ||
 		borrowedUSDLoading ||
@@ -433,7 +434,19 @@ const UnifiedMarketsTableComponent: FC = () => {
 	) {
 		return (
 			<div className={css.container}>
-				<div>Fetching markets from blockchain...</div>
+				<p className={css.label}>All Markets</p>
+				<div className={css.loadingSkeleton}>
+					{[...Array(5)].map((_, i) => (
+						<div key={i} className={css.skeletonRow}>
+							<div className={css.skeletonCell}></div>
+							<div className={css.skeletonCell}></div>
+							<div className={css.skeletonCell}></div>
+							<div className={css.skeletonCell}></div>
+							<div className={css.skeletonCell}></div>
+							<div className={css.skeletonCell}></div>
+						</div>
+					))}
+				</div>
 			</div>
 		);
 	}

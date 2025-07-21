@@ -6,34 +6,30 @@ import css from './markets-metrics.module.css';
 export const MarketsMetrics: FC = () => {
 	const { data: metrics, isLoading } = usePortfolioMetrics();
 
-	if (isLoading) {
-		return (
-			<ul className={css.container}>
-				<MarketsMetric label={'Net APY'} value={'--'} dimension="percent" />
-				<MarketsMetric label={'Health Factor'} value={'--'} />
-				<MarketsMetric label={'Borrow Usage'} value={'--'} dimension="percent" />
-				<MarketsMetric label={'LTV'} value={'--'} dimension="percent" />
-			</ul>
-		);
-	}
-
-	if (!metrics) {
-		return (
-			<ul className={css.container}>
-				<MarketsMetric label={'Net APY'} value={'0.00'} dimension="percent" />
-				<MarketsMetric label={'Health Factor'} value={'--'} />
-				<MarketsMetric label={'Borrow Usage'} value={'0.0'} dimension="percent" />
-				<MarketsMetric label={'LTV'} value={'0.0'} dimension="percent" />
-			</ul>
-		);
-	}
+	// Show default values immediately, update when loaded
+	const displayMetrics = metrics || {
+		netAPY: '0.00',
+		healthFactor: '--',
+		borrowUsage: '0.0',
+		cumulativeLTV: '0.0',
+	};
 
 	return (
 		<ul className={css.container}>
-			<MarketsMetric label={'Net APY'} value={metrics.netAPY} dimension="percent" />
-			<MarketsMetric label={'Health Factor'} value={metrics.healthFactor} />
-			<MarketsMetric label={'Borrow Usage'} value={metrics.borrowUsage} dimension="percent" />
-			<MarketsMetric label={'LTV'} value={metrics.cumulativeLTV} dimension="percent" />
+			<MarketsMetric label={'Net APY'} value={displayMetrics.netAPY} dimension="percent" isLoading={isLoading} />
+			<MarketsMetric label={'Health Factor'} value={displayMetrics.healthFactor} isLoading={isLoading} />
+			<MarketsMetric
+				label={'Borrow Usage'}
+				value={displayMetrics.borrowUsage}
+				dimension="percent"
+				isLoading={isLoading}
+			/>
+			<MarketsMetric
+				label={'LTV'}
+				value={displayMetrics.cumulativeLTV}
+				dimension="percent"
+				isLoading={isLoading}
+			/>
 		</ul>
 	);
 };
@@ -43,15 +39,16 @@ interface MarketsMetricProps {
 	value: string;
 	dimension?: 'percent';
 	subtitle?: string;
+	isLoading?: boolean;
 }
 
 const MarketsMetric = memo<MarketsMetricProps>((props) => {
-	const { label, value, dimension, subtitle } = props;
+	const { label, value, dimension, subtitle, isLoading } = props;
 
 	return (
 		<li className={css.metric}>
 			<p className={css.label}>{label}</p>
-			<span className={css.value}>
+			<span className={`${css.value} ${isLoading ? css.loading : ''}`}>
 				{value}
 				{dimension && <span className={css.dimension}>{dimension === 'percent' ? '%' : ''}</span>}
 			</span>
