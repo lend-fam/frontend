@@ -26,7 +26,7 @@ export interface ButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement
 	fullWidth?: boolean;
 	icon?: ReactNode;
 	iconPosition?: 'left' | 'right';
-	theme?: Record<string, string>;
+	theme?: typeof css;
 	type?: 'button' | 'submit' | 'reset';
 }
 
