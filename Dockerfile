@@ -12,8 +12,11 @@ RUN bun install --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Build the application
-RUN bun run build
+# Copy production environment file explicitly
+COPY .env.production .env.production
+
+# Build the application with production mode
+RUN NODE_ENV=production bun run build
 
 # Production stage using reproxy
 FROM umputun/reproxy
