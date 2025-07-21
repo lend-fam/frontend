@@ -24,6 +24,7 @@ import { ToastProvider } from '../../contexts/toast.provider';
 import { DesignThemeProvider } from '../../ui-kit/providers/design-theme-provider';
 
 import css from './app.module.css';
+import './reset.css';
 import '../../assets/fonts/fonts.css';
 import '../../styles/design-tokens.css';
 import '@rainbow-me/rainbowkit/styles.css';
