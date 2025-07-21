@@ -569,6 +569,7 @@ export type GetDataRangeQuery = {
 	__typename?: 'Query';
 	earliest: Array<{ __typename?: 'CTokenAPYData'; timestamp: number }>;
 	latest: Array<{ __typename?: 'CTokenAPYData'; timestamp: number }>;
+	totalCount: Array<{ __typename?: 'CTokenAPYData'; id: number }>;
 };
 
 export type GetCTokenApyDataDebugQueryVariables = Exact<{
@@ -1142,6 +1143,9 @@ export const GetDataRangeDocument = gql`
 			first: 1
 		) {
 			timestamp
+		}
+		totalCount: ctokenAPYDatas(where: { cTokenMarket: $cTokenMarket }, first: 1000) {
+			id
 		}
 	}
 `;
