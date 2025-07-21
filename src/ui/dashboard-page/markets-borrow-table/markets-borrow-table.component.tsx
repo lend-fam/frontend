@@ -277,7 +277,8 @@ export const MarketsBorrowTable: FC = () => {
 	const availableAssetsColumns = useMemo(() => createAvailableAssetsColumns(navigate), [navigate]);
 
 	const { borrowedMarketsData, availableMarketsData } = useMemo(() => {
-		if (!allMarkets || marketsLoading || optimizedDataLoading || usdLoading) {
+		// Only return empty arrays on initial load, not during background refetches
+		if (!allMarkets) {
 			return { borrowedMarketsData: [], availableMarketsData: [] };
 		}
 
@@ -369,14 +370,10 @@ export const MarketsBorrowTable: FC = () => {
 		}, 0);
 	}, [borrowedMarketsData]);
 
-	if (
-		marketsLoading ||
-		optimizedDataLoading ||
-		positionsLoading ||
-		usdLoading ||
-		tokenMetadataLoading ||
-		!allMarkets
-	) {
+	// Only show skeleton on initial load, not during background refetches
+	const isInitialLoading = !allMarkets || (marketsLoading && !allMarkets);
+	
+	if (isInitialLoading) {
 		return (
 			<div className={css.container}>
 				<div className={css.headerSection}>

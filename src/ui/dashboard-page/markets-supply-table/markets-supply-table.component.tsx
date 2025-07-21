@@ -412,7 +412,8 @@ export const MarketsSupplyTable: FC = () => {
 	);
 
 	const { suppliedMarketsData, availableMarketsData } = useMemo(() => {
-		if (!allMarkets || marketsLoading || optimizedDataLoading) {
+		// Only return empty arrays on initial load, not during background refetches
+		if (!allMarkets) {
 			return { suppliedMarketsData: [], availableMarketsData: [] };
 		}
 
@@ -506,15 +507,10 @@ export const MarketsSupplyTable: FC = () => {
 		}, 0);
 	}, [suppliedMarketsData]);
 
-	if (
-		marketsLoading ||
-		optimizedDataLoading ||
-		positionsLoading ||
-		usdLoading ||
-		walletBalancesLoading ||
-		tokenMetadataLoading ||
-		!allMarkets
-	) {
+	// Only show skeleton on initial load, not during background refetches
+	const isInitialLoading = !allMarkets || (marketsLoading && !allMarkets);
+	
+	if (isInitialLoading) {
 		return (
 			<div className={css.container}>
 				<div className={css.headerSection}>

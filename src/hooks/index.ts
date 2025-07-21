@@ -19,3 +19,7 @@ export * from './use-historical-apy.hook';
 export * from './use-apy-chart-data.hook';
 export * from './use-clipboard.hook';
 export * from './use-toast.hook';
+
+// Optimized hooks
+export * from './use-dashboard-optimized.hook';
+export * from './use-supply-table-optimized.hook';

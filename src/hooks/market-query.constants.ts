@@ -2,11 +2,13 @@ export const MARKET_QUERY_CONFIG = {
 	MARKET_INFO: {
 		staleTime: 300_000, // 5 minutes - Market info changes rarely
 		refetchInterval: 300_000,
+		refetchOnWindowFocus: false, // Prevent aggressive refetching
 	},
 
 	MARKET_RATES: {
 		staleTime: 60_000, // 1 minute - Rates update more frequently
 		refetchInterval: 120_000, // 2 minutes
+		refetchOnWindowFocus: false, // Prevent aggressive refetching
 	},
 
 	USER_POSITIONS: {

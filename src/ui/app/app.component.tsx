@@ -33,9 +33,11 @@ const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: {
 			queryKeyHashFn: hashFn,
-			staleTime: 30_000, // 30 seconds default
+			staleTime: 60_000, // 1 minute default (increased from 30s)
 			refetchOnWindowFocus: false, // Reduce aggressive refetching
-			retry: 2,
+			refetchOnMount: false, // Prevent refetch on component remount
+			retry: 1, // Reduce retry attempts from 2 to 1
+			retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 2000), // Faster retry delays
 		},
 	},
 });
