@@ -284,8 +284,11 @@ export const MarketsBorrowTable: FC = () => {
 		const borrowed: TableData<MarketsBorrowTableData>[] = [];
 		const available: TableData<MarketsBorrowTableData>[] = [];
 
-		for (let i = 0; i < allMarkets.length; i++) {
-			const marketAddress = allMarkets[i];
+		// Deduplicate market addresses to fix duplicate entries
+		const uniqueMarkets = [...new Set(allMarkets)];
+
+		for (let i = 0; i < uniqueMarkets.length; i++) {
+			const marketAddress = uniqueMarkets[i];
 			const metadata = tokenMetadata?.[marketAddress];
 			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
 			const apyData = optimizedMarketData?.apyData?.[marketAddress];
