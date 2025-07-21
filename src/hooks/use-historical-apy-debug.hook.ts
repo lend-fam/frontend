@@ -88,8 +88,8 @@ export const useHistoricalAPYDebug = ({ cTokenMarket, timeRange }: UseHistorical
 
 		console.log(`Debug APY Hook - Final processed data for ${cTokenMarket}:`, {
 			processedCount: processed.length,
-			averageSupplyAPY: processed.reduce((sum, p) => sum + p.supplyAPY, 0) / processed.length,
-			averageBorrowAPY: processed.reduce((sum, p) => sum + p.borrowAPY, 0) / processed.length,
+			averageSupplyAPY: processed.reduce((sum: number, p: any) => sum + p.supplyAPY, 0) / processed.length,
+			averageBorrowAPY: processed.reduce((sum: number, p: any) => sum + p.borrowAPY, 0) / processed.length,
 		});
 
 		return processed;

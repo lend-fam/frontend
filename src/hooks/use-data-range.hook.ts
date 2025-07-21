@@ -94,7 +94,7 @@ export const useDataRange = (cTokenMarket: string) => {
 			const hasEnoughTime = totalRangeSeconds >= range.seconds;
 			
 			// Minimum data points required for each range (to ensure chart quality)
-			const minDataPoints = {
+			const minDataPoints: Record<string, number> = {
 				'24h': 3,   // At least 3 points for 24h
 				'7d': 5,    // At least 5 points for 7d
 				'30d': 8,   // At least 8 points for 30d
