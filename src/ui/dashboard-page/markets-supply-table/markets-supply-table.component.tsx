@@ -363,9 +363,7 @@ export const MarketsSupplyTable: FC = () => {
 	const { data: nativeYieldData } = useNativeYield();
 	const [showZeroBalance, setShowZeroBalance] = useState(true);
 
-	const { data: walletBalances } = useMarketWalletBalances(
-		(allMarkets as Address[]) || [],
-	);
+	const { data: walletBalances } = useMarketWalletBalances((allMarkets as Address[]) || []);
 
 	const { data: tokenMetadata } = useTokenMetadata((allMarkets as Address[]) || []);
 
