@@ -2,7 +2,7 @@ import { useReadContracts, useChainId, useAccount, useBalance } from 'wagmi';
 import { useMemo } from 'react';
 import type { Address } from 'viem';
 import { isAddressEqual, zeroAddress } from 'viem';
-import { LENS_ABI, getLensAddress, getComptrollerAddress } from '../contracts';
+import { LENS_ABI, getLensAddress } from '../contracts';
 import { MarketService } from '../services/market.service';
 import { useAllMarkets } from './use-market-core.hook';
 import { MARKET_QUERY_CONFIG } from './market-query.constants';
@@ -32,7 +32,7 @@ export interface DashboardData {
  * Super-optimized hook that uses Lens contract to fetch ALL dashboard data
  * in 2-3 RPC calls instead of 100+. Replaces multiple hooks:
  * - useMarketsDataOptimized
- * - useUserSupplyPositions 
+ * - useUserSupplyPositions
  * - useMarketWalletBalances
  * - useUserBorrowPositions
  */
@@ -59,14 +59,17 @@ export function useDashboardOptimized() {
 
 	// Call 2: Get all user balances (supply, borrow, wallet) if wallet connected
 	const { data: balancesResult, isLoading: balancesLoading } = useReadContracts({
-		contracts: userAddress && marketAddresses ? [
-			{
-				address: getLensAddress(chainId),
-				abi: LENS_ABI,
-				functionName: 'cTokenBalancesAll',
-				args: [marketAddresses, userAddress],
-			},
-		] : [],
+		contracts:
+			userAddress && marketAddresses
+				? [
+						{
+							address: getLensAddress(chainId),
+							abi: LENS_ABI,
+							functionName: 'cTokenBalancesAll',
+							args: [marketAddresses, userAddress],
+						},
+					]
+				: [],
 		query: {
 			enabled: !!userAddress && !!marketAddresses && marketAddresses.length > 0,
 			...MARKET_QUERY_CONFIG.USER_POSITIONS,
@@ -119,14 +122,13 @@ export function useDashboardOptimized() {
 		}
 
 		const metadata = metadataResult[0].result as CTokenMetadata[];
-		const balances = balancesResult?.[0]?.status === 'success' 
-			? balancesResult[0].result as CTokenBalances[]
-			: [];
+		const balances =
+			balancesResult?.[0]?.status === 'success' ? (balancesResult[0].result as CTokenBalances[]) : [];
 
 		// Process market metadata
 		metadata.forEach((meta, index) => {
 			const address = meta.cToken;
-			
+
 			// Store complete metadata
 			data.marketMetadata[address] = meta;
 

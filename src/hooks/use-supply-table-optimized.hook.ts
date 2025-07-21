@@ -30,13 +30,12 @@ export type SupplyTableData = {
  */
 export function useSupplyTableOptimized() {
 	const { address: userAddress } = useAccount();
-	const { 
-		data: dashboardData, 
+	const {
 		isLoading: dashboardLoading,
 		marketMetadata,
 		userSupplyPositions,
 		walletBalances,
-		apyData
+		apyData,
 	} = useDashboardOptimized();
 
 	const marketAddresses = Object.keys(marketMetadata) as Address[];
@@ -53,7 +52,12 @@ export function useSupplyTableOptimized() {
 				return {
 					marketAddress: marketAddress as Address,
 					balance: data.balance,
-					symbol: TokenService.formatMarketName(undefined, undefined, marketAddress as Address, tokenMetadata?.[marketAddress as Address]),
+					symbol: TokenService.formatMarketName(
+						undefined,
+						undefined,
+						marketAddress as Address,
+						tokenMetadata?.[marketAddress as Address],
+					),
 					decimals: Number(metadata?.underlyingDecimals || 18n),
 				};
 			});

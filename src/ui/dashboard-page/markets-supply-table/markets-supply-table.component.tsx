@@ -357,17 +357,17 @@ export const MarketsSupplyTable: FC = () => {
 	const navigate = useNavigate();
 	const { address: userAddress } = useAccount();
 	const { data: allMarkets, isLoading: marketsLoading } = useAllMarkets();
-	const { data: optimizedMarketData, isLoading: optimizedDataLoading } = useMarketsDataOptimized();
-	const { data: userSupplyPositions, isLoading: positionsLoading } = useUserSupplyPositions(userAddress);
+	const { data: optimizedMarketData } = useMarketsDataOptimized();
+	const { data: userSupplyPositions } = useUserSupplyPositions(userAddress);
 	const { data: userMarkets } = useUserMarkets(userAddress);
 	const { data: nativeYieldData } = useNativeYield();
 	const [showZeroBalance, setShowZeroBalance] = useState(true);
 
-	const { data: walletBalances, isLoading: walletBalancesLoading } = useMarketWalletBalances(
+	const { data: walletBalances } = useMarketWalletBalances(
 		(allMarkets as Address[]) || [],
 	);
 
-	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata((allMarkets as Address[]) || []);
+	const { data: tokenMetadata } = useTokenMetadata((allMarkets as Address[]) || []);
 
 	const marketBalances = useMemo(() => {
 		if (!allMarkets || !userSupplyPositions) return {};
@@ -403,7 +403,7 @@ export const MarketsSupplyTable: FC = () => {
 			}));
 	}, [marketBalances]);
 
-	const { data: usdBalances, isLoading: usdLoading } = useUSDBalances(balanceData);
+	const { data: usdBalances } = useUSDBalances(balanceData);
 
 	const suppliedAssetsColumns = useMemo(() => createSuppliedAssetsColumns(navigate), [navigate]);
 	const availableAssetsColumns = useMemo(
@@ -482,8 +482,6 @@ export const MarketsSupplyTable: FC = () => {
 		};
 	}, [
 		allMarkets,
-		marketsLoading,
-		optimizedDataLoading,
 		optimizedMarketData,
 		userSupplyPositions,
 		userMarkets,
@@ -509,7 +507,7 @@ export const MarketsSupplyTable: FC = () => {
 
 	// Only show skeleton on initial load, not during background refetches
 	const isInitialLoading = !allMarkets || (marketsLoading && !allMarkets);
-	
+
 	if (isInitialLoading) {
 		return (
 			<div className={css.container}>

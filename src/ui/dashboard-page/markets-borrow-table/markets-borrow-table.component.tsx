@@ -204,11 +204,11 @@ export const MarketsBorrowTable: FC = () => {
 	const navigate = useNavigate();
 	const { address: userAddress } = useAccount();
 	const { data: allMarkets, isLoading: marketsLoading } = useAllMarkets();
-	const { data: optimizedMarketData, isLoading: optimizedDataLoading } = useMarketsDataOptimized();
-	const { data: userBorrowPositions, isLoading: positionsLoading } = useUserBorrowPositions(userAddress);
+	const { data: optimizedMarketData } = useMarketsDataOptimized();
+	const { data: userBorrowPositions } = useUserBorrowPositions(userAddress);
 	const { data: accountLiquidity } = useAccountLiquidity(userAddress);
 
-	const { data: tokenMetadata, isLoading: tokenMetadataLoading } = useTokenMetadata((allMarkets as Address[]) || []);
+	const { data: tokenMetadata } = useTokenMetadata((allMarkets as Address[]) || []);
 
 	const balanceData = useMemo(() => {
 		if (!allMarkets || !userBorrowPositions || !optimizedMarketData?.liquidityData) return [];
@@ -271,7 +271,7 @@ export const MarketsBorrowTable: FC = () => {
 		tokenMetadata,
 	]);
 
-	const { data: usdBalances, isLoading: usdLoading } = useUSDBalances(balanceData);
+	const { data: usdBalances } = useUSDBalances(balanceData);
 
 	const borrowedAssetsColumns = useMemo(() => createBorrowedAssetsColumns(navigate), [navigate]);
 	const availableAssetsColumns = useMemo(() => createAvailableAssetsColumns(navigate), [navigate]);
@@ -353,9 +353,6 @@ export const MarketsBorrowTable: FC = () => {
 		};
 	}, [
 		allMarkets,
-		marketsLoading,
-		optimizedDataLoading,
-		usdLoading,
 		optimizedMarketData,
 		userBorrowPositions,
 		usdBalances,
@@ -372,7 +369,7 @@ export const MarketsBorrowTable: FC = () => {
 
 	// Only show skeleton on initial load, not during background refetches
 	const isInitialLoading = !allMarkets || (marketsLoading && !allMarkets);
-	
+
 	if (isInitialLoading) {
 		return (
 			<div className={css.container}>
