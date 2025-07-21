@@ -18,6 +18,11 @@ export const GET_HISTORICAL_APY = gql`
 			totalBorrows
 			exchangeRate
 			blockNumber
+			transactionHash
+			baseRatePerBlock
+			multiplierPerBlock
+			jumpMultiplierPerBlock
+			kink
 		}
 	}
 `;
@@ -36,6 +41,11 @@ export const GET_LATEST_APY_STATS = gql`
 			totalBorrows
 			exchangeRate
 			blockNumber
+			transactionHash
+			baseRatePerBlock
+			multiplierPerBlock
+			jumpMultiplierPerBlock
+			kink
 		}
 	}
 `;
@@ -74,14 +84,20 @@ export const GET_MARKET_OVERVIEW = gql`
 			totalSupply
 			totalBorrows
 			totalReserves
+			cash
 			exchangeRate
 			borrowIndex
 			collateralFactor
 			reserveFactor
+			interestRateModelAddress
+			interestRateModelType
 			baseRatePerBlock
 			multiplierPerBlock
 			jumpMultiplierPerBlock
 			kink
+			gapPerBlock
+			potAddress
+			jugAddress
 			createdAtTimestamp
 			updatedAtTimestamp
 		}

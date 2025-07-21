@@ -8,6 +8,7 @@ export type MarketTotals = {
 	[marketAddress: Address]: {
 		totalSupply: bigint;
 		totalBorrows: bigint;
+		totalReserves: bigint;
 		exchangeRate: bigint;
 		getCash: bigint;
 	};
@@ -32,6 +33,11 @@ export const useMarketTotals = () => {
 					address: marketAddress,
 					abi: CTOKEN_ABI,
 					functionName: 'totalBorrows',
+				},
+				{
+					address: marketAddress,
+					abi: CTOKEN_ABI,
+					functionName: 'totalReserves',
 				},
 				{
 					address: marketAddress,
@@ -66,16 +72,18 @@ export const useMarketTotals = () => {
 
 		for (let i = 0; i < allMarkets.length; i++) {
 			const marketAddress = allMarkets[i];
-			const baseIndex = i * 4;
+			const baseIndex = i * 5; // Now we have 5 calls per market
 
 			const totalSupplyResult = contractResults[baseIndex];
 			const totalBorrowsResult = contractResults[baseIndex + 1];
-			const exchangeRateResult = contractResults[baseIndex + 2];
-			const getCashResult = contractResults[baseIndex + 3];
+			const totalReservesResult = contractResults[baseIndex + 2];
+			const exchangeRateResult = contractResults[baseIndex + 3];
+			const getCashResult = contractResults[baseIndex + 4];
 
 			totals[marketAddress] = {
 				totalSupply: (totalSupplyResult?.result as bigint) || 0n,
 				totalBorrows: (totalBorrowsResult?.result as bigint) || 0n,
+				totalReserves: (totalReservesResult?.result as bigint) || 0n,
 				exchangeRate: (exchangeRateResult?.result as bigint) || 0n,
 				getCash: (getCashResult?.result as bigint) || 0n,
 			};

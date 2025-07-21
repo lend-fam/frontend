@@ -53,22 +53,47 @@ export const useHistoricalAPYDebug = ({ cTokenMarket, timeRange }: UseHistorical
 	const historicalData = useMemo(() => {
 		if (!data?.ctokenAPYDatas) return [];
 
-		return data.ctokenAPYDatas.map(
+		console.log(`Debug APY Hook - Raw subgraph data for ${cTokenMarket}:`, {
+			dataCount: data.ctokenAPYDatas.length,
+			sampleRawData: data.ctokenAPYDatas[0],
+		});
+
+		const processed = data.ctokenAPYDatas.map(
 			(apyData: {
 				timestamp: string;
 				supplyAPY: string;
 				borrowAPY: string;
 				utilizationRate: string;
 				exchangeRate: string;
-			}): HistoricalAPYData => ({
-				timestamp: parseInt(apyData.timestamp) / 1000000, // Convert microseconds to seconds
-				supplyAPY: parseFloat(apyData.supplyAPY) / 1e18,
-				borrowAPY: parseFloat(apyData.borrowAPY) / 1e18,
-				utilizationRate: parseFloat(apyData.utilizationRate) / 1e18,
-				exchangeRate: parseFloat(apyData.exchangeRate) / 1e18,
-			}),
+			}): HistoricalAPYData => {
+				const result = {
+					timestamp: parseInt(apyData.timestamp) / 1000000, // Convert microseconds to seconds
+					supplyAPY: parseFloat(apyData.supplyAPY) / 1e4, // APY uses PERCENTAGE_SCALE (1e4)
+					borrowAPY: parseFloat(apyData.borrowAPY) / 1e4, // APY uses PERCENTAGE_SCALE (1e4)
+					utilizationRate: parseFloat(apyData.utilizationRate) / 1e18, // Utilization uses MANTISSA_SCALE
+					exchangeRate: parseFloat(apyData.exchangeRate) / 1e18, // Exchange rate uses MANTISSA_SCALE
+				};
+				
+				// Log first item for debugging
+				if (apyData === data.ctokenAPYDatas[0]) {
+					console.log(`Debug APY Hook - Transformation for ${cTokenMarket}:`, {
+						raw: apyData,
+						processed: result,
+					});
+				}
+				
+				return result;
+			},
 		);
-	}, [data]);
+
+		console.log(`Debug APY Hook - Final processed data for ${cTokenMarket}:`, {
+			processedCount: processed.length,
+			averageSupplyAPY: processed.reduce((sum, p) => sum + p.supplyAPY, 0) / processed.length,
+			averageBorrowAPY: processed.reduce((sum, p) => sum + p.borrowAPY, 0) / processed.length,
+		});
+
+		return processed;
+	}, [data, cTokenMarket]);
 
 	const mockData = useMemo(() => {
 		const baseAPY = 0.05;
@@ -116,10 +141,10 @@ export const useLatestAPYStatsDebug = (cTokenMarket: string) => {
 		const apyData = data.ctokenAPYDatas[0];
 		return {
 			timestamp: parseInt(apyData.timestamp) / 1000000, // Convert microseconds to seconds
-			supplyAPY: parseFloat(apyData.supplyAPY) / 1e18,
-			borrowAPY: parseFloat(apyData.borrowAPY) / 1e18,
-			utilizationRate: parseFloat(apyData.utilizationRate) / 1e18,
-			exchangeRate: parseFloat(apyData.exchangeRate) / 1e18,
+			supplyAPY: parseFloat(apyData.supplyAPY) / 1e4, // APY uses PERCENTAGE_SCALE (1e4)
+			borrowAPY: parseFloat(apyData.borrowAPY) / 1e4, // APY uses PERCENTAGE_SCALE (1e4)
+			utilizationRate: parseFloat(apyData.utilizationRate) / 1e18, // Utilization uses MANTISSA_SCALE
+			exchangeRate: parseFloat(apyData.exchangeRate) / 1e18, // Exchange rate uses MANTISSA_SCALE
 		};
 	}, [data]);
 

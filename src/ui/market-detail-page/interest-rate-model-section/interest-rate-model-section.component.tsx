@@ -107,9 +107,9 @@ export const InterestRateModelSection: FC<InterestRateModelSectionProps> = ({ ma
 		}
 
 		const utilizationRate = MarketService.calculateUtilizationRate(
-			marketData.totalSupply,
 			marketData.totalBorrows,
-			marketData.exchangeRate,
+			marketData.getCash,
+			marketData.totalReserves,
 		);
 
 		const baseRateAPY = baseRatePerBlock ? ((Number(baseRatePerBlock) * blocksPerYear) / 1e18) * 100 : 0;

@@ -114,13 +114,13 @@ export class MarketService {
 	}
 
 	/**
-	 * Calculate utilization rate for a market
-	 * @param totalSupply - Total cTokens in circulation
+	 * Calculate utilization rate for a market using the standard Compound formula
 	 * @param totalBorrows - Total borrowed amount in underlying tokens
-	 * @param exchangeRate - Exchange rate from cTokens to underlying
+	 * @param cash - Available cash in the market
+	 * @param totalReserves - Total reserves in the market
 	 * @returns Utilization rate as a percentage
 	 */
-	static calculateUtilizationRate(totalSupply: bigint, totalBorrows: bigint, exchangeRate: bigint): number {
-		return MathService.calculateUtilizationRate(totalSupply, totalBorrows, exchangeRate);
+	static calculateUtilizationRate(totalBorrows: bigint, cash: bigint, totalReserves: bigint): number {
+		return MathService.calculateUtilizationRate(totalBorrows, cash, totalReserves);
 	}
 }

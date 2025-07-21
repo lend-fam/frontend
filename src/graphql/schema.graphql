@@ -100,19 +100,37 @@ type CTokenMarket {
   symbol: String!
   name: String!
   decimals: Int!
+
+  # Market state
   totalSupply: BigInt!
   totalBorrows: BigInt!
   totalReserves: BigInt!
+  cash: BigInt!
   exchangeRate: BigInt!
   borrowIndex: BigInt!
+
+  # Risk parameters
   collateralFactor: BigInt!
   reserveFactor: BigInt!
+
+  # Interest rate model
+  interestRateModelAddress: Bytes!
+  interestRateModelType: String!
   baseRatePerBlock: BigInt!
   multiplierPerBlock: BigInt!
   jumpMultiplierPerBlock: BigInt!
   kink: BigInt!
+  
+  # Additional parameters for specific model types
+  gapPerBlock: BigInt! # For DAI model
+  potAddress: Bytes # For DAI model
+  jugAddress: Bytes # For DAI model
+  
+  # Derived relationships
   vaults: [MarketVault!]!
   accountMarkets: [AccountMarket!]!
+
+  # Metadata
   createdAtBlock: BigInt!
   createdAtTimestamp: BigInt!
   updatedAtBlock: BigInt!

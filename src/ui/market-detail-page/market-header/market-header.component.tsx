@@ -16,6 +16,7 @@ interface MarketHeaderProps {
 	marketData: {
 		totalSupply: bigint;
 		totalBorrows: bigint;
+		totalReserves: bigint;
 		exchangeRate: bigint;
 		getCash: bigint;
 	};
@@ -92,11 +93,11 @@ export const MarketHeader: FC<MarketHeaderProps> = ({ symbol, marketAddress, mar
 
 	const availableLiquidityFormatted = MarketService.formatTokenBalance(availableLiquidity, 18);
 
-	// Calculate utilization rate using centralized method
+	// Calculate utilization rate using the correct Compound formula
 	const utilizationRate = MarketService.calculateUtilizationRate(
-		marketData.totalSupply,
 		marketData.totalBorrows,
-		marketData.exchangeRate,
+		marketData.getCash,
+		marketData.totalReserves,
 	);
 
 	// Format oracle price using real data or show loading/unavailable

@@ -19,6 +19,7 @@ interface ReserveStatusSectionProps {
 	marketData: {
 		totalSupply: bigint;
 		totalBorrows: bigint;
+		totalReserves: bigint;
 		exchangeRate: bigint;
 		getCash: bigint;
 	};
@@ -48,9 +49,9 @@ export const ReserveStatusSection: FC<ReserveStatusSectionProps> = ({
 		const availableLiquidity = Number(formatUnits(marketData.getCash, 18));
 
 		const utilizationRate = MarketService.calculateUtilizationRate(
-			marketData.totalSupply,
 			marketData.totalBorrows,
-			marketData.exchangeRate,
+			marketData.getCash,
+			marketData.totalReserves,
 		);
 
 		const supplyProgress = currentSupplyTokens > 0 ? 100 : 0;

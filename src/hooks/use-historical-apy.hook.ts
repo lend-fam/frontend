@@ -34,15 +34,27 @@ function generateMockAPYData(timeRange: TimeRange): HistoricalAPYData[] {
 export const useHistoricalAPY = ({ cTokenMarket, timeRange, interval = 'hour' }: UseHistoricalAPYOptions) => {
 	const timeRangeMap = useMemo(() => {
 		const now = Math.floor(Date.now() / 1000);
+		
+		// Conservative time ranges - only go back as far as we're confident we have data
+		// Using 90% of the full range to ensure data availability
 		const ranges = {
-			'24h': { from: now - 86400, interval: 'hour' },
-			'7d': { from: now - 604800, interval: 'hour' },
-			'30d': { from: now - 2592000, interval: 'day' },
-			'90d': { from: now - 7776000, interval: 'day' },
-			'1y': { from: now - 31536000, interval: 'day' },
+			'24h': { from: now - (86400 * 0.9), interval: 'hour' },
+			'7d': { from: now - (604800 * 0.9), interval: 'hour' },
+			'30d': { from: now - (2592000 * 0.9), interval: 'day' },
+			'90d': { from: now - (7776000 * 0.9), interval: 'day' },
+			'1y': { from: now - (31536000 * 0.9), interval: 'day' },
 		};
+		
+		console.log(`Historical APY Query for ${cTokenMarket} - ${timeRange}:`, {
+			from: ranges[timeRange]?.from,
+			to: now,
+			fromDate: new Date(ranges[timeRange]?.from * 1000).toISOString(),
+			toDate: new Date(now * 1000).toISOString(),
+			lookbackHours: ((now - ranges[timeRange]?.from) / 3600).toFixed(1),
+		});
+		
 		return ranges[timeRange];
-	}, [timeRange]);
+	}, [timeRange, cTokenMarket]);
 
 	const { data, loading, error } = useGetHistoricalApyQuery({
 		variables: {
@@ -59,20 +71,29 @@ export const useHistoricalAPY = ({ cTokenMarket, timeRange, interval = 'hour' }:
 
 		const processedData = data.ctokenAPYDatas.map(
 			(stat): HistoricalAPYData => ({
-				timestamp: parseInt(stat.timestamp.toString()) / 1000000, // Convert microseconds to seconds
-				supplyAPY: parseFloat(stat.supplyAPY) / 1e18,
-				borrowAPY: parseFloat(stat.borrowAPY) / 1e18,
-				utilizationRate: parseFloat(stat.utilizationRate) / 1e18,
-				exchangeRate: parseFloat(stat.exchangeRate) / 1e18,
+				timestamp: parseInt(stat.timestamp.toString()) / 1000000, // Timestamp is in microseconds, convert to seconds
+				supplyAPY: parseFloat(stat.supplyAPY) / 1e4, // APY is scaled by 10^4 (PERCENTAGE_SCALE)
+				borrowAPY: parseFloat(stat.borrowAPY) / 1e4, // APY is scaled by 10^4 (PERCENTAGE_SCALE)
+				utilizationRate: parseFloat(stat.utilizationRate) / 1e18, // Utilization is in mantissa scale
+				exchangeRate: parseFloat(stat.exchangeRate) / 1e18, // Exchange rate is in mantissa scale
 			}),
 		);
 
-		// Check if all APY values are zero (indicating interest rate model not configured)
-		const allZeroAPY = processedData.every((point) => point.supplyAPY === 0 && point.borrowAPY === 0);
+		// Check data quality and provide appropriate fallback
+		console.log(`Historical APY Data Quality for ${cTokenMarket} - ${timeRange}:`, {
+			requestedDataPoints: processedData.length,
+			hasNonZeroData: processedData.some(p => p.supplyAPY > 0 || p.borrowAPY > 0),
+			averageSupplyAPY: processedData.length > 0 ? (processedData.reduce((sum, p) => sum + p.supplyAPY, 0) / processedData.length).toFixed(4) : 0,
+			averageBorrowAPY: processedData.length > 0 ? (processedData.reduce((sum, p) => sum + p.borrowAPY, 0) / processedData.length).toFixed(4) : 0,
+		});
 
-		// If all APY values are zero, return mock data for demonstration
-		if (allZeroAPY && processedData.length > 0) {
-			console.warn('All APY values are zero - using mock data. Check interest rate model configuration.');
+		// Only use mock data if we have no data or all APY values are exactly zero
+		const allZeroAPY = processedData.every((point) => point.supplyAPY === 0 && point.borrowAPY === 0);
+		const hasInsufficientData = processedData.length < 2;
+
+		if ((allZeroAPY && processedData.length > 0) || hasInsufficientData) {
+			const reason = hasInsufficientData ? 'insufficient data points' : 'all APY values are zero';
+			console.warn(`Using mock data for ${cTokenMarket} - ${timeRange}: ${reason}`);
 			return generateMockAPYData(timeRange);
 		}
 
@@ -107,14 +128,14 @@ export const useLatestAPYStats = (cTokenMarket: string) => {
 
 		const stats = data.ctokenAPYDatas[0];
 		const processedStats = {
-			timestamp: parseInt(stats.timestamp.toString()) / 1000000, // Convert microseconds to seconds
-			supplyAPY: parseFloat(stats.supplyAPY) / 1e18,
-			borrowAPY: parseFloat(stats.borrowAPY) / 1e18,
-			utilizationRate: parseFloat(stats.utilizationRate) / 1e18,
-			exchangeRate: parseFloat(stats.exchangeRate) / 1e18,
+			timestamp: parseInt(stats.timestamp.toString()) / 1000000, // Timestamp is in microseconds, convert to seconds
+			supplyAPY: parseFloat(stats.supplyAPY) / 1e4, // APY is scaled by 10^4 (PERCENTAGE_SCALE)
+			borrowAPY: parseFloat(stats.borrowAPY) / 1e4, // APY is scaled by 10^4 (PERCENTAGE_SCALE)
+			utilizationRate: parseFloat(stats.utilizationRate) / 1e18, // Utilization is in mantissa scale
+			exchangeRate: parseFloat(stats.exchangeRate) / 1e18, // Exchange rate is in mantissa scale
 		};
 
-		// If APY values are zero, use mock data
+		// Only use mock data if both APY values are exactly zero
 		if (processedStats.supplyAPY === 0 && processedStats.borrowAPY === 0) {
 			console.warn('Latest APY values are zero - using mock data. Check interest rate model configuration.');
 			return {

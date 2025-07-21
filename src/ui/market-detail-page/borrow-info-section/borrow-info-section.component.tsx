@@ -17,6 +17,7 @@ interface BorrowInfoSectionProps {
 	marketData: {
 		totalSupply: bigint;
 		totalBorrows: bigint;
+		totalReserves: bigint;
 		exchangeRate: bigint;
 		getCash: bigint;
 	};
@@ -44,9 +45,9 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({
 				: 0;
 
 		const utilizationRate = MarketService.calculateUtilizationRate(
-			marketData.totalSupply,
 			marketData.totalBorrows,
-			marketData.exchangeRate,
+			marketData.getCash,
+			marketData.totalReserves,
 		);
 
 		const maxBorrowCapacity = totalSuppliedUnderlying * 0.85;

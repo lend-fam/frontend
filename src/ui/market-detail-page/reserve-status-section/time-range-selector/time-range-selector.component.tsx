@@ -26,13 +26,24 @@ export const TimeRangeSelector: FC<TimeRangeSelectorProps> = typedMemo(
 				{timeRanges.map((range) => {
 					const isAvailable = dataRangeInfo.isRangeAvailable(range.value);
 					const isDisabled = !loading && !isAvailable;
+					
+					// Create informative tooltip
+					const getTooltip = () => {
+						if (loading) return 'Checking data availability...';
+						if (isAvailable) return `${range.label} data available`;
+						
+						const { totalRangeDays, totalDataPoints } = dataRangeInfo;
+						if (totalRangeDays === 0) return 'No historical data available';
+						
+						return `Insufficient data for ${range.label} (${totalRangeDays.toFixed(1)} days, ${totalDataPoints} points available)`;
+					};
 
 					return (
 						<button
 							key={range.value}
 							onClick={() => isAvailable && onRangeChange(range.value)}
 							disabled={isDisabled}
-							title={isDisabled ? `Not enough data for ${range.label}` : undefined}
+							title={getTooltip()}
 							style={{
 								padding: '4px 8px',
 								fontSize: '12px',
@@ -69,8 +80,9 @@ export const TimeRangeSelector: FC<TimeRangeSelectorProps> = typedMemo(
 							color: '#9ca3af',
 							marginLeft: '8px',
 							whiteSpace: 'nowrap',
-						}}>
-						{dataRangeInfo.totalRangeDays.toFixed(0)} days of data
+						}}
+						title={`${dataRangeInfo.totalDataPoints} data points available over ${dataRangeInfo.totalRangeDays.toFixed(1)} days`}>
+						{dataRangeInfo.totalRangeDays.toFixed(1)} days • {dataRangeInfo.totalDataPoints} points
 					</div>
 				)}
 			</div>
