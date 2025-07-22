@@ -12,8 +12,11 @@ RUN bun install --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Build the application (environment will be determined by build command)
-RUN bun run build
+# Build argument to determine build mode (prod or develop)
+ARG BUILD_MODE=prod
+
+# Build the application with the specified mode
+RUN if [ "$BUILD_MODE" = "develop" ]; then bun run build:develop; else bun run build; fi
 
 # Production stage using nginx for static file serving
 FROM nginx:alpine

@@ -28,6 +28,8 @@ jobs:
         context: .
         push: true
         tags: ${{ secrets.DOCKER_USERNAME }}/lend-family-app:latest
+        build-args: |
+          BUILD_MODE=prod
         cache-from: type=gha
         cache-to: type=gha,mode=max
         
