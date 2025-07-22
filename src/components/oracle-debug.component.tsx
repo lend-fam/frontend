@@ -102,7 +102,10 @@ export function OracleDebugComponent() {
 
 					{oracleStatus.assetInfo.fallbackPrice !== undefined && (
 						<div>
-							<strong>Fallback Price:</strong> {oracleStatus.assetInfo.fallbackPrice === 0n ? '0' : formatUnits(oracleStatus.assetInfo.fallbackPrice, 18)}
+							<strong>Fallback Price:</strong>{' '}
+							{oracleStatus.assetInfo.fallbackPrice === 0n
+								? '0'
+								: formatUnits(oracleStatus.assetInfo.fallbackPrice, 18)}
 						</div>
 					)}
 				</div>
