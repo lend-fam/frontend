@@ -49,8 +49,8 @@ export const LandingPage: FC = typedMemo(() => {
 							<a href="#how" className={css.navLink}>
 								HOW
 							</a>
-							<a href="#when" className={css.navLink}>
-								WHEN
+							<a href="#roadmap" className={css.navLink}>
+								ROADMAP
 							</a>
 							<a href="#who" className={css.navLink}>
 								WHO
@@ -128,44 +128,100 @@ export const LandingPage: FC = typedMemo(() => {
 				</div>
 			</section>
 
-			{/* When Section */}
-			<section id="when" className={css.when}>
+			{/* Roadmap Section */}
+			<section id="roadmap" className={css.roadmap}>
 				<div className={css.sectionContainer}>
-					<h2 className={css.sectionTitle}>WHEN</h2>
-					<div className={css.whenContent}>
-						<div className={css.whenBox}>
-							<div className={css.whenStageHeader}>
-								<div className={css.whenStageOne}>Stage One</div>
-								<div className={css.whenYearOne}>2025</div>
-							</div>
-							<div className={css.whenFeatures}>
-								<div className={css.whenFeature}>
-									<div className={css.whenFeatureIcon}>♦</div>
-									<div className={css.whenFeatureText}>liquidity pools for lenders and borrowers</div>
+					<h2 className={css.sectionTitle}>ROADMAP</h2>
+					<div className={css.roadmapContent}>
+						<div className={css.roadmapTimeline}>
+							<div className={css.roadmapPhase}>
+								<div className={css.roadmapPhaseHeader}>
+									<div className={css.roadmapPhaseNumber}>01</div>
+									<div className={css.roadmapPhaseTitle}>Public Testnet</div>
+									<div className={css.roadmapPhaseDate}>Q3 2025</div>
 								</div>
-								<div className={css.whenFeature}>
-									<div className={css.whenFeatureIcon}>♦</div>
-									<div className={css.whenFeatureText}>
-										NFT integration via cross-chain collections tracking
+								<div className={css.roadmapPhaseItems}>
+									<div className={css.roadmapItem}>
+										<div className={css.roadmapItemIcon}>✓</div>
+										<div className={css.roadmapItemText}>Launch lending protocol on testnet</div>
+									</div>
+									<div className={css.roadmapItem}>
+										<div className={css.roadmapItemIcon}>○</div>
+										<div className={css.roadmapItemText}>
+											Deploy collection vaults and subsidies system
+										</div>
+									</div>
+									<div className={css.roadmapItem}>
+										<div className={css.roadmapItemIcon}>○</div>
+										<div className={css.roadmapItemText}>
+											Partnership announcements with NFT collections
+										</div>
+									</div>
+									<div className={css.roadmapItem}>
+										<div className={css.roadmapItemIcon}>○</div>
+										<div className={css.roadmapItemText}>
+											Testnet rewards program for early users
+										</div>
 									</div>
 								</div>
-								<div className={css.whenFeature}>
-									<div className={css.whenFeatureIcon}>♦</div>
-									<div className={css.whenFeatureText}>flexible conditions tailored for partners</div>
+							</div>
+
+							<div className={css.roadmapConnector}></div>
+
+							<div className={css.roadmapPhase}>
+								<div className={css.roadmapPhaseHeader}>
+									<div className={css.roadmapPhaseNumber}>02</div>
+									<div className={css.roadmapPhaseTitle}>Mainnet Launch</div>
+									<div className={css.roadmapPhaseDate}>Q4 2025</div>
+								</div>
+								<div className={css.roadmapPhaseItems}>
+									<div className={css.roadmapItem}>
+										<div className={css.roadmapItemIcon}>○</div>
+										<div className={css.roadmapItemText}>
+											Launch mainnet with full security audit
+										</div>
+									</div>
+									<div className={css.roadmapItem}>
+										<div className={css.roadmapItemIcon}>○</div>
+										<div className={css.roadmapItemText}>
+											Release official protocol NFT collection
+										</div>
+									</div>
+									<div className={css.roadmapItem}>
+										<div className={css.roadmapItemIcon}>○</div>
+										<div className={css.roadmapItemText}>
+											Best-in-class UI/UX for family-focused DeFi
+										</div>
+									</div>
 								</div>
 							</div>
-						</div>
-						<div className={css.whenBox}>
-							<div className={css.whenStageHeader}>
-								<div className={css.whenStageTwo}>Stage Two</div>
-								<div className={css.whenYearTwo}>2026</div>
-							</div>
-							<div className={css.whenFeatures}>
-								<div className={css.whenFeature}>
-									<div className={css.whenFeatureIcon}>♦</div>
-									<div className={css.whenFeatureText}>
-										leveraged purchase functionality, allowing users to borrow tokens from the
-										protocol to acquire NFTs of partner collections
+
+							<div className={css.roadmapConnector}></div>
+
+							<div className={css.roadmapPhase}>
+								<div className={css.roadmapPhaseHeader}>
+									<div className={css.roadmapPhaseNumber}>03</div>
+									<div className={css.roadmapPhaseTitle}>Advanced Features</div>
+									<div className={css.roadmapPhaseDate}>Q4 2025 - Q1 2026</div>
+								</div>
+								<div className={css.roadmapPhaseItems}>
+									<div className={css.roadmapItem}>
+										<div className={css.roadmapItemIcon}>○</div>
+										<div className={css.roadmapItemText}>
+											Advanced yield optimization strategies
+										</div>
+									</div>
+									<div className={css.roadmapItem}>
+										<div className={css.roadmapItemIcon}>○</div>
+										<div className={css.roadmapItemText}>
+											Advanced analytics and risk management tools
+										</div>
+									</div>
+									<div className={css.roadmapItem}>
+										<div className={css.roadmapItemIcon}>○</div>
+										<div className={css.roadmapItemText}>
+											Real-time notifications and alerts system
+										</div>
 									</div>
 								</div>
 							</div>
@@ -199,6 +255,13 @@ export const LandingPage: FC = typedMemo(() => {
 							</div>
 							<div className={css.memberHandle}>@0xThunderkid</div>
 							<div className={css.memberTitle}>Design lead</div>
+						</div>
+						<div className={css.teamMemberBox}>
+							<div className={css.memberImageContainer}>
+								<div className={css.memberPlaceholder}>👨‍💻</div>
+							</div>
+							<div className={css.memberHandle}>@frontend_dev</div>
+							<div className={css.memberTitle}>Frontend developer</div>
 						</div>
 					</div>
 				</div>
