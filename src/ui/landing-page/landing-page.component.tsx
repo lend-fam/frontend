@@ -190,7 +190,7 @@ export const LandingPage: FC = typedMemo(() => {
 									<div className={css.roadmapItem}>
 										<div className={css.roadmapItemIcon}>○</div>
 										<div className={css.roadmapItemText}>
-											Best-in-class UI/UX for family-focused DeFi
+											Best-in-class UI/UX for our family
 										</div>
 									</div>
 								</div>
