@@ -120,9 +120,54 @@ export const App: FC = () => {
 		}
 	}, []);
 
+	// Enhanced environment detection with fallbacks
+	const viteAppEnv = import.meta.env.VITE_APP_ENVIRONMENT;
+	const viteMode = import.meta.env.MODE;
+	const viteDev = import.meta.env.DEV;
+	
+	// Multiple detection methods with fallbacks
+	const isDevelop = 
+		viteAppEnv === 'develop' ||               // Primary: explicit env var
+		viteMode === 'develop' ||                 // Fallback 1: vite mode
+		(viteDev && viteMode !== 'production');   // Fallback 2: dev mode unless explicitly production
+	
+	const basename = isDevelop ? '/development' : undefined;
+	
+	// Enhanced debug logging (visible in browser console)
+	console.log('🔧 Environment Debug:', {
+		'VITE_APP_ENVIRONMENT': viteAppEnv,
+		'import.meta.env.MODE': viteMode,
+		'import.meta.env.DEV': viteDev,
+		'import.meta.env.PROD': import.meta.env.PROD,
+		'isDevelop (computed)': isDevelop,
+		'basename': basename,
+		'detection_method': viteAppEnv === 'develop' ? 'VITE_APP_ENVIRONMENT' : 
+		                   viteMode === 'develop' ? 'MODE' : 'DEV_FALLBACK'
+	});
+
 	return (
 		// Development mode uses /development basename for proper routing
-		<BrowserRouter basename={import.meta.env.MODE === 'develop' ? '/development' : undefined}>
+		<BrowserRouter basename={basename}>
+			{/* Debug Environment Indicator - visible on page */}
+			<div style={{
+				position: 'fixed',
+				top: '10px',
+				right: '10px',
+				background: isDevelop ? '#10b981' : '#f59e0b',
+				color: 'white',
+				padding: '8px 12px',
+				borderRadius: '6px',
+				fontSize: '11px',
+				fontFamily: 'monospace',
+				zIndex: 9999,
+				boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+				lineHeight: '1.4'
+			}}>
+				<div>ENV: {viteAppEnv || 'undefined'} | MODE: {viteMode}</div>
+				<div>BASE: {basename || '/'} | DEV: {viteDev ? 'Y' : 'N'}</div>
+				<div>DEVELOP: {isDevelop ? 'YES' : 'NO'}</div>
+			</div>
+
 			<WagmiProvider config={wagmiConfig}>
 				<QueryClientProvider client={queryClient}>
 					<RainbowKitProvider>

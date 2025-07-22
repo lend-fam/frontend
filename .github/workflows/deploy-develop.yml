@@ -27,9 +27,13 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/lend-family-app:develop
+        tags: |
+          ${{ secrets.DOCKER_USERNAME }}/lend-family-app:develop
+          ${{ secrets.DOCKER_USERNAME }}/lend-family-app:develop-${{ github.sha }}
         build-args: |
           BUILD_MODE=develop
+          VITE_APP_ENVIRONMENT=develop
+        no-cache: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
         
@@ -42,11 +46,38 @@ jobs:
         script: |
           cd /opt/lend-family
           export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
-          # Pull the latest development image
+          echo "🚀 Deploying development build with commit ${{ github.sha }}"
+          
+          # Stop the current development container
+          docker compose stop frontend-development || true
+          docker compose rm -f frontend-development || true
+          
+          # Pull the latest development image (force fresh pull)
           docker pull ${{ secrets.DOCKER_USERNAME }}/lend-family-app:develop
-          # Start/restart only the development frontend service (keeps production running)
+          
+          # Clear any cached images
+          docker image rm ${{ secrets.DOCKER_USERNAME }}/lend-family-app:develop-old || true
+          
+          # Tag current image as old for rollback capability
+          docker tag ${{ secrets.DOCKER_USERNAME }}/lend-family-app:develop ${{ secrets.DOCKER_USERNAME }}/lend-family-app:develop-old || true
+          
+          # Start the development frontend service (fresh container)
           docker compose up --no-deps -d frontend-development
-          # Start reproxy if not running
+          
+          # Ensure reproxy is running
           docker compose up -d reproxy
-          # Cleanup unused images
-          docker system prune -f
+          
+          # Verify the deployment
+          sleep 5
+          if docker compose ps frontend-development | grep -q "Up"; then
+            echo "✅ Development frontend deployed successfully"
+          else
+            echo "❌ Development frontend deployment failed"
+            docker compose logs frontend-development
+            exit 1
+          fi
+          
+          # Cleanup unused images (but keep the old tag for rollback)
+          docker system prune -f --volumes=false
+          
+          echo "🎉 Development deployment complete! Visit https://lend.family/development"

@@ -1,5 +1,6 @@
 import { type FC, useEffect } from 'react';
 import { typedMemo } from '../../ui-kit/utils/typed-memo.utils';
+import { Link } from '../../ui-kit/components/link/link.component';
 
 import css from './landing-page.module.css';
 import logoTildaSvg from '../../assets/svg/logo-tilda.svg';
@@ -35,9 +36,9 @@ export const LandingPage: FC = typedMemo(() => {
 				<div className={css.navContainer}>
 					<div className={css.navContent}>
 						<div className={css.logoSection}>
-							<a href="/">
+							<Link to="/">
 								<img src={logoTildaSvg} alt="Lend.family" className={css.navLogo} />
-							</a>
+							</Link>
 						</div>
 						<nav className={css.navMenu}>
 							<a href="#home" className={css.navLink}>
@@ -65,9 +66,9 @@ export const LandingPage: FC = typedMemo(() => {
 							</a>
 						</div>
 						<div className={css.toAppContainer}>
-							<a href="/dashboard" className={css.toAppButton}>
+							<Link to="/dashboard" className={css.toAppButton}>
 								Open App
-							</a>
+							</Link>
 						</div>
 					</div>
 				</div>

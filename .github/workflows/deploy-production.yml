@@ -27,9 +27,12 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/lend-family-app:latest
+        tags: |
+          ${{ secrets.DOCKER_USERNAME }}/lend-family-app:latest
+          ${{ secrets.DOCKER_USERNAME }}/lend-family-app:prod-${{ github.sha }}
         build-args: |
           BUILD_MODE=prod
+          VITE_APP_ENVIRONMENT=production
         cache-from: type=gha
         cache-to: type=gha,mode=max
         

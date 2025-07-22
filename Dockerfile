@@ -12,8 +12,12 @@ RUN bun install --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Build argument to determine build mode (prod or develop)
+# Build arguments to determine build mode (prod or develop)
 ARG BUILD_MODE=prod
+ARG VITE_APP_ENVIRONMENT=production
+
+# Set environment variable for Vite build
+ENV VITE_APP_ENVIRONMENT=${VITE_APP_ENVIRONMENT}
 
 # Build the application with the specified mode
 RUN if [ "$BUILD_MODE" = "develop" ]; then bun run build:develop; else bun run build; fi
