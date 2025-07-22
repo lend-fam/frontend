@@ -121,7 +121,7 @@ export const App: FC = () => {
 	}, []);
 
 	return (
-		<BrowserRouter>
+		<BrowserRouter basename={import.meta.env.BASE_URL}>
 			<WagmiProvider config={wagmiConfig}>
 				<QueryClientProvider client={queryClient}>
 					<RainbowKitProvider>
