@@ -189,9 +189,7 @@ export const LandingPage: FC = typedMemo(() => {
 									</div>
 									<div className={css.roadmapItem}>
 										<div className={css.roadmapItemIcon}>○</div>
-										<div className={css.roadmapItemText}>
-											Best-in-class UI/UX for our family
-										</div>
+										<div className={css.roadmapItemText}>Best-in-class UI/UX for our family</div>
 									</div>
 								</div>
 							</div>
