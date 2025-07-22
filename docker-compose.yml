@@ -39,7 +39,7 @@ services:
     labels:
       - "reproxy.server=lend.family"
       - "reproxy.route=^/development(?:/(.*))?$$"
-      - "reproxy.dest=/development/$$1"
+      - "reproxy.dest=/$$1"
     restart: unless-stopped
     networks:
       - reproxy
