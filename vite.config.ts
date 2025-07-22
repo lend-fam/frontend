@@ -4,12 +4,9 @@ import { patchCssModules } from 'vite-css-modules';
 import path from 'path';
 
 // https://vite.dev/config/
-export default defineConfig(({ mode }) => {
-	// Set base URL based on build mode
-	const base = mode === 'develop' ? '/development/' : '/';
-
+export default defineConfig(() => {
 	return {
-		base,
+		base: '/',
 		plugins: [react(), patchCssModules({ generateSourceTypes: true })],
 		resolve: {
 			alias: {
