@@ -19,6 +19,13 @@ ARG VITE_APP_ENVIRONMENT=production
 # Set environment variable for Vite build
 ENV VITE_APP_ENVIRONMENT=${VITE_APP_ENVIRONMENT}
 
+# Copy appropriate environment file based on build mode
+RUN if [ "$BUILD_MODE" = "develop" ]; then \
+      cp .env.develop .env.local; \
+    else \
+      cp .env.production .env.local; \
+    fi
+
 # Build the application with the specified mode
 RUN if [ "$BUILD_MODE" = "develop" ]; then bun run build:develop; else bun run build; fi
 
