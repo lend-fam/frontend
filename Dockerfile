@@ -12,17 +12,17 @@ RUN bun install --frozen-lockfile
 # Copy source code
 COPY . .
 
-# Copy production environment file explicitly
-COPY .env.production .env.production
+# Build the application (environment will be determined by build command)
+RUN bun run build
 
-# Build the application with production mode
-RUN NODE_ENV=production bun run build
-
-# Production stage using reproxy
-FROM umputun/reproxy
+# Production stage using nginx for static file serving
+FROM nginx:alpine
 
 # Copy built assets from builder stage
-COPY --from=builder /app/dist /srv/site
+COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Configure reproxy for SPA mode with static file serving and HTTPS
-ENTRYPOINT ["/srv/reproxy", "--assets.location=/srv/site", "--assets.spa", "--ssl.type=auto", "--ssl.acme-email=admin@lend.family", "--ssl.fqdn=lend.family", "--ssl.acme-location=/srv/var/ssl"]
+# Copy custom nginx configuration for SPA
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose port 80 (reproxy will handle SSL)
+EXPOSE 80

@@ -1,8 +1,8 @@
-name: Deploy to Server (Develop)
+name: Deploy to Server (Production)
 
 on:
   push:
-    branches: [develop]
+    branches: [main]
   workflow_dispatch:
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
       with:
         context: .
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/lend-family-app:develop
+        tags: ${{ secrets.DOCKER_USERNAME }}/lend-family-app:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
         
@@ -40,10 +40,10 @@ jobs:
         script: |
           cd /opt/lend-family
           export DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}
-          # Pull the latest development image
-          docker pull ${{ secrets.DOCKER_USERNAME }}/lend-family-app:develop
-          # Start/restart only the development frontend service (keeps production running)
-          docker compose up --no-deps -d frontend-development
+          # Pull the latest production image
+          docker pull ${{ secrets.DOCKER_USERNAME }}/lend-family-app:latest
+          # Start/restart only the production frontend service (keeps development running)
+          docker compose up --no-deps -d frontend-production
           # Start reproxy if not running
           docker compose up -d reproxy
           # Cleanup unused images
