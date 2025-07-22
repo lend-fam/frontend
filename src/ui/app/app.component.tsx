@@ -148,25 +148,6 @@ export const App: FC = () => {
 	return (
 		// Development mode uses /development basename for proper routing
 		<BrowserRouter basename={basename}>
-			{/* Debug Environment Indicator - visible on page */}
-			<div style={{
-				position: 'fixed',
-				top: '10px',
-				right: '10px',
-				background: isDevelop ? '#10b981' : '#f59e0b',
-				color: 'white',
-				padding: '8px 12px',
-				borderRadius: '6px',
-				fontSize: '11px',
-				fontFamily: 'monospace',
-				zIndex: 9999,
-				boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
-				lineHeight: '1.4'
-			}}>
-				<div>ENV: {viteAppEnv || 'undefined'} | MODE: {viteMode}</div>
-				<div>BASE: {basename || '/'} | DEV: {viteDev ? 'Y' : 'N'}</div>
-				<div>DEVELOP: {isDevelop ? 'YES' : 'NO'}</div>
-			</div>
 
 			<WagmiProvider config={wagmiConfig}>
 				<QueryClientProvider client={queryClient}>
