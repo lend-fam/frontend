@@ -38,8 +38,8 @@ services:
     container_name: lend-family-app-development
     labels:
       - "reproxy.server=lend.family"
-      - "reproxy.route=^/development(?:/(.*))?$"
-      - "reproxy.dest=/$$1"
+      - "reproxy.route=^/development(?:/(.*))?$$"
+      - "reproxy.dest=/development/$$1"
     restart: unless-stopped
     networks:
       - reproxy
