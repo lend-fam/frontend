@@ -35,7 +35,8 @@ export const FaucetPage: FC = () => {
 	// Check claim status for all tokens
 	const usdcAddress = FaucetService.getTokenAddress('usdc');
 	const wethAddress = FaucetService.getTokenAddress('weth');
-	const daiAddress = FaucetService.getTokenAddress('dai');
+	const usdtAddress = FaucetService.getTokenAddress('usdt');
+	const apeUsdAddress = FaucetService.getTokenAddress('apeusd');
 
 	const { data: claimData, refetch: refetchClaimData } = useReadContracts({
 		contracts: [
@@ -63,21 +64,33 @@ export const FaucetPage: FC = () => {
 				abi: TEST_TOKEN_ABI,
 				functionName: 'FAUCET_COOLDOWN',
 			},
-			// DAI
+			// USDT
 			{
-				address: daiAddress!,
+				address: usdtAddress!,
 				abi: TEST_TOKEN_ABI,
 				functionName: 'lastClaim',
 				args: [address!],
 			},
 			{
-				address: daiAddress!,
+				address: usdtAddress!,
+				abi: TEST_TOKEN_ABI,
+				functionName: 'FAUCET_COOLDOWN',
+			},
+			// apeUSD
+			{
+				address: apeUsdAddress!,
+				abi: TEST_TOKEN_ABI,
+				functionName: 'lastClaim',
+				args: [address!],
+			},
+			{
+				address: apeUsdAddress!,
 				abi: TEST_TOKEN_ABI,
 				functionName: 'FAUCET_COOLDOWN',
 			},
 		],
 		query: {
-			enabled: !!address && isTestnet && !!usdcAddress && !!wethAddress && !!daiAddress,
+			enabled: !!address && isTestnet && !!usdcAddress && !!wethAddress && !!usdtAddress && !!apeUsdAddress,
 		},
 	});
 
@@ -111,7 +124,8 @@ export const FaucetPage: FC = () => {
 	// Get claim status for each token
 	const usdcStatus = canClaimToken(0);
 	const wethStatus = canClaimToken(1);
-	const daiStatus = canClaimToken(2);
+	const usdtStatus = canClaimToken(2);
+	const apeUsdStatus = canClaimToken(3);
 
 	// Helper function to format time remaining
 	const formatTimeRemaining = (seconds: number): string => {
@@ -358,7 +372,7 @@ export const FaucetPage: FC = () => {
 											<p>
 												{!usdcStatus.canClaim && usdcStatus.timeRemaining
 													? `Cooldown: ${formatTimeRemaining(usdcStatus.timeRemaining)}`
-													: '100 USDC per claim'}
+													: '1000 USDC per claim'}
 											</p>
 										</div>
 										<Button
@@ -394,7 +408,7 @@ export const FaucetPage: FC = () => {
 											<p>
 												{!wethStatus.canClaim && wethStatus.timeRemaining
 													? `Cooldown: ${formatTimeRemaining(wethStatus.timeRemaining)}`
-													: '100 WETH per claim'}
+													: '10 WETH per claim'}
 											</p>
 										</div>
 										<Button
@@ -426,37 +440,73 @@ export const FaucetPage: FC = () => {
 
 									<div className={css.tokenCard}>
 										<div className={css.tokenInfo}>
-											<h4>Test DAI</h4>
+											<h4>Test USDT</h4>
 											<p>
-												{!daiStatus.canClaim && daiStatus.timeRemaining
-													? `Cooldown: ${formatTimeRemaining(daiStatus.timeRemaining)}`
-													: '100 DAI per claim'}
+												{!usdtStatus.canClaim && usdtStatus.timeRemaining
+													? `Cooldown: ${formatTimeRemaining(usdtStatus.timeRemaining)}`
+													: '1000 USDT per claim'}
 											</p>
 										</div>
 										<Button
 											variant="secondary"
 											size="medium"
 											className={css.mintButton}
-											onClick={() => handleMintTestToken('dai')}
+											onClick={() => handleMintTestToken('usdt')}
 											disabled={
 												!captchaVerified ||
-												!daiStatus.canClaim ||
-												mintingToken === 'dai' ||
+												!usdtStatus.canClaim ||
+												mintingToken === 'usdt' ||
 												isPending ||
 												isConfirming
 											}
-											loading={mintingToken === 'dai' && (isPending || isConfirming)}>
+											loading={mintingToken === 'usdt' && (isPending || isConfirming)}>
 											{!captchaVerified
 												? 'Complete CAPTCHA First'
-												: !daiStatus.canClaim
+												: !usdtStatus.canClaim
 													? 'Cooldown Active'
-													: mintingToken === 'dai'
+													: mintingToken === 'usdt'
 														? isPending
 															? 'Confirm in wallet...'
 															: isConfirming
 																? 'Confirming...'
 																: 'Claiming...'
-														: 'Claim DAI'}
+														: 'Claim USDT'}
+										</Button>
+									</div>
+
+									<div className={css.tokenCard}>
+										<div className={css.tokenInfo}>
+											<h4>Test apeUSD</h4>
+											<p>
+												{!apeUsdStatus.canClaim && apeUsdStatus.timeRemaining
+													? `Cooldown: ${formatTimeRemaining(apeUsdStatus.timeRemaining)}`
+													: '1000 apeUSD per claim'}
+											</p>
+										</div>
+										<Button
+											variant="secondary"
+											size="medium"
+											className={css.mintButton}
+											onClick={() => handleMintTestToken('apeusd')}
+											disabled={
+												!captchaVerified ||
+												!apeUsdStatus.canClaim ||
+												mintingToken === 'apeusd' ||
+												isPending ||
+												isConfirming
+											}
+											loading={mintingToken === 'apeusd' && (isPending || isConfirming)}>
+											{!captchaVerified
+												? 'Complete CAPTCHA First'
+												: !apeUsdStatus.canClaim
+													? 'Cooldown Active'
+													: mintingToken === 'apeusd'
+														? isPending
+															? 'Confirm in wallet...'
+															: isConfirming
+																? 'Confirming...'
+																: 'Claiming...'
+														: 'Claim apeUSD'}
 										</Button>
 									</div>
 								</div>

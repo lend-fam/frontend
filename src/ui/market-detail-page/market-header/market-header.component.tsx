@@ -150,6 +150,18 @@ export const MarketHeader: FC<MarketHeaderProps> = ({ symbol, marketAddress, mar
 					<span className={css.metricLabel}>Oracle price</span>
 					<div className={css.oraclePrice}>
 						<span className={css.metricValue}>{formattedOraclePrice}</span>
+						{oracleAddress && (
+							<button
+								className={css.oracleButton}
+								onClick={() => {
+									const baseUrl = getBlockExplorerUrl(chainId);
+									const oracleUrl = `${baseUrl}/address/${oracleAddress}`;
+									window.open(oracleUrl, '_blank', 'noopener,noreferrer');
+								}}
+								title="View Oracle Contract">
+								🔗
+							</button>
+						)}
 					</div>
 				</div>
 			</div>

@@ -118,6 +118,25 @@
 	gap: 8px;
 }
 
+.oracleButton {
+	width: 24px;
+	height: 24px;
+	border: none;
+	background: rgba(255, 255, 255, 0.2);
+	border-radius: 4px;
+	color: var(--color-text-inversion);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	transition: background 0.2s;
+	font-size: 12px;
+}
+
+.oracleButton:hover {
+	background: rgba(255, 255, 255, 0.3);
+}
+
 .priceChange {
 	font-family: var(--font-text-small-family);
 	font-size: var(--font-text-small-size);
