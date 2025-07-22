@@ -121,6 +121,7 @@ export const App: FC = () => {
 	}, []);
 
 	return (
+		// Development mode uses /development basename for proper routing
 		<BrowserRouter basename={import.meta.env.MODE === 'develop' ? '/development' : undefined}>
 			<WagmiProvider config={wagmiConfig}>
 				<QueryClientProvider client={queryClient}>
