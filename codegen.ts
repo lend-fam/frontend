@@ -21,6 +21,7 @@ const config: CodegenConfig = {
 			},
 		},
 	},
+	hooks: { afterAllFileWrite: ["prettier --write './**/*.{js,mjs,cjs,ts,tsx}'"] },
 };
 
 export default config;

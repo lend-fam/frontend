@@ -16,6 +16,7 @@ import { useMarketsCollateralFactors } from '../../../hooks/use-market-data.hook
 import { useTokenMetadata } from '../../../hooks/use-token-metadata.hook';
 import { useAccount } from 'wagmi';
 import type { BaseTransactionModalProps, TransactionOverviewRow } from './transaction.types';
+import { Checkbox } from '../checkbox/checkbox.component';
 
 import css from './base-transaction-modal.module.css';
 
@@ -677,7 +678,7 @@ const BaseTransactionModalComponent: FC<BaseTransactionModalProps> = ({
 						<div className={styles.approvalContainer}>
 							<div className={styles.approvalOption}>
 								<label className={styles.approvalLabel}>
-									<input
+									<Checkbox
 										type="checkbox"
 										checked={approvalSettings.useMaxApproval || isMaxRepay}
 										onChange={(e) => handleApprovalSettingChange(e.target.checked)}
