@@ -1,0 +1,86 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: '${CLUSTER_NAME:-lend-fam}'
+    environment: '${ENVIRONMENT:-production}'
+    region: '${REGION:-unknown}'
+
+# Grafana Cloud remote write configuration
+remote_write:
+  - url: '${GRAFANA_CLOUD_PROMETHEUS_URL}/api/prom/push'
+    basic_auth:
+      username: '${GRAFANA_CLOUD_PROMETHEUS_USERNAME}'
+      password: '${GRAFANA_CLOUD_API_KEY}'
+    queue_config:
+      capacity: 10000
+      max_samples_per_send: 2000
+      batch_send_deadline: 5s
+      min_backoff: 30ms
+      max_backoff: 5s
+      retry_on_http_429: true
+    # Filter metrics to reduce costs - allow more container metrics
+    write_relabel_configs:
+      - source_labels: [__name__]
+        regex: '(up|node_.*|container_.*|prometheus_.*|cadvisor_.*)'
+        action: keep
+      - source_labels: [container_label_com_docker_compose_service]
+        regex: 'lend-fam-frontend'
+        target_label: service
+        replacement: 'frontend'
+      - source_labels: [container_label_com_docker_compose_service]
+        regex: 'lend-fam-prometheus'
+        target_label: service  
+        replacement: 'prometheus'
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # Node Exporter - System metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          node: 'lend-fam-server'
+    scrape_interval: 15s
+    metrics_path: /metrics
+
+  # cAdvisor - Container metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['cadvisor:8080']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    metric_relabel_configs:
+      # Add readable service names
+      - source_labels: [container_label_com_docker_compose_service]
+        target_label: service
+        regex: 'lend-fam-(.*)'
+        replacement: '${1}'
+
+  # Frontend application health check
+  - job_name: 'frontend-health'
+    static_configs:
+      - targets: ['172.17.0.1:3000']  # Docker host IP
+    scrape_interval: 30s
+    metrics_path: /health
+    scrape_timeout: 10s
+    scheme: http
+    metric_relabel_configs:
+      - target_label: service
+        replacement: 'frontend-app'
+
+# Rule files for alerting (optional)
+rule_files:
+  # - "rules/*.yml"
+
+# Basic alerting configuration (can be extended)
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []

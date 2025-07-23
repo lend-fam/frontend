@@ -25,3 +25,7 @@ dist-ssr
 
 *.module.css.d.ts
 .env
+
+# Deployment files with secrets
+deploy/env.yml
+deploy/inventory.yml

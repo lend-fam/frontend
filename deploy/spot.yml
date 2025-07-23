@@ -1,0 +1,221 @@
+inventory: inventory.yml
+
+targets:
+  production:
+    groups: ["production-root"]
+  production-deploy:
+    groups: ["production-deploy"]
+  staging:
+    groups: ["staging-root"]
+  staging-deploy:
+    groups: ["staging-deploy"]
+
+tasks:
+  - name: create-user
+    commands:
+      - name: create deploy user
+        script: |
+          set -e
+          # Create deploy user if it doesn't exist
+          if ! id -u deploy >/dev/null 2>&1; then
+            useradd -m -s /bin/bash deploy
+            echo "Deploy user created"
+          else
+            echo "Deploy user already exists"
+          fi
+
+          # Add to sudo group
+          usermod -aG sudo deploy
+
+          # Create .ssh directory
+          mkdir -p /home/deploy/.ssh
+          chmod 700 /home/deploy/.ssh
+
+      - name: setup ssh key
+        script: |
+          set -e
+          # Add public key to authorized_keys using spot environment variable
+          echo "$SSH_PUBLIC_KEY" > /home/deploy/.ssh/authorized_keys
+          chmod 600 /home/deploy/.ssh/authorized_keys
+          chown -R deploy:deploy /home/deploy/.ssh
+          echo "SSH key added for deploy user"
+
+      - name: configure sudo access
+        script: |
+          set -e
+          # Give deploy user passwordless sudo for deployment commands
+          echo "deploy ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/deploy
+          chmod 440 /etc/sudoers.d/deploy
+
+  - name: setup-server
+    commands:
+      - name: update system
+        script: |
+          set -e
+          export DEBIAN_FRONTEND=noninteractive
+          sudo apt update
+          sudo apt upgrade -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold"
+
+      - name: install dependencies
+        script: |
+          set -e
+          export DEBIAN_FRONTEND=noninteractive
+          
+          # Install Docker using convenience script (easier for ARM64)
+          curl -fsSL https://get.docker.com -o get-docker.sh
+          sudo sh get-docker.sh
+          sudo rm get-docker.sh
+
+          # Install monitoring tools
+          sudo apt install -y htop fail2ban unattended-upgrades
+
+          # Add deploy user to docker group
+          sudo usermod -aG docker deploy
+          
+          # Verify Docker installation
+          sudo systemctl enable docker
+          sudo systemctl start docker
+
+      - name: configure firewall
+        script: |
+          set -e
+          sudo ufw allow 22/tcp
+          sudo ufw allow 80/tcp
+          sudo ufw allow 443/tcp
+          sudo ufw --force enable
+
+      - name: setup directories
+        script: |
+          set -e
+          sudo mkdir -p /opt/lend-fam/{app,scripts,backup,logs}
+          sudo chown -R deploy:deploy /opt/lend-fam
+          sudo mkdir -p /var/log/lend-fam
+          sudo chown deploy:deploy /var/log/lend-fam
+
+  - name: configure-security
+    commands:
+      - name: configure ssh
+        script: |
+          set -e
+          sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.backup
+          # Configure SSH security settings (handle both commented and uncommented lines)
+          sudo sed -i 's/^#*PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
+          sudo sed -i 's/^#*PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
+          sudo sed -i 's/^#*PubkeyAuthentication.*/PubkeyAuthentication yes/' /etc/ssh/sshd_config
+          # Test the configuration before restarting
+          sudo sshd -t
+          sudo systemctl restart sshd
+
+      - name: configure fail2ban
+        copy:
+          src: ./config/jail.local
+          dst: /etc/fail2ban/jail.local
+
+      - name: restart fail2ban
+        script: sudo systemctl restart fail2ban
+
+      - name: configure docker daemon
+        copy:
+          src: ./config/docker-daemon.json
+          dst: /etc/docker/daemon.json
+
+      - name: restart docker
+        script: sudo systemctl restart docker
+
+  - name: deploy-app
+    commands:
+      - name: copy docker compose
+        copy:
+          src: ../docker-compose.yml
+          dst: /opt/lend-fam/docker-compose.yml
+
+      - name: create production environment file
+        script: |
+          set -e
+          # Create production environment file with spot variables
+          cat > /opt/lend-fam/.env.production << EOF
+          NODE_ENV=production
+          PORT=3000
+          DOCKER_USERNAME=$DOCKER_USERNAME
+          EOF
+          echo "Environment file created. Ready for manual deployment."
+
+  - name: setup-monitoring
+    commands:
+      - name: create config directory
+        script: |
+          set -e
+          mkdir -p /opt/lend-fam/config
+          
+      - name: copy monitoring docker compose
+        copy:
+          src: ./docker-compose.monitoring.yml
+          dst: /opt/lend-fam/docker-compose.monitoring.yml
+          
+      - name: copy prometheus config
+        copy:
+          src: ./config/prometheus.yml
+          dst: /opt/lend-fam/config/prometheus.yml
+          
+      - name: copy promtail config
+        copy:
+          src: ./config/promtail.yml
+          dst: /opt/lend-fam/config/promtail.yml
+          
+      - name: create monitoring environment file
+        script: |
+          set -e
+          # Create monitoring environment file with spot variables
+          cat > /opt/lend-fam/.env.monitoring << EOF
+          # Grafana Cloud Configuration
+          GRAFANA_CLOUD_PROMETHEUS_URL=$GRAFANA_CLOUD_PROMETHEUS_URL
+          GRAFANA_CLOUD_PROMETHEUS_USERNAME=$GRAFANA_CLOUD_PROMETHEUS_USERNAME
+          GRAFANA_CLOUD_API_KEY=$GRAFANA_CLOUD_API_KEY
+          
+          # Grafana Cloud Logs Configuration
+          GRAFANA_CLOUD_LOKI_URL=$GRAFANA_CLOUD_LOKI_URL
+          GRAFANA_CLOUD_LOKI_USERNAME=$GRAFANA_CLOUD_LOKI_USERNAME
+          GRAFANA_CLOUD_LOKI_PASSWORD=$GRAFANA_CLOUD_LOKI_PASSWORD
+          
+          # Cluster identification
+          CLUSTER_NAME=$CLUSTER_NAME
+          ENVIRONMENT=$ENVIRONMENT
+          REGION=$REGION
+          EOF
+          
+      - name: start monitoring services
+        script: |
+          set -e
+          cd /opt/lend-fam
+          # Load monitoring environment variables
+          export $(cat .env.monitoring | grep -v '^#' | xargs)
+          # Substitute environment variables in prometheus config
+          envsubst < config/prometheus.yml > /tmp/prometheus.yml && mv /tmp/prometheus.yml config/prometheus.yml
+          # Substitute environment variables in promtail config
+          envsubst < config/promtail.yml > /tmp/promtail.yml && mv /tmp/promtail.yml config/promtail.yml
+          # Start monitoring stack
+          docker compose -f docker-compose.monitoring.yml up -d
+          
+      - name: verify monitoring services
+        script: |
+          set -e
+          echo "Waiting for monitoring services to start..."
+          sleep 30
+          # Check if Prometheus is responding
+          if curl -f http://localhost:9090/-/healthy > /dev/null 2>&1; then
+            echo "Prometheus is healthy"
+          else
+            echo "WARNING: Prometheus health check failed"
+          fi
+          # Check if Node Exporter is responding
+          if curl -f http://localhost:9100/metrics > /dev/null 2>&1; then
+            echo "Node Exporter is healthy"
+          else
+            echo "WARNING: Node Exporter health check failed"
+          fi
+          # Check if cAdvisor is responding
+          if curl -f http://localhost:8080/healthz > /dev/null 2>&1; then
+            echo "cAdvisor is healthy"
+          else
+            echo "WARNING: cAdvisor health check failed"
+          fi

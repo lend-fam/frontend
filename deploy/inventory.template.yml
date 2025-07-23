@@ -1,0 +1,9 @@
+groups:
+  production-root:
+    - {host: "${SERVER_HOST}", user: "root", name: "prod-root", tags: ["production"]}
+  production-deploy:
+    - {host: "${SERVER_HOST}", user: "deploy", name: "prod-deploy", tags: ["production"]}
+  staging-root:
+    - {host: "${STAGING_HOST}", user: "root", name: "staging-root", tags: ["staging"]}
+  staging-deploy:
+    - {host: "${STAGING_HOST}", user: "deploy", name: "staging-deploy", tags: ["staging"]}
