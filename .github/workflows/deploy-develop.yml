@@ -13,6 +13,29 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
+    - name: Setup Bun
+      uses: oven-sh/setup-bun@v2
+      with:
+        bun-version: latest
+        
+    - name: Cache Bun dependencies
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.bun/install/cache
+          node_modules
+        key: bun-${{ runner.os }}-${{ hashFiles('**/bun.lock') }}
+        restore-keys: |
+          bun-${{ runner.os }}-
+          
+    - name: Install dependencies
+      run: bun install --frozen-lockfile
+      
+    - name: Cache build info
+      run: |
+        echo "Cache key: bun-${{ runner.os }}-${{ hashFiles('**/bun.lock') }}"
+        echo "Dependencies installed at: $(date)"
+      
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
       
@@ -34,7 +57,6 @@ jobs:
         build-args: |
           BUILD_MODE=develop
           VITE_APP_ENVIRONMENT=develop
-        no-cache: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
         

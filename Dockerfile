@@ -3,21 +3,25 @@ FROM oven/bun:1-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY package.json bun.lock ./
-
-# Install dependencies (including devDependencies for build)
-RUN bun install --frozen-lockfile
-
-# Copy source code
-COPY . .
-
 # Build arguments to determine build mode (prod or develop)
 ARG BUILD_MODE=prod
 ARG VITE_APP_ENVIRONMENT=production
 
 # Set environment variable for Vite build
 ENV VITE_APP_ENVIRONMENT=${VITE_APP_ENVIRONMENT}
+
+# Copy package files first for better layer caching
+COPY package.json bun.lock ./
+
+# Copy environment files for build configuration
+COPY .env.develop .env.production ./
+
+# Install dependencies with cache mount for faster rebuilds
+RUN --mount=type=cache,target=/root/.bun/install/cache \
+    bun install --frozen-lockfile
+
+# Copy source code (this layer will change most frequently)
+COPY . .
 
 # Copy appropriate environment file based on build mode
 RUN if [ "$BUILD_MODE" = "develop" ]; then \

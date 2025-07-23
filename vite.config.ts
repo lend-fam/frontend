@@ -22,5 +22,16 @@ export default defineConfig(({ mode }) => {
 			// Include Glyph SDK in dependency pre-bundling
 			include: ['@use-glyph/sdk-react'],
 		},
+		build: {
+			rollupOptions: {
+				onwarn(warning, warn) {
+					// Suppress PURE annotation warnings from nested viem dependencies
+					if (warning.code === 'INVALID_ANNOTATION' && warning.message?.includes('/*#__PURE__*/')) {
+						return;
+					}
+					warn(warning);
+				},
+			},
+		},
 	};
 });
