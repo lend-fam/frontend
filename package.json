@@ -8,6 +8,7 @@
     "dev:prod": "vite --mode prod",
     "build": "tsc -b && vite build --mode prod",
     "build:develop": "tsc -b && vite build --mode develop",
+    "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "lint": "eslint .",
     "lint:fix": "eslint --fix",

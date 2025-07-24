@@ -56,7 +56,7 @@ jobs:
           ${{ secrets.DOCKER_USERNAME }}/lend-family-app:develop-${{ github.sha }}
         build-args: |
           BUILD_MODE=develop
-          VITE_APP_ENVIRONMENT=development
+          VITE_APP_ENVIRONMENT=develop
         cache-from: type=gha
         cache-to: type=gha,mode=max
         
