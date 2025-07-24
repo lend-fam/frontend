@@ -6,9 +6,13 @@ WORKDIR /app
 # Build arguments to determine build mode (prod or develop)
 ARG BUILD_MODE=prod
 ARG VITE_APP_ENVIRONMENT=production
+ARG VITE_POSTHOG_API_KEY
+ARG VITE_POSTHOG_API_HOST=https://app.posthog.com
 
-# Set environment variable for Vite build
+# Set environment variables for Vite build
 ENV VITE_APP_ENVIRONMENT=${VITE_APP_ENVIRONMENT}
+ENV VITE_POSTHOG_API_KEY=${VITE_POSTHOG_API_KEY}
+ENV VITE_POSTHOG_API_HOST=${VITE_POSTHOG_API_HOST}
 
 # Copy package files first for better layer caching
 COPY package.json bun.lock ./

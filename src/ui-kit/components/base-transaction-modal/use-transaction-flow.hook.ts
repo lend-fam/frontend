@@ -8,6 +8,7 @@ import { CTOKEN_ABI, ERC20_ABI } from '../../../contracts';
 import { useAccountLiquidity } from '../../../hooks/use-account-liquidity.hook';
 import { useMarketWalletBalances } from '../../../hooks/use-market-wallet-balances.hook';
 import { useToastContext } from '../../../hooks/use-toast-context.hook';
+import { useAnalyticsContext } from '../../../hooks/use-analytics-context.hook';
 import type {
 	TransactionConfig,
 	TransactionState,
@@ -62,6 +63,7 @@ export const useTransactionFlow = ({
 	const lastSuccessTimeRef = useRef<number>(0);
 	const queryClient = useQueryClient();
 	const { showError } = useToastContext();
+	const { trackTransactionStart, trackTransactionComplete, trackTransactionError } = useAnalyticsContext();
 
 	const {
 		data: marketBalances,
@@ -277,6 +279,12 @@ export const useTransactionFlow = ({
 
 	const executeMainTransaction = useCallback(() => {
 		setTransactionStarted(true);
+		
+		// Track transaction start
+		const tokenSymbol = balance?.symbol || 'Unknown';
+		const formattedAmount = formatUnits(amountInWei, isNativeToken ? 18 : tokenDecimals || 18);
+		trackTransactionStart(config.type, tokenSymbol, formattedAmount);
+		
 		switch (config.type) {
 			case 'supply': {
 				if (isNativeToken) {
@@ -376,6 +384,9 @@ export const useTransactionFlow = ({
 		cTokenBalance,
 		isNativeToken,
 		isMaxRepayAttempt,
+		trackTransactionStart,
+		balance,
+		tokenDecimals,
 	]);
 
 	useEffect(() => {
@@ -410,6 +421,13 @@ export const useTransactionFlow = ({
 			lastSuccessTimeRef.current = Date.now();
 			setHasAutoProceeded(false);
 			setTransactionStarted(false);
+
+			// Track transaction success
+			const tokenSymbol = balance?.symbol || 'Unknown';
+			const formattedAmount = formatUnits(amountInWei, isNativeToken ? 18 : tokenDecimals || 18);
+			if (transactionHash) {
+				trackTransactionComplete(config.type, tokenSymbol, formattedAmount, transactionHash);
+			}
 
 			queryClient.invalidateQueries({
 				predicate: (query) => {
@@ -494,6 +512,12 @@ export const useTransactionFlow = ({
 		queryClient,
 		address,
 		marketAddress,
+		balance,
+		amountInWei,
+		isNativeToken,
+		tokenDecimals,
+		transactionHash,
+		trackTransactionComplete,
 	]);
 
 	useEffect(() => {
@@ -526,8 +550,13 @@ export const useTransactionFlow = ({
 		if (isTransactionError) {
 			setHasAutoProceeded(false);
 			showError(`${config.type} transaction failed. Please try again.`);
+			
+			// Track transaction error
+			const tokenSymbol = balance?.symbol || 'Unknown';
+			const formattedAmount = formatUnits(amountInWei, isNativeToken ? 18 : tokenDecimals || 18);
+			trackTransactionError(config.type, tokenSymbol, formattedAmount, 'Transaction failed');
 		}
-	}, [isTransactionError, config.type, showError]);
+	}, [isTransactionError, config.type, showError, balance, amountInWei, isNativeToken, tokenDecimals, trackTransactionError]);
 
 	const handleMaxClick = () => {
 		const decimals = isNativeToken ? 18 : tokenDecimals || 18;

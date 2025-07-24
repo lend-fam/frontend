@@ -19,19 +19,21 @@ remote_write:
       min_backoff: 30ms
       max_backoff: 5s
       retry_on_http_429: true
-    # Filter metrics to reduce costs - allow more container metrics
+    # Filter metrics to reduce costs - allow essential metrics
     write_relabel_configs:
+      # Allow basic infrastructure metrics
       - source_labels: [__name__]
-        regex: '(up|node_.*|container_.*|prometheus_.*|cadvisor_.*)'
+        regex: '(up|node_.*|container_memory_usage_bytes|container_cpu_usage_seconds_total|container_network_receive_bytes_total|container_network_transmit_bytes_total|container_last_seen|container_start_time_seconds|prometheus_.*)'
         action: keep
+      # Add readable service names for containers
       - source_labels: [container_label_com_docker_compose_service]
-        regex: 'lend-fam-frontend'
+        regex: '(.+)'
         target_label: service
-        replacement: 'frontend'
-      - source_labels: [container_label_com_docker_compose_service]
-        regex: 'lend-fam-prometheus'
-        target_label: service  
-        replacement: 'prometheus'
+        replacement: '${1}'
+      - source_labels: [name]
+        regex: '(.+)'
+        target_label: container_name
+        replacement: '${1}'
 
 scrape_configs:
   # Prometheus itself
@@ -57,11 +59,20 @@ scrape_configs:
     scrape_interval: 15s
     metrics_path: /metrics
     metric_relabel_configs:
-      # Add readable service names
+      # Add readable service names from compose labels
       - source_labels: [container_label_com_docker_compose_service]
         target_label: service
-        regex: 'lend-fam-(.*)'
+        regex: '(.+)'
         replacement: '${1}'
+      # Add container name as label
+      - source_labels: [name]
+        target_label: container_name
+        regex: '(.+)'
+        replacement: '${1}'
+      # Drop metrics for root container to reduce noise
+      - source_labels: [id]
+        regex: '/'
+        action: drop
 
   # Frontend application health check
   - job_name: 'frontend-health'

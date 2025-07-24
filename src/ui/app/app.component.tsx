@@ -7,6 +7,8 @@ import { RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import { ApolloProvider } from '@apollo/client';
 import { hashFn } from '@wagmi/core/query';
 import { GlyphProvider, StrategyType, WalletClientType } from '@use-glyph/sdk-react';
+import { useWalletAnalytics } from '../../hooks/use-wallet-analytics.hook';
+import { usePageAnalytics } from '../../hooks/use-page-analytics.hook';
 import { Header } from '../header/header.component';
 import { LandingPage } from '../landing-page';
 import { MarketsPage } from '../dashboard-page/markets-page/markets-page.component';
@@ -21,6 +23,7 @@ import { wagmiConfig } from '../../config/wagmi.config';
 import { apolloClient } from '../../config/apollo';
 import { TransactionProvider } from '../../contexts/transaction.context';
 import { ToastProvider } from '../../contexts/toast.provider';
+import { AnalyticsProvider } from '../../contexts/analytics.provider';
 import { DesignThemeProvider } from '../../ui-kit/providers/design-theme-provider';
 
 import css from './app.module.css';
@@ -44,6 +47,12 @@ const queryClient = new QueryClient({
 });
 
 const AppContent: FC = () => {
+	// Track wallet connection events
+	useWalletAnalytics();
+	
+	// Track page views
+	usePageAnalytics();
+
 	return (
 		<div className={css.container}>
 			<Header />
@@ -158,12 +167,14 @@ export const App: FC = () => {
 							askForSignature={false}>
 							<ApolloProvider client={apolloClient}>
 								<DesignThemeProvider>
-									<ToastProvider>
-										<TransactionProvider>
-											<AppContent />
-											<ReactQueryDevtools initialIsOpen={false} />
-										</TransactionProvider>
-									</ToastProvider>
+									<AnalyticsProvider>
+										<ToastProvider>
+											<TransactionProvider>
+												<AppContent />
+												<ReactQueryDevtools initialIsOpen={false} />
+											</TransactionProvider>
+										</ToastProvider>
+									</AnalyticsProvider>
 								</DesignThemeProvider>
 							</ApolloProvider>
 						</GlyphProvider>

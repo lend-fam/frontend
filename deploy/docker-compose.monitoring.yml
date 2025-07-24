@@ -84,6 +84,8 @@ services:
     command:
       - '--housekeeping_interval=30s'
       - '--docker_only'
+      - '--enable_metrics=cpu,memory,network,diskIO'
+      - '--store_container_labels=false'
 
   promtail:
     image: grafana/promtail:latest
