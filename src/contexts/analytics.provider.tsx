@@ -13,7 +13,7 @@ export const AnalyticsProvider: FC<AnalyticsProviderProps> = ({ children }) => {
 	// Initialize PostHog
 	useEffect(() => {
 		const apiKey = import.meta.env.VITE_POSTHOG_API_KEY;
-		const apiHost = import.meta.env.VITE_POSTHOG_API_HOST || 'https://app.posthog.com';
+		const apiHost = import.meta.env.VITE_POSTHOG_API_HOST || 'https://eu.i.posthog.com';
 
 		if (apiKey) {
 			try {
@@ -30,6 +30,9 @@ export const AnalyticsProvider: FC<AnalyticsProviderProps> = ({ children }) => {
 					opt_out_capturing_by_default: false,
 					// Disable session recording for privacy
 					disable_session_recording: true,
+					// PostHog configuration
+					defaults: '2025-05-24',
+					person_profiles: 'identified_only',
 				});
 			} catch (error) {
 				console.error('Failed to initialize PostHog:', error);
