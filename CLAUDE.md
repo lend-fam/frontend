@@ -51,6 +51,12 @@ bun run codegen
 
 # Watch mode for GraphQL codegen
 bun run codegen:watch
+
+# Type checking
+bun run typecheck
+
+# Run tests (if available)
+bun test
 ```
 
 ### Build Modes
@@ -59,6 +65,21 @@ bun run codegen:watch
 - `bun run dev:prod` - Development server with production configuration
 - `bun run build` - Production build
 - `bun run build:develop` - Development build (sets base path to `/development/`)
+
+### Blockchain Interaction Tools
+
+```bash
+# Direct blockchain interactions using Foundry cast
+cast call <contract_address> "methodName()" --rpc-url <rpc_url>
+cast send <contract_address> "methodName()" --private-key <private_key> --rpc-url <rpc_url>
+
+# Get contract storage and state
+cast storage <contract_address> <slot> --rpc-url <rpc_url>
+cast code <contract_address> --rpc-url <rpc_url>
+
+# Monitor contract events in real-time
+cast logs --from-block latest "event_signature" --rpc-url <rpc_url>
+```
 
 ## Architecture Overview
 
@@ -69,13 +90,14 @@ This is a React + TypeScript frontend application built with Vite for the lend.f
 ### Key Technologies
 
 - **React 18.3.1** with TypeScript for component development
-- **Vite 7.0.0** for build tooling and development server with CSS Modules support
-- **Wagmi 2.15.2 + RainbowKit 2.2.8** for Web3 wallet connection and management
-- **Viem 2.29.2** for low-level Web3 operations and type-safe contract interactions
-- **Apollo Client 3.11.11** for GraphQL data management with automatic code generation
-- **React Query 5.76.0** (via @tanstack/react-query) for caching and synchronization
-- **Recharts 2.12.7** for data visualization and charting
-- **React Router DOM 7.6.3** for navigation
+- **Vite 7.0.6** for build tooling and development server with CSS Modules support
+- **Bun** as the preferred runtime and package manager
+- **Wagmi 2.16.0 + RainbowKit 2.2.8** for Web3 wallet connection and management
+- **Viem 2.33.0** for low-level Web3 operations and type-safe contract interactions
+- **Apollo Client 3.13.8** for GraphQL data management with automatic code generation
+- **React Query 5.83.0** (via @tanstack/react-query) for caching and synchronization
+- **Recharts 2.15.4** for data visualization and charting
+- **React Router DOM 7.7.0** for navigation
 - **CSS Modules** with `vite-css-modules` plugin for automatic TypeScript definitions
 - **ESLint + Prettier** for code quality and formatting
 
@@ -117,6 +139,7 @@ This is a React + TypeScript frontend application built with Vite for the lend.f
 - **RPC Configuration**: Curtis RPC prioritized over native ApeChain RPC for reliability
 - **Multi-wallet Integration**: MetaMask, Coinbase Wallet, Rainbow, and Glyph wallet support
 - **Transport Configuration**: HTTP transports with timeout (5s), retry count (2), and retry delay (1s)
+- **WebSocket Integration**: Real-time chain interactions via WebSocket transports for live data
 - **Chain Utilities**: Helper functions for chain display names and block explorer URLs
 
 #### Component Architecture
