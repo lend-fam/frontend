@@ -66,8 +66,8 @@ tasks:
           sudo sh get-docker.sh
           sudo rm get-docker.sh
 
-          # Install monitoring tools
-          sudo apt install -y htop fail2ban unattended-upgrades
+          # Install monitoring tools and micro editor
+          sudo apt install -y htop fail2ban unattended-upgrades micro
 
           # Add deploy user to docker group
           sudo usermod -aG docker deploy
