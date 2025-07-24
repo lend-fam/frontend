@@ -162,6 +162,11 @@ tasks:
           src: ./config/promtail.yml
           dst: /opt/lend-fam/config/promtail.yml
           
+      - name: copy blackbox config
+        copy:
+          src: ./config/blackbox.yml
+          dst: /opt/lend-fam/config/blackbox.yml
+          
       - name: create monitoring environment file
         script: |
           set -e

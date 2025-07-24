@@ -103,6 +103,26 @@ services:
     command:
       - '-config.file=/etc/promtail/config.yml'
 
+  blackbox-exporter:
+    image: prom/blackbox-exporter:latest
+    container_name: lend-fam-blackbox-exporter
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9115:9115"
+    volumes:
+      - ./config/blackbox.yml:/etc/blackbox_exporter/config.yml:ro
+    networks:
+      - monitoring
+    security_opt:
+      - no-new-privileges:true
+    user: "nobody"
+    read_only: true
+    tmpfs:
+      - /tmp
+    command:
+      - '--config.file=/etc/blackbox_exporter/config.yml'
+      - '--web.listen-address=:9115'
+
 volumes:
   prometheus_data:
     driver: local

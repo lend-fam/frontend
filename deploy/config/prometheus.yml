@@ -23,7 +23,7 @@ remote_write:
     write_relabel_configs:
       # Allow basic infrastructure metrics
       - source_labels: [__name__]
-        regex: '(up|node_.*|container_memory_usage_bytes|container_cpu_usage_seconds_total|container_network_receive_bytes_total|container_network_transmit_bytes_total|container_last_seen|container_start_time_seconds|prometheus_.*)'
+        regex: '(up|node_.*|container_memory_usage_bytes|container_cpu_usage_seconds_total|container_network_receive_bytes_total|container_network_transmit_bytes_total|container_last_seen|container_start_time_seconds|prometheus_.*|probe_.*)'
         action: keep
       # Add readable service names for containers
       - source_labels: [container_label_com_docker_compose_service]
@@ -74,17 +74,48 @@ scrape_configs:
         regex: '/'
         action: drop
 
-  # Frontend application health check
-  - job_name: 'frontend-health'
+  # Blackbox Exporter - Website monitoring
+  - job_name: 'blackbox-http'
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
     static_configs:
-      - targets: ['172.17.0.1:3000']  # Docker host IP
+      - targets:
+        - https://lend.family
+        - https://lend.family/health
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
     scrape_interval: 30s
-    metrics_path: /health
-    scrape_timeout: 10s
-    scheme: http
-    metric_relabel_configs:
-      - target_label: service
-        replacement: 'frontend-app'
+    
+  # Blackbox Exporter - SSL monitoring
+  - job_name: 'blackbox-ssl'
+    metrics_path: /probe
+    params:
+      module: [ssl_expiry]
+    static_configs:
+      - targets:
+        - https://lend.family
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+    scrape_interval: 300s  # Check SSL every 5 minutes
+
+  # DNS monitoring disabled for now - HTTPS monitoring provides sufficient coverage
+
+  # Blackbox Exporter itself
+  - job_name: 'blackbox-exporter'
+    static_configs:
+      - targets: ['blackbox-exporter:9115']
+    scrape_interval: 30s
 
 # Rule files for alerting (optional)
 rule_files:
