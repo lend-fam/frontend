@@ -18,7 +18,7 @@ export const AnalyticsProvider: FC<AnalyticsProviderProps> = ({ children }) => {
 			? '/ingest'  // Use local proxy endpoint
 			: import.meta.env.VITE_POSTHOG_API_HOST || 'https://eu.i.posthog.com';
 		const uiHost = useProxy 
-			? '/static'  // Use local proxy endpoint for static assets
+			? '/ingest/static'  // Use local proxy endpoint for static assets
 			: undefined; // Use PostHog default
 
 		if (apiKey) {
