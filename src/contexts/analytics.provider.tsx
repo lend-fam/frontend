@@ -13,27 +13,35 @@ export const AnalyticsProvider: FC<AnalyticsProviderProps> = ({ children }) => {
 	// Initialize PostHog
 	useEffect(() => {
 		const apiKey = import.meta.env.VITE_POSTHOG_API_KEY;
-		const apiHost = import.meta.env.VITE_POSTHOG_API_HOST || 'https://eu.i.posthog.com';
+		const useProxy = import.meta.env.VITE_POSTHOG_USE_PROXY === 'true';
+		const apiHost = useProxy 
+			? '/ingest'  // Use local proxy endpoint
+			: import.meta.env.VITE_POSTHOG_API_HOST || 'https://eu.i.posthog.com';
+		const uiHost = useProxy 
+			? '/static'  // Use local proxy endpoint for static assets
+			: undefined; // Use PostHog default
 
 		if (apiKey) {
 			try {
-				posthog.init(apiKey, {
+				const config = {
 					api_host: apiHost,
+					...(uiHost && { ui_host: uiHost }),
 					loaded: () => {
 						setIsInitialized(true);
 						setIsEnabled(true);
 					},
 					capture_pageview: false, // We'll handle page views manually
-					persistence: 'localStorage',
+					persistence: 'localStorage' as const,
 					// Privacy settings for Web3
 					respect_dnt: true,
 					opt_out_capturing_by_default: false,
 					// Disable session recording for privacy
 					disable_session_recording: true,
 					// PostHog configuration
-					defaults: '2025-05-24',
-					person_profiles: 'identified_only',
-				});
+					person_profiles: 'identified_only' as const,
+				};
+				
+				posthog.init(apiKey, config);
 			} catch (error) {
 				console.error('Failed to initialize PostHog:', error);
 				setIsInitialized(true);
