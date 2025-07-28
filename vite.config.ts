@@ -44,37 +44,14 @@ export default defineConfig(({ mode }) => {
 		},
 		build: {
 			rollupOptions: {
-				output: {
-					manualChunks: {
-						// Vendor chunk for heavy dependencies
-						'vendor-web3': ['wagmi', 'viem', '@rainbow-me/rainbowkit', '@use-glyph/sdk-react'],
-						'vendor-apollo': ['@apollo/client', 'graphql'],
-						'vendor-react': ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query'],
-						'vendor-charts': ['recharts'],
-						'vendor-ui': ['classnames', 'posthog-js', '@marsidev/react-turnstile'],
-					},
-				},
 				onwarn(warning, warn) {
 					// Suppress PURE annotation warnings from nested viem dependencies
 					if (warning.code === 'INVALID_ANNOTATION' && warning.message?.includes('/*#__PURE__*/')) {
 						return;
 					}
-					// Suppress buffer externalization warnings - this is expected for Web3 libraries
-					if (warning.message?.includes('Module "buffer" has been externalized')) {
-						return;
-					}
 					warn(warning);
 				},
-				treeshake: {
-					moduleSideEffects: false,
-					propertyReadSideEffects: false,
-					unknownGlobalSideEffects: false,
-				},
 			},
-			// Optimize CSS
-			cssCodeSplit: true,
-			// Enable compression with esbuild (default)
-			minify: 'esbuild',
 		},
 	};
 });
