@@ -49,8 +49,7 @@ export default defineConfig(({ mode }) => {
 						// Vendor chunk for heavy dependencies
 						'vendor-web3': ['wagmi', 'viem', '@rainbow-me/rainbowkit', '@use-glyph/sdk-react'],
 						'vendor-apollo': ['@apollo/client', 'graphql'],
-						'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-						'vendor-query': ['@tanstack/react-query'],
+						'vendor-react': ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query'],
 						'vendor-charts': ['recharts'],
 						'vendor-ui': ['classnames', 'posthog-js', '@marsidev/react-turnstile'],
 					},
