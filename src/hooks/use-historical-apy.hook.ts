@@ -45,14 +45,6 @@ export const useHistoricalAPY = ({ cTokenMarket, timeRange, interval = 'hour' }:
 			'1y': { from: now - 31536000 * 0.9, interval: 'day' },
 		};
 
-		console.log(`Historical APY Query for ${cTokenMarket} - ${timeRange}:`, {
-			from: ranges[timeRange]?.from,
-			to: now,
-			fromDate: new Date(ranges[timeRange]?.from * 1000).toISOString(),
-			toDate: new Date(now * 1000).toISOString(),
-			lookbackHours: ((now - ranges[timeRange]?.from) / 3600).toFixed(1),
-		});
-
 		return ranges[timeRange];
 	}, [timeRange, cTokenMarket]);
 
@@ -80,26 +72,11 @@ export const useHistoricalAPY = ({ cTokenMarket, timeRange, interval = 'hour' }:
 		);
 
 		// Check data quality and provide appropriate fallback
-		console.log(`Historical APY Data Quality for ${cTokenMarket} - ${timeRange}:`, {
-			requestedDataPoints: processedData.length,
-			hasNonZeroData: processedData.some((p) => p.supplyAPY > 0 || p.borrowAPY > 0),
-			averageSupplyAPY:
-				processedData.length > 0
-					? (processedData.reduce((sum, p) => sum + p.supplyAPY, 0) / processedData.length).toFixed(4)
-					: 0,
-			averageBorrowAPY:
-				processedData.length > 0
-					? (processedData.reduce((sum, p) => sum + p.borrowAPY, 0) / processedData.length).toFixed(4)
-					: 0,
-		});
-
 		// Only use mock data if we have no data or all APY values are exactly zero
 		const allZeroAPY = processedData.every((point) => point.supplyAPY === 0 && point.borrowAPY === 0);
 		const hasInsufficientData = processedData.length < 2;
 
 		if ((allZeroAPY && processedData.length > 0) || hasInsufficientData) {
-			const reason = hasInsufficientData ? 'insufficient data points' : 'all APY values are zero';
-			console.warn(`Using mock data for ${cTokenMarket} - ${timeRange}: ${reason}`);
 			return generateMockAPYData(timeRange);
 		}
 
@@ -143,7 +120,6 @@ export const useLatestAPYStats = (cTokenMarket: string) => {
 
 		// Only use mock data if both APY values are exactly zero
 		if (processedStats.supplyAPY === 0 && processedStats.borrowAPY === 0) {
-			console.warn('Latest APY values are zero - using mock data. Check interest rate model configuration.');
 			return {
 				timestamp: processedStats.timestamp,
 				supplyAPY: 0.05,

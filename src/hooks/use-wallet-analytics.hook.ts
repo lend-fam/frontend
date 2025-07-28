@@ -10,7 +10,7 @@ export const useWalletAnalytics = () => {
 	const { address, isConnected, connector } = useAccount();
 	const connections = useConnections();
 	const { trackWalletConnection, trackWalletDisconnection, identify } = useAnalyticsContext();
-	
+
 	// Use refs to track previous state and prevent duplicate events
 	const prevConnectedRef = useRef<boolean>(false);
 	const prevAddressRef = useRef<string | undefined>(undefined);
@@ -18,21 +18,18 @@ export const useWalletAnalytics = () => {
 	useEffect(() => {
 		const wasConnected = prevConnectedRef.current;
 		const prevAddress = prevAddressRef.current;
-		
+
 		// Wallet connected (first time or address changed)
 		if (isConnected && address && (!wasConnected || address !== prevAddress)) {
 			const walletType = connector?.name || 'unknown';
-			
+
 			// Track wallet connection event
 			trackWalletConnection(walletType, address);
-			
-			console.log('Analytics: Wallet connected', { walletType, address });
 		}
-		
+
 		// Wallet disconnected
 		else if (!isConnected && wasConnected) {
 			trackWalletDisconnection();
-			console.log('Analytics: Wallet disconnected');
 		}
 
 		// Update refs

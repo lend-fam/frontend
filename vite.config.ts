@@ -7,7 +7,7 @@ import path from 'path';
 export default defineConfig(({ mode }) => {
 	// Set base path based on build mode
 	const base = mode === 'develop' ? '/development/' : '/';
-	
+
 	return {
 		base,
 		plugins: [react(), patchCssModules({ generateSourceTypes: true })],
@@ -17,6 +17,10 @@ export default defineConfig(({ mode }) => {
 				react: path.resolve('./node_modules/react'),
 				'react-dom': path.resolve('./node_modules/react-dom'),
 			},
+		},
+		define: {
+			// Polyfills for Node.js modules in browser
+			global: 'globalThis',
 		},
 		optimizeDeps: {
 			// Include heavy dependencies in pre-bundling for faster dev server startup
@@ -30,6 +34,13 @@ export default defineConfig(({ mode }) => {
 				'@marsidev/react-turnstile',
 				'classnames',
 			],
+		},
+		// Browser caching strategy
+		server: {
+			headers: {
+				// Cache static assets aggressively
+				'Cache-Control': 'public, max-age=31536000', // 1 year for static assets
+			},
 		},
 		build: {
 			rollupOptions: {
@@ -49,9 +60,22 @@ export default defineConfig(({ mode }) => {
 					if (warning.code === 'INVALID_ANNOTATION' && warning.message?.includes('/*#__PURE__*/')) {
 						return;
 					}
+					// Suppress buffer externalization warnings - this is expected for Web3 libraries
+					if (warning.message?.includes('Module "buffer" has been externalized')) {
+						return;
+					}
 					warn(warning);
 				},
+				treeshake: {
+					moduleSideEffects: false,
+					propertyReadSideEffects: false,
+					unknownGlobalSideEffects: false,
+				},
 			},
+			// Optimize CSS
+			cssCodeSplit: true,
+			// Enable compression with esbuild (default)
+			minify: 'esbuild',
 		},
 	};
 });

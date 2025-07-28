@@ -2,7 +2,7 @@ import { type FC, useMemo } from 'react';
 import type { Address } from 'viem';
 import { useReadContracts } from 'wagmi';
 import { CTOKEN_ABI, INTEREST_RATE_MODEL_ABI, BLOCKS_PER_YEAR } from '../../../contracts';
-import { InterestRateChart } from './interest-rate-chart/interest-rate-chart.component';
+import { LazyInterestRateChart } from './interest-rate-chart/lazy-interest-rate-chart.component';
 import { useMarketTotals } from '../../../hooks';
 import { MarketService } from '../../../services';
 import { Card } from '../../../ui-kit/components/card/card.component';
@@ -190,7 +190,7 @@ export const InterestRateModelSection: FC<InterestRateModelSectionProps> = ({ ma
 				</div>
 
 				<div className={css.chartSection}>
-					<InterestRateChart
+					<LazyInterestRateChart
 						currentRate={interestRateMetrics.currentBorrowAPY}
 						currentUtilization={interestRateMetrics.utilizationRate}
 						interestRateParams={{

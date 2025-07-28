@@ -279,12 +279,12 @@ export const useTransactionFlow = ({
 
 	const executeMainTransaction = useCallback(() => {
 		setTransactionStarted(true);
-		
+
 		// Track transaction start
 		const tokenSymbol = balance?.symbol || 'Unknown';
 		const formattedAmount = formatUnits(amountInWei, isNativeToken ? 18 : tokenDecimals || 18);
 		trackTransactionStart(config.type, tokenSymbol, formattedAmount);
-		
+
 		switch (config.type) {
 			case 'supply': {
 				if (isNativeToken) {
@@ -550,13 +550,22 @@ export const useTransactionFlow = ({
 		if (isTransactionError) {
 			setHasAutoProceeded(false);
 			showError(`${config.type} transaction failed. Please try again.`);
-			
+
 			// Track transaction error
 			const tokenSymbol = balance?.symbol || 'Unknown';
 			const formattedAmount = formatUnits(amountInWei, isNativeToken ? 18 : tokenDecimals || 18);
 			trackTransactionError(config.type, tokenSymbol, formattedAmount, 'Transaction failed');
 		}
-	}, [isTransactionError, config.type, showError, balance, amountInWei, isNativeToken, tokenDecimals, trackTransactionError]);
+	}, [
+		isTransactionError,
+		config.type,
+		showError,
+		balance,
+		amountInWei,
+		isNativeToken,
+		tokenDecimals,
+		trackTransactionError,
+	]);
 
 	const handleMaxClick = () => {
 		const decimals = isNativeToken ? 18 : tokenDecimals || 18;

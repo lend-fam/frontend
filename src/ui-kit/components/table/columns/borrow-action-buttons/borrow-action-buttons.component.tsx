@@ -3,8 +3,8 @@ import type { Address } from 'viem';
 
 import { Button } from '../../../button/button.component';
 import { FlexContainer } from '../../../flex-container/flex-container.component';
-import { BorrowModal } from '../../../borrow-modal/borrow-modal.component';
-import { RepayModal } from '../../../repay-modal/repay-modal.component';
+import { LazyBorrowModal } from '../../../lazy-modals/lazy-borrow-modal.component';
+import { LazyRepayModal } from '../../../lazy-modals/lazy-repay-modal.component';
 import { useBorrowEligibility } from '../../../../../hooks/use-borrow-eligibility.hook';
 
 import css from './borrow-action-buttons.module.css';
@@ -101,7 +101,7 @@ export const BorrowActionButtons: FC<BorrowActionButtonsProps> = ({
 				)}
 			</FlexContainer>
 
-			<BorrowModal
+			<LazyBorrowModal
 				isOpen={isBorrowModalOpen}
 				onClose={() => setIsBorrowModalOpen(false)}
 				marketAddress={marketAddress}
@@ -110,10 +110,11 @@ export const BorrowActionButtons: FC<BorrowActionButtonsProps> = ({
 				availableLiquidity={borrowEligibility.details.maxBorrowAmount || availableLiquidity}
 			/>
 
-			<RepayModal
+			<LazyRepayModal
 				isOpen={isRepayModalOpen}
 				onClose={() => setIsRepayModalOpen(false)}
 				marketAddress={marketAddress}
+				tokenSymbol={tokenSymbol}
 				borrowAPY={borrowAPY}
 			/>
 		</>

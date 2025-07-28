@@ -4,8 +4,8 @@ import type { Address } from 'viem';
 
 import { Button } from '../../../button/button.component';
 import { FlexContainer } from '../../../flex-container/flex-container.component';
-import { SupplyModal } from '../../../supply-modal/supply-modal.component';
-import { WithdrawModal } from '../../../withdraw-modal/withdraw-modal.component';
+import { LazySupplyModal } from '../../../lazy-modals/lazy-supply-modal.component';
+import { LazyWithdrawModal } from '../../../lazy-modals/lazy-withdraw-modal.component';
 
 import css from './action-buttons.module.css';
 
@@ -132,7 +132,7 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
 				)}
 			</FlexContainer>
 
-			<SupplyModal
+			<LazySupplyModal
 				isOpen={isSupplyModalOpen}
 				onClose={() => setIsSupplyModalOpen(false)}
 				marketAddress={marketAddress}
@@ -143,7 +143,7 @@ export const ActionButtons: FC<ActionButtonsProps> = ({
 				}}
 			/>
 
-			<WithdrawModal
+			<LazyWithdrawModal
 				isOpen={isWithdrawModalOpen}
 				onClose={() => setIsWithdrawModalOpen(false)}
 				marketAddress={marketAddress}

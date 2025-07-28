@@ -22,7 +22,6 @@ export const AnalyticsProvider: FC<AnalyticsProviderProps> = ({ children }) => {
 					loaded: () => {
 						setIsInitialized(true);
 						setIsEnabled(true);
-						console.log('PostHog analytics initialized');
 					},
 					capture_pageview: false, // We'll handle page views manually
 					persistence: 'localStorage',
@@ -38,7 +37,7 @@ export const AnalyticsProvider: FC<AnalyticsProviderProps> = ({ children }) => {
 				setIsEnabled(false);
 			}
 		} else {
-			console.warn('PostHog API key not configured - analytics disabled');
+			// Analytics disabled - API key not configured
 			setIsInitialized(true);
 			setIsEnabled(false);
 		}
@@ -54,7 +53,7 @@ export const AnalyticsProvider: FC<AnalyticsProviderProps> = ({ children }) => {
 	// Generic event tracking
 	const track = (eventName: string, properties?: AnalyticsEventProperties) => {
 		if (!isEnabled) return;
-		
+
 		try {
 			posthog.capture(eventName, properties);
 		} catch (error) {
@@ -118,7 +117,7 @@ export const AnalyticsProvider: FC<AnalyticsProviderProps> = ({ children }) => {
 		type: 'supply' | 'withdraw' | 'borrow' | 'repay',
 		token: string,
 		amount: string,
-		success: boolean
+		success: boolean,
 	) => {
 		track('transaction_completed', {
 			transaction_type: type,
@@ -128,11 +127,7 @@ export const AnalyticsProvider: FC<AnalyticsProviderProps> = ({ children }) => {
 		});
 	};
 
-	const trackTransactionStart = (
-		type: 'supply' | 'withdraw' | 'borrow' | 'repay',
-		token: string,
-		amount: string
-	) => {
+	const trackTransactionStart = (type: 'supply' | 'withdraw' | 'borrow' | 'repay', token: string, amount: string) => {
 		track('transaction_started', {
 			transaction_type: type,
 			token,
@@ -144,7 +139,7 @@ export const AnalyticsProvider: FC<AnalyticsProviderProps> = ({ children }) => {
 		type: 'supply' | 'withdraw' | 'borrow' | 'repay',
 		token: string,
 		amount: string,
-		transactionHash: string
+		transactionHash: string,
 	) => {
 		track('transaction_success', {
 			transaction_type: type,
@@ -158,7 +153,7 @@ export const AnalyticsProvider: FC<AnalyticsProviderProps> = ({ children }) => {
 		type: 'supply' | 'withdraw' | 'borrow' | 'repay',
 		token: string,
 		amount: string,
-		error: string
+		error: string,
 	) => {
 		track('transaction_error', {
 			transaction_type: type,

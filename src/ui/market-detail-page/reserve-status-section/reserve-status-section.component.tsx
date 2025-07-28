@@ -2,7 +2,7 @@ import { type FC, useMemo, useState } from 'react';
 import type { Address } from 'viem';
 import { formatUnits } from 'viem';
 import { ProgressCircle } from './progress-circle/progress-circle.component';
-import { EnhancedAPYChartDebug } from './apy-chart/enhanced-apy-chart-debug.component';
+import { LazyAPYChart } from './apy-chart/lazy-apy-chart.component';
 import { TimeRangeSelector } from './time-range-selector/time-range-selector.component';
 import { Card } from '../../../ui-kit/components/card/card.component';
 import { NativeYieldBadge } from '../../../ui-kit/components/native-yield-badge/native-yield-badge.component';
@@ -205,7 +205,7 @@ export const ReserveStatusSection: FC<ReserveStatusSectionProps> = ({
 						cTokenMarket={marketAddress.toLowerCase()}
 					/>
 				</div>
-				<EnhancedAPYChartDebug
+				<LazyAPYChart
 					cTokenMarket={marketAddress.toLowerCase()}
 					timeRange={selectedTimeRange}
 					metric="supply"

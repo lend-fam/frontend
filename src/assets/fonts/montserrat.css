@@ -1,17 +1,17 @@
-/* Montserrat Variable Font - Normal */
+/* Montserrat Variable Font - Normal (optimized loading) */
 @font-face {
   font-family: 'Montserrat';
   font-style: normal;
-  font-weight: 100 900;
-  font-display: swap;
+  font-weight: 400 700; /* Only load common weights (400-700) */
+  font-display: swap; /* Ensure text remains visible during font load */
   src: url('./Montserrat/Montserrat-VariableFont_wght.ttf') format('truetype-variations');
 }
 
-/* Montserrat Variable Font - Italic */
+/* Montserrat Variable Font - Italic (lazy-loaded for performance) */
 @font-face {
   font-family: 'Montserrat';
   font-style: italic;
-  font-weight: 100 900;
-  font-display: swap;
+  font-weight: 400 700; /* Only load common weights (400-700) */
+  font-display: fallback; /* Use fallback font if not loaded quickly */
   src: url('./Montserrat/Montserrat-Italic-VariableFont_wght.ttf') format('truetype-variations');
 }

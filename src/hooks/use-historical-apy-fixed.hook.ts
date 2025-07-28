@@ -57,12 +57,6 @@ export const useHistoricalAPYFixed = ({ cTokenMarket, timeRange, interval = 'hou
 	const historicalData = useMemo(() => {
 		if (!data?.ctokenAPYDatas) return [];
 
-		console.log(`APY Data Debug for ${cTokenMarket}:`, {
-			rawDataCount: data.ctokenAPYDatas.length,
-			sampleRawData: data.ctokenAPYDatas[0],
-			timeRange,
-		});
-
 		const processedData = data.ctokenAPYDatas.map((stat): HistoricalAPYData => {
 			// Parse raw values from subgraph
 			const rawSupplyAPY = parseFloat(stat.supplyAPY);
@@ -84,22 +78,11 @@ export const useHistoricalAPYFixed = ({ cTokenMarket, timeRange, interval = 'hou
 			};
 		});
 
-		// Debug log processed data
-		console.log(`Processed APY Data for ${cTokenMarket}:`, {
-			processedDataCount: processedData.length,
-			sampleProcessedData: processedData[0],
-			averageSupplyAPY: processedData.reduce((sum, p) => sum + p.supplyAPY, 0) / processedData.length,
-			averageBorrowAPY: processedData.reduce((sum, p) => sum + p.borrowAPY, 0) / processedData.length,
-		});
-
 		// Only use mock data if all APY values are exactly zero
 		const allZeroAPY = processedData.every((point) => point.supplyAPY === 0 && point.borrowAPY === 0);
 
 		// Only return mock data if all APY values are exactly zero
 		if (allZeroAPY && processedData.length > 0) {
-			console.warn(
-				`All APY values are zero for ${cTokenMarket} - using mock data. Check interest rate model configuration.`,
-			);
 			return generateMockAPYData(timeRange);
 		}
 
@@ -149,16 +132,8 @@ export const useLatestAPYStatsFixed = (cTokenMarket: string) => {
 			exchangeRate: rawExchangeRate / 1e18, // Convert from mantissa scale
 		};
 
-		console.log(`Latest APY Stats for ${cTokenMarket}:`, {
-			raw: { rawSupplyAPY, rawBorrowAPY, rawUtilizationRate, rawExchangeRate, rawTimestamp },
-			processed: processedStats,
-		});
-
 		// Only use mock data if both APY values are exactly zero
 		if (processedStats.supplyAPY === 0 && processedStats.borrowAPY === 0) {
-			console.warn(
-				`Latest APY values are zero for ${cTokenMarket} - using mock data. Check interest rate model configuration.`,
-			);
 			return {
 				timestamp: processedStats.timestamp,
 				supplyAPY: 0.05,

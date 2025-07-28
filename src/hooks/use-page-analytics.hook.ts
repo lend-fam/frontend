@@ -19,7 +19,7 @@ export const usePageAnalytics = () => {
 		if (currentPath !== prevPath) {
 			// Get page name from pathname
 			const pageName = getPageNameFromPath(location.pathname);
-			
+
 			// Track the page view with additional context
 			trackPage(pageName, {
 				path: location.pathname,
@@ -27,8 +27,6 @@ export const usePageAnalytics = () => {
 				hash: location.hash,
 				full_url: window.location.href,
 			});
-
-			console.log('Analytics: Page view tracked', { pageName, path: currentPath });
 
 			// Update ref
 			prevLocationRef.current = currentPath;

@@ -81,37 +81,18 @@ export class MathService {
 	 */
 	static calculateUtilizationRate(totalBorrows: bigint, cash: bigint, totalReserves: bigint): number {
 		// Standard Compound formula: totalBorrows / (cash + totalBorrows - totalReserves)
-		console.log('Frontend Utilization Rate Calculation:', {
-			totalBorrows: totalBorrows.toString(),
-			cash: cash.toString(),
-			totalReserves: totalReserves.toString(),
-			formula: 'totalBorrows / (cash + totalBorrows - totalReserves)',
-		});
-
 		if (totalBorrows === 0n) {
-			console.log('Frontend Utilization Rate: 0% (no borrows)');
 			return 0;
 		}
 
 		const denominator = cash + totalBorrows - totalReserves;
-		console.log('Frontend Utilization Rate - Denominator:', {
-			calculation: `${cash.toString()} + ${totalBorrows.toString()} - ${totalReserves.toString()}`,
-			result: denominator.toString(),
-		});
 
 		if (denominator === 0n || denominator <= 0n) {
-			console.log('Frontend Utilization Rate: 0% (invalid denominator)');
 			return 0;
 		}
 
 		const utilizationRate = Number((totalBorrows * BIGINT_CONSTANTS.PERCENTAGE_SCALE) / denominator);
 		const finalRate = Math.max(0, Math.min(100, utilizationRate));
-
-		console.log('Frontend Utilization Rate - Final Result:', {
-			rawCalculation: `(${totalBorrows.toString()} * ${BIGINT_CONSTANTS.PERCENTAGE_SCALE}) / ${denominator.toString()}`,
-			rawResult: utilizationRate,
-			finalRate: finalRate.toFixed(2) + '%',
-		});
 
 		return finalRate;
 	}

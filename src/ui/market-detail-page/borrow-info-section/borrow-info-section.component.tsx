@@ -2,7 +2,7 @@ import { type FC, useMemo, useState } from 'react';
 import type { Address } from 'viem';
 import { formatUnits } from 'viem';
 import { ProgressCircle } from '../reserve-status-section/progress-circle/progress-circle.component';
-import { EnhancedAPYChartDebug } from '../reserve-status-section/apy-chart/enhanced-apy-chart-debug.component';
+import { LazyAPYChart } from '../reserve-status-section/apy-chart/lazy-apy-chart.component';
 import { TimeRangeSelector } from '../reserve-status-section/time-range-selector/time-range-selector.component';
 import { MarketService } from '../../../services';
 import { Card } from '../../../ui-kit/components/card/card.component';
@@ -154,7 +154,7 @@ export const BorrowInfoSection: FC<BorrowInfoSectionProps> = ({
 							cTokenMarket={marketAddress.toLowerCase()}
 						/>
 					</div>
-					<EnhancedAPYChartDebug
+					<LazyAPYChart
 						cTokenMarket={marketAddress.toLowerCase()}
 						timeRange={selectedTimeRange}
 						metric="borrow"

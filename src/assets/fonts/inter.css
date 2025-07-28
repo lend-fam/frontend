@@ -1,17 +1,16 @@
-/* Inter Variable Font - Normal */
 @font-face {
   font-family: 'Inter';
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 400 700;
   font-display: swap;
   src: url('./Inter/Inter-VariableFont_opsz,wght.ttf') format('truetype-variations');
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
 }
 
-/* Inter Variable Font - Italic */
 @font-face {
   font-family: 'Inter';
   font-style: italic;
-  font-weight: 100 900;
-  font-display: swap;
+  font-weight: 400 700;
+  font-display: fallback;
   src: url('./Inter/Inter-Italic-VariableFont_opsz,wght.ttf') format('truetype-variations');
 }
