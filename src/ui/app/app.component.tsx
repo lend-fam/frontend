@@ -1,4 +1,4 @@
-import { type FC, useEffect } from 'react';
+import { type FC, useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { WagmiProvider } from 'wagmi';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -10,15 +10,43 @@ import { GlyphProvider, StrategyType, WalletClientType } from '@use-glyph/sdk-re
 import { useWalletAnalytics } from '../../hooks/use-wallet-analytics.hook';
 import { usePageAnalytics } from '../../hooks/use-page-analytics.hook';
 import { Header } from '../header/header.component';
-import { LandingPage } from '../landing-page';
-import { MarketsPage } from '../dashboard-page/markets-page/markets-page.component';
-import { MarketsOverviewPage } from '../markets-overview-page';
-import { MarketDetailPage } from '../market-detail-page';
-import { FaucetPage } from '../faucet-page/faucet-page.component';
-import { CollectionsPage } from '../collections-page';
-import { CollectionDetailPage } from '../collection-detail-page';
-import { ComingSoonPage } from '../coming-soon-page';
 import { Footer } from '../footer/footer.component';
+
+// Lazy load major page components for code splitting
+const LandingPage = lazy(() =>
+	import('../landing-page').then((module) => ({ default: module.LandingPage }))
+);
+const MarketsPage = lazy(() =>
+	import('../dashboard-page/markets-page/markets-page.component').then((module) => ({
+		default: module.MarketsPage,
+	}))
+);
+const MarketsOverviewPage = lazy(() =>
+	import('../markets-overview-page').then((module) => ({ default: module.MarketsOverviewPage }))
+);
+const MarketDetailPage = lazy(() =>
+	import('../market-detail-page').then((module) => ({ default: module.MarketDetailPage }))
+);
+const FaucetPage = lazy(() =>
+	import('../faucet-page/faucet-page.component').then((module) => ({ default: module.FaucetPage }))
+);
+const CollectionsPage = lazy(() =>
+	import('../collections-page').then((module) => ({ default: module.CollectionsPage }))
+);
+const CollectionDetailPage = lazy(() =>
+	import('../collection-detail-page').then((module) => ({ default: module.CollectionDetailPage }))
+);
+const ComingSoonPage = lazy(() =>
+	import('../coming-soon-page').then((module) => ({ default: module.ComingSoonPage }))
+);
+
+// Simple loading fallback component for Suspense
+const PageLoadingFallback: FC = () => (
+	<div className={css.loadingFallback}>
+		<div className={css.loadingSpinner} />
+	</div>
+);
+
 import { wagmiConfig } from '../../config/wagmi.config';
 import { apolloClient } from '../../config/apollo';
 import { TransactionProvider } from '../../contexts/transaction.context';
@@ -56,7 +84,8 @@ const AppContent: FC = () => {
 	return (
 		<div className={css.container}>
 			<Header />
-			<Routes>
+			<Suspense fallback={<PageLoadingFallback />}>
+				<Routes>
 				<Route path="/" element={<LandingPage />} />
 				<Route path="/dashboard" element={<MarketsPage />} />
 				<Route path="/markets" element={<MarketsOverviewPage />} />
@@ -99,6 +128,7 @@ const AppContent: FC = () => {
 				/>
 				<Route path="/faucet" element={<FaucetPage />} />
 			</Routes>
+			</Suspense>
 			<Footer />
 		</div>
 	);

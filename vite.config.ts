@@ -19,11 +19,31 @@ export default defineConfig(({ mode }) => {
 			},
 		},
 		optimizeDeps: {
-			// Include Glyph SDK in dependency pre-bundling
-			include: ['@use-glyph/sdk-react'],
+			// Include heavy dependencies in pre-bundling for faster dev server startup
+			include: [
+				'@use-glyph/sdk-react',
+				'@apollo/client',
+				'graphql',
+				'@tanstack/react-query',
+				'recharts',
+				'posthog-js',
+				'@marsidev/react-turnstile',
+				'classnames',
+			],
 		},
 		build: {
 			rollupOptions: {
+				output: {
+					manualChunks: {
+						// Vendor chunk for heavy dependencies
+						'vendor-web3': ['wagmi', 'viem', '@rainbow-me/rainbowkit', '@use-glyph/sdk-react'],
+						'vendor-apollo': ['@apollo/client', 'graphql'],
+						'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+						'vendor-query': ['@tanstack/react-query'],
+						'vendor-charts': ['recharts'],
+						'vendor-ui': ['classnames', 'posthog-js', '@marsidev/react-turnstile'],
+					},
+				},
 				onwarn(warning, warn) {
 					// Suppress PURE annotation warnings from nested viem dependencies
 					if (warning.code === 'INVALID_ANNOTATION' && warning.message?.includes('/*#__PURE__*/')) {
