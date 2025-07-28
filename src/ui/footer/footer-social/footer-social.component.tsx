@@ -16,8 +16,13 @@ export const FooterSocial: FC = () => {
 				<div className={css.text}>Feel free to slide into our DMs or send a letter</div>
 				<ul className={css.social}>
 					<Social icon={emailIcon} path="mailto:hi@lend.family" />
-					<Social icon={discordIcon} path="https://discord.gg/lendfam" />
-					<Social icon={xIcon} path="https://x.com/lend_fam" />
+					<Social
+						icon={discordIcon}
+						path="https://discord.gg/U6qB3h6mbw"
+						target="_blank"
+						rel="noopener noreferrer"
+					/>
+					<Social icon={xIcon} path="https://x.com/lend_fam" target="_blank" rel="noopener noreferrer" />
 				</ul>
 			</div>
 		</div>
@@ -27,14 +32,16 @@ export const FooterSocial: FC = () => {
 interface SocialProps {
 	icon: string;
 	path: string;
+	target?: string;
+	rel?: string;
 }
 
 const Social = memo<SocialProps>((props) => {
-	const { icon, path } = props;
+	const { icon, path, target, rel } = props;
 
 	return (
 		<li className={css.social_item}>
-			<Link href={path}>
+			<Link href={path} target={target} rel={rel}>
 				<Icon src={icon} className={iconCss.container} />
 			</Link>
 		</li>

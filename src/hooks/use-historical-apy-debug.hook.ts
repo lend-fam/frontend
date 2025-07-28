@@ -74,7 +74,7 @@ export const useHistoricalAPYDebug = ({ cTokenMarket, timeRange }: UseHistorical
 		);
 
 		return processed;
-	}, [data, cTokenMarket]);
+	}, [data]);
 
 	const mockData = useMemo(() => {
 		const baseAPY = 0.05;

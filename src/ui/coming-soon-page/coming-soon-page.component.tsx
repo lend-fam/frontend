@@ -20,12 +20,12 @@ export const ComingSoonPage: FC<ComingSoonPageProps> = () => {
 					<p className={css.followText}>Follow us for updates:</p>
 					<div className={css.socialButtons}>
 						<div className={css.socialButton}>
-							<Link href="https://discord.gg/lendfam">
+							<Link href="https://discord.gg/U6qB3h6mbw" target="_blank" rel="noopener noreferrer">
 								<Icon src={DiscordIcon} />
 							</Link>
 						</div>
 						<div className={css.socialButton}>
-							<Link href="https://x.com/lend_fam">
+							<Link href="https://x.com/lend_fam" target="_blank" rel="noopener noreferrer">
 								<Icon src={XIcon} />
 							</Link>
 						</div>

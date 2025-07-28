@@ -10,7 +10,7 @@ import xIcon from '../../../assets/svg/x.svg';
 export const SocialNetwork: FC = () => {
 	return (
 		<ul className={css.container}>
-			<Network icon={discordIcon} path="https://discord.gg/lendfam" />
+			<Network icon={discordIcon} path="https://discord.gg/U6qB3h6mbw" />
 			<Network icon={xIcon} path="https://x.com/lend_fam" />
 		</ul>
 	);

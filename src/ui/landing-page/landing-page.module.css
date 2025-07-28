@@ -491,6 +491,7 @@
 	font-weight: var(--font-text-default-bold-weight);
 	color: var(--color-text-default);
 	margin: 0 0 16px 0;
+	text-decoration: none;
 }
 
 .memberTitle {

@@ -105,7 +105,7 @@ export const useDataRange = (cTokenMarket: string) => {
 			availableRanges,
 			isRangeAvailable,
 		};
-	}, [data, cTokenMarket]);
+	}, [data]);
 
 	return {
 		dataRangeInfo,

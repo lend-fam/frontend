@@ -3,13 +3,12 @@ import { typedMemo } from '../../ui-kit/utils/typed-memo.utils';
 import { Link } from '../../ui-kit/components/link/link.component';
 
 import css from './landing-page.module.css';
-import logoTildaSvg from '../../assets/svg/logo-tilda.svg';
 import logoLargeSvg from '../../assets/svg/logo-large.svg';
 import sloganSvg from '../../assets/svg/slogan.svg';
 import heroBackgroundSvg from '../../assets/svg/hero-background.svg';
 import aboutIllustrationSvg from '../../assets/svg/about-illustration.svg';
-import discordTildaSvg from '../../assets/svg/discord-tilda.svg';
-import xTildaSvg from '../../assets/svg/x-tilda.svg';
+import discordSvg from '../../assets/svg/discord.svg';
+import xSvg from '../../assets/svg/x.svg';
 import teamDickrektardImg from '../../assets/images/team-dickrektard.png';
 import teamNnielApeImg from '../../assets/images/team-nniel_ape.png';
 import teamThunderkidImg from '../../assets/images/team-0xThunderkid.png';
@@ -37,7 +36,7 @@ export const LandingPage: FC = typedMemo(() => {
 					<div className={css.navContent}>
 						<div className={css.logoSection}>
 							<Link to="/">
-								<img src={logoTildaSvg} alt="Lend.family" className={css.navLogo} />
+								<img src={logoLargeSvg} alt="Lend.family" className={css.navLogo} />
 							</Link>
 						</div>
 						<nav className={css.navMenu}>
@@ -58,11 +57,11 @@ export const LandingPage: FC = typedMemo(() => {
 							</a>
 						</nav>
 						<div className={css.socialIcons}>
-							<a href="https://discord.gg/lendfam" target="_blank" rel="noopener noreferrer">
-								<img src={discordTildaSvg} alt="Discord" className={css.socialIcon} />
+							<a href="https://discord.gg/U6qB3h6mbw" target="_blank" rel="noopener noreferrer">
+								<img src={discordSvg} alt="Discord" className={css.socialIcon} />
 							</a>
 							<a href="https://x.com/lend_fam" target="_blank" rel="noopener noreferrer">
-								<img src={xTildaSvg} alt="X (Twitter)" className={css.socialIcon} />
+								<img src={xSvg} alt="X (Twitter)" className={css.socialIcon} />
 							</a>
 						</div>
 						<div className={css.toAppContainer}>
@@ -155,13 +154,13 @@ export const LandingPage: FC = typedMemo(() => {
 									<div className={css.roadmapItem}>
 										<div className={css.roadmapItemIcon}>○</div>
 										<div className={css.roadmapItemText}>
-											Partnership announcements with NFT collections
+											Announce partnerships with NFT collections
 										</div>
 									</div>
 									<div className={css.roadmapItem}>
 										<div className={css.roadmapItemIcon}>○</div>
 										<div className={css.roadmapItemText}>
-											Testnet rewards program for early users
+											Implement rewards program for early testnet users
 										</div>
 									</div>
 								</div>
@@ -179,18 +178,18 @@ export const LandingPage: FC = typedMemo(() => {
 									<div className={css.roadmapItem}>
 										<div className={css.roadmapItemIcon}>○</div>
 										<div className={css.roadmapItemText}>
-											Launch mainnet with full security audit
+											Launch protocol on mainnet with full security audit
 										</div>
+									</div>
+									<div className={css.roadmapItem}>
+										<div className={css.roadmapItemIcon}>○</div>
+										<div className={css.roadmapItemText}>Release Lend.family NFT collection</div>
 									</div>
 									<div className={css.roadmapItem}>
 										<div className={css.roadmapItemIcon}>○</div>
 										<div className={css.roadmapItemText}>
-											Release official protocol NFT collection
+											Enhance UX/UI for improved user experience
 										</div>
-									</div>
-									<div className={css.roadmapItem}>
-										<div className={css.roadmapItemIcon}>○</div>
-										<div className={css.roadmapItemText}>Best-in-class UI/UX for our family</div>
 									</div>
 								</div>
 							</div>
@@ -207,19 +206,19 @@ export const LandingPage: FC = typedMemo(() => {
 									<div className={css.roadmapItem}>
 										<div className={css.roadmapItemIcon}>○</div>
 										<div className={css.roadmapItemText}>
-											Advanced yield optimization strategies
+											Integrate advanced yield optimization strategies
 										</div>
 									</div>
 									<div className={css.roadmapItem}>
 										<div className={css.roadmapItemIcon}>○</div>
 										<div className={css.roadmapItemText}>
-											Advanced analytics and risk management tools
+											Roll out analytics dashboard and risk management tools
 										</div>
 									</div>
 									<div className={css.roadmapItem}>
 										<div className={css.roadmapItemIcon}>○</div>
 										<div className={css.roadmapItemText}>
-											Real-time notifications and alerts system
+											Add real-time notifications and alerts system
 										</div>
 									</div>
 								</div>
@@ -238,14 +237,26 @@ export const LandingPage: FC = typedMemo(() => {
 							<div className={css.memberImageContainer}>
 								<img src={teamDickrektardImg} alt="@dickrektard" className={css.memberImage} />
 							</div>
-							<div className={css.memberHandle}>@dickrektard</div>
+							<a
+								href="https://x.com/dickrektard"
+								target="_blank"
+								rel="noopener noreferrer"
+								className={css.memberHandle}>
+								@dickrektard
+							</a>
 							<div className={css.memberTitle}>Communications lead</div>
 						</div>
 						<div className={css.teamMemberBox}>
 							<div className={css.memberImageContainer}>
 								<img src={teamNnielApeImg} alt="@nniel_ape" className={css.memberImage} />
 							</div>
-							<div className={css.memberHandle}>@nniel_ape</div>
+							<a
+								href="https://x.com/nniel_ape"
+								target="_blank"
+								rel="noopener noreferrer"
+								className={css.memberHandle}>
+								@nniel_ape
+							</a>
 							<div className={css.memberTitle}>Founder, Technical lead</div>
 						</div>
 						<div className={css.teamMemberBox}>

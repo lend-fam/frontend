@@ -46,7 +46,7 @@ export const useHistoricalAPY = ({ cTokenMarket, timeRange, interval = 'hour' }:
 		};
 
 		return ranges[timeRange];
-	}, [timeRange, cTokenMarket]);
+	}, [timeRange]);
 
 	const { data, loading, error } = useGetHistoricalApyQuery({
 		variables: {
@@ -81,7 +81,7 @@ export const useHistoricalAPY = ({ cTokenMarket, timeRange, interval = 'hour' }:
 		}
 
 		return processedData;
-	}, [data, timeRange, cTokenMarket]);
+	}, [data, timeRange]);
 
 	return {
 		data: historicalData,

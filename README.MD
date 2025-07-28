@@ -28,23 +28,27 @@ A React + TypeScript frontend application for the lend.fam MVP platform - an NFT
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/lend-fam/frontend.git
 cd frontend
 ```
 
 2. Install dependencies:
+
 ```bash
 bun install
 ```
 
 3. Set up environment variables:
+
 ```bash
 cp .env.example .env
 # Edit .env with your configuration
 ```
 
 4. Start the development server:
+
 ```bash
 bun run dev
 ```
@@ -113,18 +117,21 @@ src/
 ### Key Features
 
 #### Web3 Integration
+
 - **Multi-chain Support**: ApeChain mainnet and testnet with Curtis RPC prioritization
 - **Wallet Management**: Seamless connection with popular Web3 wallets
 - **Contract Interactions**: Type-safe smart contract calls using Wagmi and Viem
 - **Real-time Updates**: Automatic blockchain state synchronization
 
 #### User Experience
+
 - **Transaction Flows**: Intuitive supply, borrow, withdraw, and repay interfaces
 - **Portfolio Dashboard**: Comprehensive view of user positions and metrics
 - **Market Discovery**: Browse available lending markets with real-time data
 - **Responsive Design**: Optimized for all screen sizes
 
 #### Developer Experience
+
 - **Type Safety**: Full TypeScript coverage with generated types
 - **Component Library**: Reusable UI components with theming support
 - **Development Tools**: Hot reload, linting, and formatting automation
@@ -182,4 +189,4 @@ This project is licensed under the ISC License - see the [LICENSE](LICENSE) file
 - **Website**: [lend.family](https://lend.family)
 - **Documentation**: [GitHub Wiki](https://github.com/lend-fam/frontend/wiki)
 - **Issues**: [GitHub Issues](https://github.com/lend-fam/frontend/issues)
-- **Discord**: [Join our community](https://discord.gg/lend-fam)
+- **Discord**: [Join our community](https://discord.gg/U6qB3h6mbw)

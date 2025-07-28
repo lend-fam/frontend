@@ -87,7 +87,7 @@ export const useHistoricalAPYFixed = ({ cTokenMarket, timeRange, interval = 'hou
 		}
 
 		return processedData;
-	}, [data, timeRange, cTokenMarket]);
+	}, [data, timeRange]);
 
 	return {
 		data: historicalData,
@@ -144,7 +144,7 @@ export const useLatestAPYStatsFixed = (cTokenMarket: string) => {
 		}
 
 		return processedStats;
-	}, [data, cTokenMarket]);
+	}, [data]);
 
 	return {
 		data: latestStats,
