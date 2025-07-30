@@ -114,9 +114,7 @@ const createUnifiedMarketsColumns = (
 				<div style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: '500', color: '#18171E' }}>
 					{data.supplyAPY}
 				</div>
-				{data.hasNativeYield && data.nativeYieldAPY && (
-					<NativeYieldBadge apy={data.nativeYieldAPY} />
-				)}
+				{data.hasNativeYield && data.nativeYieldAPY && <NativeYieldBadge apy={data.nativeYieldAPY} />}
 			</div>
 		),
 	},

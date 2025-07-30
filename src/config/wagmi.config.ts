@@ -85,12 +85,34 @@ const connectors = connectorsForWallets(
 
 export const wagmiConfig = createConfig({
 	chains: supportedChains,
+	// Enable multicall batching for contract reads
+	batch: {
+		multicall: {
+			batchSize: 1024, // 1KB max per batch - optimal for most RPC providers
+			wait: 16, // 16ms wait time to batch concurrent calls
+		},
+	},
 	transports: supportedChains.reduce(
 		(acc, chain) => {
 			acc[chain.id] = http(undefined, {
-				timeout: 5_000,
-				retryCount: 2,
+				// Enable Batch JSON-RPC for automatic request batching
+				batch: true,
+				// Increased timeout for batch requests
+				timeout: 10_000,
+				// Optimized retry strategy
+				retryCount: 3,
 				retryDelay: 1_000,
+				// Optional: Add monitoring callbacks for RPC optimization
+				onFetchRequest: (request) => {
+					if (import.meta.env.DEV) {
+						console.debug('RPC Request:', request.url, request.body);
+					}
+				},
+				onFetchResponse: (response) => {
+					if (import.meta.env.DEV) {
+						console.debug('RPC Response:', response.status, response.url);
+					}
+				},
 			});
 			return acc;
 		},

@@ -14,7 +14,9 @@ export function useAllMarkets() {
 		address: comptrollerAddress,
 		abi: COMPTROLLER_ABI,
 		functionName: 'getAllMarkets',
-		query: MARKET_QUERY_CONFIG.MARKET_INFO,
+		query: {
+			...MARKET_QUERY_CONFIG.MARKET_INFO,
+		},
 	});
 
 	return result;
@@ -51,7 +53,7 @@ export function useMarket(marketAddress: Address) {
 			},
 		],
 		query: {
-			staleTime: MARKET_QUERY_CONFIG.MARKET_INFO.staleTime,
+			...MARKET_QUERY_CONFIG.MARKET_INFO,
 		},
 	});
 }
@@ -88,7 +90,9 @@ export function useMarketData(marketAddress: Address) {
 				functionName: 'exchangeRateStored',
 			},
 		],
-		query: MARKET_QUERY_CONFIG.MARKET_RATES,
+		query: {
+			...MARKET_QUERY_CONFIG.MARKET_RATES,
+		},
 	});
 }
 

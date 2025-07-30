@@ -2,6 +2,7 @@ import { useReadContracts, useAccount } from 'wagmi';
 import type { Address } from 'viem';
 import { useMemo } from 'react';
 import { CTOKEN_ABI } from '../contracts/ctoken.abi';
+import { MARKET_QUERY_CONFIG } from './market-query.constants';
 
 export interface CTokenBalanceData {
 	cTokenBalance: bigint;
@@ -58,6 +59,7 @@ export function useCTokenBalances(marketAddresses: Address[]) {
 		contracts,
 		query: {
 			enabled: !!userAddress && marketAddresses.length > 0,
+			...MARKET_QUERY_CONFIG.USER_POSITIONS,
 		},
 	});
 
@@ -116,6 +118,7 @@ export function useCTokenBalancesOnly(marketAddresses: Address[]) {
 		contracts,
 		query: {
 			enabled: !!userAddress && marketAddresses.length > 0,
+			...MARKET_QUERY_CONFIG.WALLET_BALANCES,
 		},
 	});
 

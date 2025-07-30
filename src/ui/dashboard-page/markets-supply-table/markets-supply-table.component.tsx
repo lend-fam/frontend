@@ -102,9 +102,7 @@ const createSuppliedAssetsColumns = (
 				<div style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: '500', color: '#18171E' }}>
 					{data.apy}
 				</div>
-				{data.hasNativeYield && data.nativeYieldAPY && (
-					<NativeYieldBadge apy={data.nativeYieldAPY} />
-				)}
+				{data.hasNativeYield && data.nativeYieldAPY && <NativeYieldBadge apy={data.nativeYieldAPY} />}
 			</div>
 		),
 	},
@@ -217,9 +215,7 @@ const createAvailableAssetsColumns = (
 				<div style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: '500', color: '#18171E' }}>
 					{data.apy}
 				</div>
-				{data.hasNativeYield && data.nativeYieldAPY && (
-					<NativeYieldBadge apy={data.nativeYieldAPY} />
-				)}
+				{data.hasNativeYield && data.nativeYieldAPY && <NativeYieldBadge apy={data.nativeYieldAPY} />}
 			</div>
 		),
 	},
