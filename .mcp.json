@@ -7,16 +7,6 @@
         "@upstash/context7-mcp"
       ]
     },
-    "chrome-devtools": {
-      "type": "stdio",
-      "command": "python",
-      "args": [
-        "server.py"
-      ],
-      "env": {
-        "CHROME_DEBUG_PORT": "9222"
-      }
-    },
     "sequential-thinking": {
       "command": "npx",
       "args": [

@@ -187,11 +187,11 @@ const createUnifiedMarketsColumns = (
 	},
 	{
 		key: 'borrowAPY',
-		label: 'Borrow APY, variable',
+		label: 'Borrow APY',
 		align: 'right',
 		width: '16%',
 		sortable: true,
-		headCellRenderer: createSortableColumnRenderer('borrowAPY' as const, 'Borrow APY, variable') as ComponentType<
+		headCellRenderer: createSortableColumnRenderer('borrowAPY' as const, 'Borrow APY') as ComponentType<
 			TableHeadColumnRendererProps<UnifiedMarketsTableColumn>
 		>,
 	},

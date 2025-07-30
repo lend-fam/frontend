@@ -92,7 +92,7 @@ const createBorrowedAssetsColumns = (
 	},
 	{
 		key: 'actions',
-		label: 'Actions',
+		label: '',
 		align: 'right',
 		width: '30%',
 		cellRenderer: ({ data, style }: TableColumnRendererProps<MarketsBorrowTableData>) => (
@@ -154,7 +154,7 @@ const createAvailableAssetsColumns = (
 	},
 	{
 		key: 'apy',
-		label: 'APY, variable',
+		label: 'APY',
 		align: 'right',
 		width: '30%',
 		cellRenderer: ({ data, style }) => (
@@ -174,7 +174,7 @@ const createAvailableAssetsColumns = (
 	},
 	{
 		key: 'actions',
-		label: 'Actions',
+		label: '',
 		align: 'right',
 		width: '30%',
 		cellRenderer: ({ data, style }: TableColumnRendererProps<MarketsBorrowTableData>) => (

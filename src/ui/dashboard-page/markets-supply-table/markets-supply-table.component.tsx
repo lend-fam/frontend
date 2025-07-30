@@ -171,7 +171,7 @@ const createSuppliedAssetsColumns = (
 	},
 	{
 		key: 'actions',
-		label: 'Actions',
+		label: '',
 		align: 'right',
 		width: '20%',
 		cellRenderer: ({ data, style }) => (
@@ -232,8 +232,7 @@ const createAvailableAssetsColumns = (
 					{MarketService.formatTokenBalance(
 						data.walletBalance,
 						tokenMetadata?.[data.marketAddress]?.underlyingDecimals ?? 18,
-					)}{' '}
-					{data.symbol}
+					)}
 				</div>
 			</div>
 		),
@@ -326,7 +325,7 @@ const createAvailableAssetsColumns = (
 	},
 	{
 		key: 'actions',
-		label: 'Actions',
+		label: '',
 		align: 'right',
 		width: '20%',
 		cellRenderer: ({ data, style }) => (

@@ -96,7 +96,7 @@ export const YourInfoSidebar: FC<YourInfoSidebarProps> = ({
 						<span className={css.balanceLabel}>Wallet balance</span>
 					</div>
 					<div className={css.balanceValue}>
-						{availableToSupplyFormatted} {symbol}
+						{availableToSupplyFormatted}
 					</div>
 					<div className={css.balanceUsd}>{usdValues.wallet}</div>
 				</div>
