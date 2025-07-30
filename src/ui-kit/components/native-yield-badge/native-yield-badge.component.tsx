@@ -9,10 +9,12 @@ interface NativeYieldBadgeProps extends HTMLAttributes<HTMLDivElement> {
 	apy: string;
 	/** Optional theme override */
 	theme?: Partial<typeof css>;
+	/** Tooltip position */
+	tooltipPosition?: 'top' | 'bottom' | 'left' | 'right';
 }
 
 export const NativeYieldBadge = typedMemo((props: NativeYieldBadgeProps) => {
-	const { apy, theme: propsTheme, className, ...restProps } = props;
+	const { apy, theme: propsTheme, className, tooltipPosition = 'top', ...restProps } = props;
 	const theme = useTheme(css, propsTheme);
 
 	return (
@@ -23,8 +25,7 @@ export const NativeYieldBadge = typedMemo((props: NativeYieldBadgeProps) => {
 						<strong>🦍</strong>
 					</div>
 					<div className={theme.description}>
-						ApeChain&apos;s built-in yield feature that automatically earns you additional APY on your APE
-						token holdings.
+						ApeChain&apos;s automatic yield feature that passively earns you extra APY on your APE holdings.
 					</div>
 					<a
 						href="https://docs.apechain.com/apecoin-staking/native-yield/Overview"
@@ -35,7 +36,7 @@ export const NativeYieldBadge = typedMemo((props: NativeYieldBadgeProps) => {
 					</a>
 				</div>
 			}
-			position="top">
+			position={tooltipPosition}>
 			<div {...restProps} className={`${theme.badge} ${className || ''}`}>
 				{apy} 🦍
 			</div>

@@ -12,7 +12,7 @@ import { createSortableColumnRenderer } from '../../../ui-kit/components/table/s
 import { AssetsColumn } from '../../../ui-kit/components/table/columns/assets-column/assets-column.component';
 import { BalanceColumn } from '../../../ui-kit/components/table/columns/balance-column/balance-column.component';
 import { Button } from '../../../ui-kit/components/button/button.component';
-import { Tooltip } from '../../../ui-kit/components/tooltip/tooltip.component';
+import { NativeYieldBadge } from '../../../ui-kit/components/native-yield-badge/native-yield-badge.component';
 import { useAllMarkets, useMarketTotals, useUSDBalances } from '../../../hooks';
 import { useMarketsDataOptimized } from '../../../hooks/use-market-data-optimized.hook';
 import { useNativeYield } from '../../../hooks/use-native-yield.hook';
@@ -115,46 +115,7 @@ const createUnifiedMarketsColumns = (
 					{data.supplyAPY}
 				</div>
 				{data.hasNativeYield && data.nativeYieldAPY && (
-					<Tooltip
-						content={
-							<div>
-								<div style={{ marginBottom: '8px' }}>
-									<strong>🦍</strong>
-								</div>
-								<div style={{ marginBottom: '8px' }}>
-									ApeChain&apos;s built-in yield feature that automatically earns you additional APY
-									on your APE token holdings.
-								</div>
-								<a
-									href="https://docs.apechain.com/apecoin-staking/native-yield/Overview"
-									target="_blank"
-									rel="noopener noreferrer"
-									style={{ color: '#007AFF', textDecoration: 'none', fontWeight: '500' }}>
-									Learn more about Native Yield →
-								</a>
-							</div>
-						}
-						position="top">
-						<div
-							style={{
-								fontFamily: 'Inter',
-								fontSize: '11px',
-								fontWeight: '400',
-								color: '#007AFF',
-								display: 'flex',
-								alignItems: 'center',
-								gap: '4px',
-								marginTop: '2px',
-								padding: '2px 6px',
-								border: '1px solid #007AFF',
-								borderRadius: '12px',
-								width: 'fit-content',
-								cursor: 'help',
-								alignSelf: 'center',
-							}}>
-							{data.nativeYieldAPY} 🦍
-						</div>
-					</Tooltip>
+					<NativeYieldBadge apy={data.nativeYieldAPY} />
 				)}
 			</div>
 		),

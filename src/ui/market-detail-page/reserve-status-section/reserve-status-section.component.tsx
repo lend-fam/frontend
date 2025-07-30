@@ -143,7 +143,7 @@ export const ReserveStatusSection: FC<ReserveStatusSectionProps> = ({
 					<div className={css.apySection}>
 						<div className={css.apyLabel}>APY</div>
 						<div className={css.apyValue}>{parseFloat(apyData.supplyAPY) || 0}%</div>
-						{hasNativeYield && nativeYieldAPY && <NativeYieldBadge apy={nativeYieldAPY} />}
+						{hasNativeYield && nativeYieldAPY && <NativeYieldBadge apy={nativeYieldAPY} tooltipPosition="left" />}
 						<div className={css.apySubtext}>
 							Available:{' '}
 							{MarketService.formatTokenBalance(
