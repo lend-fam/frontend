@@ -18,6 +18,7 @@ import { useMarketsDataOptimized } from '../../../hooks/use-market-data-optimize
 import { useNativeYield } from '../../../hooks/use-native-yield.hook';
 import { useTokenMetadata } from '../../../hooks/use-token-metadata.hook';
 import { TokenService, MarketService } from '../../../services';
+import { useMarketsAPY } from '../../../hooks/use-market-data.hook';
 
 import css from './unified-markets-table.module.css';
 import tableCss from './theme/table.module.css';
@@ -183,6 +184,7 @@ const UnifiedMarketsTableComponent: FC = () => {
 	const { data: optimizedMarketData, isLoading: optimizedDataLoading } = useMarketsDataOptimized();
 	const { data: marketTotals, isLoading: totalsLoading } = useMarketTotals();
 	const { data: nativeYieldData } = useNativeYield();
+	const { data: legacyAPYData, isLoading: legacyAPYLoading } = useMarketsAPY();
 
 	const [sortState, setSortState] = useState<SortState<UnifiedMarketsTableColumn>>({
 		column: null,
@@ -272,7 +274,7 @@ const UnifiedMarketsTableComponent: FC = () => {
 			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
 			const symbol = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
 
-			const apyData = optimizedMarketData?.apyData?.[marketAddress];
+			const apyData = optimizedMarketData?.apyData?.[marketAddress] || legacyAPYData?.[marketAddress];
 			const supplyAPY = apyData?.supplyAPY || '0.00';
 			const borrowAPY = apyData?.borrowAPY || '0.00';
 
@@ -334,6 +336,7 @@ const UnifiedMarketsTableComponent: FC = () => {
 		borrowedUSDBalances,
 		tokenMetadata,
 		nativeYieldData,
+		legacyAPYData,
 	]);
 
 	const sortedMarketsData = useMemo(() => {
@@ -389,6 +392,7 @@ const UnifiedMarketsTableComponent: FC = () => {
 		suppliedUSDLoading ||
 		borrowedUSDLoading ||
 		tokenMetadataLoading ||
+		legacyAPYLoading ||
 		!allMarkets
 	) {
 		return (

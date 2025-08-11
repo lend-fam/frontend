@@ -24,6 +24,7 @@ import { useMarketsDataOptimized } from '../../../hooks/use-market-data-optimize
 import { useTokenMetadata, type TokenMetadata } from '../../../hooks/use-token-metadata.hook';
 import { MarketService, TokenService } from '../../../services';
 import { Checkbox } from '../../../ui-kit/components/checkbox/checkbox.component';
+import { useMarketsAPY } from '../../../hooks/use-market-data.hook';
 
 import css from './markets-supply-table.module.css';
 import tableCss from '../../../ui-kit/themes/market-table.module.css';
@@ -275,7 +276,8 @@ export const MarketsSupplyTable: FC = () => {
 	const navigate = useNavigate();
 	const { address: userAddress } = useAccount();
 	const { data: allMarkets, isLoading: marketsLoading } = useAllMarkets();
-	const { data: optimizedMarketData } = useMarketsDataOptimized();
+  const { data: optimizedMarketData, isLoading: optimizedDataLoading } = useMarketsDataOptimized();
+  const { data: legacyAPYData, isLoading: legacyAPYLoading } = useMarketsAPY();
 	const { data: userSupplyPositions } = useUserSupplyPositions(userAddress);
 	const { data: userMarkets } = useUserMarkets(userAddress);
 	const { data: nativeYieldData } = useNativeYield();
@@ -343,8 +345,8 @@ export const MarketsSupplyTable: FC = () => {
 			const marketAddress = uniqueMarkets[i];
 			const metadata = tokenMetadata?.[marketAddress];
 			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
-			const apyData = optimizedMarketData?.apyData?.[marketAddress];
-			const baseAPY = parseFloat(apyData?.supplyAPY || '0.00');
+            const apyData = optimizedMarketData?.apyData?.[marketAddress] || legacyAPYData?.[marketAddress];
+            const supplyAPYStr = apyData?.supplyAPY ?? '0.00';
 			const userPosition = userSupplyPositions?.[marketAddress];
 			const hasSupplied = userPosition?.hasSupplied || false;
 
@@ -366,10 +368,10 @@ export const MarketsSupplyTable: FC = () => {
 			const hasNativeYield = isAPEToken && nativeYieldData?.apy && parseFloat(nativeYieldData.apy) > 0;
 			const nativeYieldAPY = hasNativeYield ? `${nativeYieldData?.apy}%` : undefined;
 
-			const marketData: MarketsSupplyTableData = {
+            const marketData: MarketsSupplyTableData = {
 				assets: displayName,
 				balance: tokenAmount,
-				apy: `${baseAPY.toFixed(2)}%`,
+                apy: `${supplyAPYStr}%`,
 				collateral: isCollateralEnabled ? 'enabled' : 'disabled',
 				actions: '',
 				marketAddress,
@@ -379,7 +381,7 @@ export const MarketsSupplyTable: FC = () => {
 				isCollateralEnabled,
 				isCollateralEligible,
 				hasSupplied,
-				supplyAPY: `${baseAPY.toFixed(2)}%`,
+                supplyAPY: `${supplyAPYStr}%`,
 				walletBalance,
 				nativeYieldAPY,
 				hasNativeYield: !!hasNativeYield,
@@ -406,6 +408,7 @@ export const MarketsSupplyTable: FC = () => {
 		walletBalances,
 		tokenMetadata,
 		nativeYieldData,
+		legacyAPYData,
 	]);
 
 	const filteredAvailableMarketsData = useMemo(() => {
@@ -422,7 +425,8 @@ export const MarketsSupplyTable: FC = () => {
 	}, [suppliedMarketsData]);
 
 	// Only show skeleton on initial load, not during background refetches
-	const isInitialLoading = !allMarkets || (marketsLoading && !allMarkets);
+  const isInitialLoading =
+    !allMarkets || (marketsLoading && !allMarkets) || optimizedDataLoading || legacyAPYLoading;
 
 	if (isInitialLoading) {
 		return (

@@ -4,7 +4,8 @@ import { formatUnits } from 'viem';
 import type { Address } from 'viem';
 import { useAccountLiquidity } from './use-account-liquidity.hook';
 import { useUserSupplyPositions, useUserBorrowPositions } from './use-user-positions.hook';
-import { useMarketsAPY, useMarketsCollateralFactors } from './use-market-data.hook';
+import { useMarketsCollateralFactors } from './use-market-data.hook';
+import { useMarketsAPYOptimized } from './use-market-data-optimized.hook';
 import { useTokenPrices, PriceService } from '../services/price.service';
 import { HealthFactorService, type PositionData } from '../services/health-factor.service';
 import { useNativeYield } from './use-native-yield.hook';
@@ -42,7 +43,7 @@ export function usePortfolioMetrics(): {
 	const { data: supplyPositions, isLoading: supplyLoading } = useUserSupplyPositions(address);
 	const { data: borrowPositions, isLoading: borrowLoading } = useUserBorrowPositions(address);
 	const { data: accountLiquidity, isLoading: liquidityLoading } = useAccountLiquidity(address);
-	const { data: marketsAPY, isLoading: apyLoading } = useMarketsAPY();
+	const { data: marketsAPY, isLoading: apyLoading } = useMarketsAPYOptimized();
 	const { data: collateralFactors, isLoading: collateralLoading } = useMarketsCollateralFactors();
 	const { data: nativeYieldData, isLoading: nativeYieldLoading } = useNativeYield();
 
@@ -93,7 +94,8 @@ export function usePortfolioMetrics(): {
 				const priceUSD = parseFloat(formatUnits(oraclePrice, 18));
 				priceMap.set(marketAddress, priceUSD);
 			} else {
-				const fallbackPrice = PriceService.getFallbackPrice(marketAddress);
+				const symbol = tokenMetadata[marketAddress as Address]?.underlyingSymbol || '';
+				const fallbackPrice = PriceService.getFallbackPrice(symbol);
 				priceMap.set(marketAddress, fallbackPrice);
 			}
 		});

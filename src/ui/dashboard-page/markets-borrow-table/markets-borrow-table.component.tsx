@@ -15,6 +15,7 @@ import { useAllMarkets, useUserBorrowPositions, useUSDBalances, useAccountLiquid
 import { useMarketsDataOptimized } from '../../../hooks/use-market-data-optimized.hook';
 import { useTokenMetadata } from '../../../hooks/use-token-metadata.hook';
 import { TokenService, MarketService } from '../../../services';
+import { useMarketsAPY } from '../../../hooks/use-market-data.hook';
 
 import css from './markets-borrow-table.module.css';
 import tableCss from '../../../ui-kit/themes/market-table.module.css';
@@ -204,7 +205,8 @@ export const MarketsBorrowTable: FC = () => {
 	const navigate = useNavigate();
 	const { address: userAddress } = useAccount();
 	const { data: allMarkets, isLoading: marketsLoading } = useAllMarkets();
-	const { data: optimizedMarketData } = useMarketsDataOptimized();
+  const { data: optimizedMarketData, isLoading: optimizedDataLoading } = useMarketsDataOptimized();
+  const { data: legacyAPYData, isLoading: legacyAPYLoading } = useMarketsAPY();
 	const { data: userBorrowPositions } = useUserBorrowPositions(userAddress);
 	const { data: accountLiquidity } = useAccountLiquidity(userAddress);
 
@@ -292,8 +294,8 @@ export const MarketsBorrowTable: FC = () => {
 			const marketAddress = uniqueMarkets[i];
 			const metadata = tokenMetadata?.[marketAddress];
 			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
-			const apyData = optimizedMarketData?.apyData?.[marketAddress];
-			const baseAPY = parseFloat(apyData?.borrowAPY || '0.00');
+            const apyData = optimizedMarketData?.apyData?.[marketAddress] || legacyAPYData?.[marketAddress];
+            const borrowAPYStr = apyData?.borrowAPY ?? '0.00';
 			const userPosition = userBorrowPositions?.[marketAddress];
 			const hasBorrowed = userPosition?.hasBorrowed || false;
 
@@ -325,17 +327,17 @@ export const MarketsBorrowTable: FC = () => {
 				userBorrowCapacity = liquidity && liquidity > 0n ? liquidity : 0n;
 			}
 
-			const marketData: MarketsBorrowTableData = {
+            const marketData: MarketsBorrowTableData = {
 				assets: displayName,
 				available: availableAmount,
-				apy: `${baseAPY.toFixed(2)}%`,
+                apy: `${borrowAPYStr}%`,
 				actions: '',
 				marketAddress,
 				availableAmount,
 				usdValue,
 				symbol,
 				hasBorrowed,
-				borrowAPY: `${baseAPY.toFixed(2)}%`,
+                borrowAPY: `${borrowAPYStr}%`,
 				availableLiquidity: availableCash,
 				userBorrowCapacity,
 			};
@@ -359,6 +361,7 @@ export const MarketsBorrowTable: FC = () => {
 		accountLiquidity,
 		userAddress,
 		tokenMetadata,
+		legacyAPYData,
 	]);
 
 	const totalBorrowedUSD = useMemo(() => {
@@ -368,7 +371,8 @@ export const MarketsBorrowTable: FC = () => {
 	}, [borrowedMarketsData]);
 
 	// Only show skeleton on initial load, not during background refetches
-	const isInitialLoading = !allMarkets || (marketsLoading && !allMarkets);
+  const isInitialLoading =
+    !allMarkets || (marketsLoading && !allMarkets) || optimizedDataLoading || legacyAPYLoading;
 
 	if (isInitialLoading) {
 		return (
