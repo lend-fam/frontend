@@ -4,8 +4,8 @@ import { formatUnits } from 'viem';
 import type { Address } from 'viem';
 import { useAccountLiquidity } from './use-account-liquidity.hook';
 import { useUserSupplyPositions, useUserBorrowPositions } from './use-user-positions.hook';
-import { useMarketsCollateralFactors } from './use-market-data.hook';
-import { useMarketsAPYOptimized } from './use-market-data-optimized.hook';
+import { useMarketsCollateralFactors, useMarketsAPY } from './use-market-data.hook';
+import { useMarketsAPYOptimized, useMarketsDataOptimized } from './use-market-data-optimized.hook';
 import { useTokenPrices, PriceService } from '../services/price.service';
 import { HealthFactorService, type PositionData } from '../services/health-factor.service';
 import { useNativeYield } from './use-native-yield.hook';
@@ -44,6 +44,8 @@ export function usePortfolioMetrics(): {
 	const { data: borrowPositions, isLoading: borrowLoading } = useUserBorrowPositions(address);
 	const { data: accountLiquidity, isLoading: liquidityLoading } = useAccountLiquidity(address);
 	const { data: marketsAPY, isLoading: apyLoading } = useMarketsAPYOptimized();
+	const { data: legacyAPYData } = useMarketsAPY();
+	const { data: optimizedMarketData } = useMarketsDataOptimized();
 	const { data: collateralFactors, isLoading: collateralLoading } = useMarketsCollateralFactors();
 	const { data: nativeYieldData, isLoading: nativeYieldLoading } = useNativeYield();
 
@@ -73,7 +75,9 @@ export function usePortfolioMetrics(): {
 		tokenMetadataLoading;
 
 	const metrics = useMemo(() => {
+		// Defer calculating until all inputs have loaded to avoid transient zeros
 		if (
+			isLoading ||
 			!address ||
 			!supplyPositions ||
 			!borrowPositions ||
@@ -88,66 +92,80 @@ export function usePortfolioMetrics(): {
 
 		const priceMap = new Map<Address, number>();
 		allMarketAddresses.forEach((marketAddress, index) => {
+			const symbol = tokenMetadata[marketAddress as Address]?.underlyingSymbol || '';
+			const fallbackPrice = PriceService.getFallbackPrice(symbol);
+
 			if (priceResults[index]?.status === 'success' && priceResults[index].result) {
 				const result = priceResults[index].result;
 				const oraclePrice = typeof result === 'bigint' ? result : BigInt(String(result));
-				const priceUSD = parseFloat(formatUnits(oraclePrice, 18));
+
+				// Convert assuming 1e18 mantissa; if invalid or non-positive, use fallback
+				const parsed = parseFloat(formatUnits(oraclePrice, 18));
+				const priceUSD = isNaN(parsed) || parsed <= 0 ? fallbackPrice : parsed;
 				priceMap.set(marketAddress, priceUSD);
 			} else {
-				const symbol = tokenMetadata[marketAddress as Address]?.underlyingSymbol || '';
-				const fallbackPrice = PriceService.getFallbackPrice(symbol);
 				priceMap.set(marketAddress, fallbackPrice);
 			}
 		});
 
 		let totalSupplyValue = 0;
-		let totalBorrowValue = 0;
 		let weightedSupplyAPY = 0;
 		let weightedBorrowAPY = 0;
 
 		Object.entries(supplyPositions).forEach(([marketAddress, position]) => {
 			if (position.balance > 0n) {
-				const marketData = marketsAPY[marketAddress as Address];
+				const marketData =
+					marketsAPY[marketAddress as Address] ||
+					optimizedMarketData.apyData[marketAddress as Address] ||
+					legacyAPYData[marketAddress as Address];
 				const priceUSD = priceMap.get(marketAddress as Address) || 1;
+				const decimals = tokenMetadata[marketAddress as Address]?.underlyingDecimals ?? 18;
+				const positionValue = parseFloat(formatUnits(position.balance, decimals)) * priceUSD;
 
+				// Always include supply value in the denominator, even if APY data is missing
+				totalSupplyValue += positionValue;
+
+				// If we have APY data, accumulate weighted supply APY; otherwise treat as 0% contribution
 				if (marketData) {
-					const positionValue = parseFloat(formatUnits(position.balance, 18)) * priceUSD;
 					let apy = parseFloat(marketData.supplyAPY || '0');
-
 					if (nativeYieldData?.apy && parseFloat(nativeYieldData.apy) > 0) {
 						const metadata = tokenMetadata[marketAddress as Address];
 						const symbol = metadata?.underlyingSymbol || '';
 						const isAPEToken = symbol.toUpperCase() === 'APE';
-
 						if (isAPEToken) {
 							apy += parseFloat(nativeYieldData.apy);
 						}
 					}
-
 					weightedSupplyAPY += positionValue * apy;
-					totalSupplyValue += positionValue;
 				}
 			}
 		});
 
 		Object.entries(borrowPositions).forEach(([marketAddress, position]) => {
 			if (position.balance > 0n) {
-				const marketData = marketsAPY[marketAddress as Address];
+				const marketData =
+					marketsAPY[marketAddress as Address] ||
+					optimizedMarketData.apyData[marketAddress as Address] ||
+					legacyAPYData[marketAddress as Address];
 				const priceUSD = priceMap.get(marketAddress as Address) || 1;
+				const decimals = tokenMetadata[marketAddress as Address]?.underlyingDecimals ?? 18;
+				const positionValue = parseFloat(formatUnits(position.balance, decimals)) * priceUSD;
 
+				// If we have APY data, accumulate weighted borrow APY; otherwise treat as 0% contribution
 				if (marketData) {
-					const positionValue = parseFloat(formatUnits(position.balance, 18)) * priceUSD;
 					const apy = parseFloat(marketData.borrowAPY || '0');
-
 					weightedBorrowAPY += positionValue * apy;
-					totalBorrowValue += positionValue;
 				}
 			}
 		});
 
-		const avgSupplyAPY = totalSupplyValue > 0 ? weightedSupplyAPY / totalSupplyValue : 0;
-		const avgBorrowAPY = totalBorrowValue > 0 ? weightedBorrowAPY / totalBorrowValue : 0;
-		const netAPY = avgSupplyAPY - avgBorrowAPY;
+		// Portfolio net APY should reflect earnings minus costs.
+		// Prefer computing on equity (supplied - borrowed) when equity is positive; fall back to supply-normalized.
+		// Proper equity based on USD values (kept for potential future use)
+		// Removed usage to avoid confusion; net APY now uses total exposure weighting
+
+		// Deposit-based Net APY (Aave-style): normalize by supplied capital only
+		const netAPY = totalSupplyValue > 0 ? (weightedSupplyAPY - weightedBorrowAPY) / totalSupplyValue : 0;
 
 		const positions: PositionData[] = [];
 
@@ -246,11 +264,14 @@ export function usePortfolioMetrics(): {
 		borrowPositions,
 		accountLiquidity,
 		marketsAPY,
+		optimizedMarketData,
+		legacyAPYData,
 		collateralFactors,
 		priceResults,
 		allMarketAddresses,
 		nativeYieldData,
 		tokenMetadata,
+		isLoading,
 	]);
 
 	return {
