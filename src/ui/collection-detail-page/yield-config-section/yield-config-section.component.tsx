@@ -1,30 +1,30 @@
-import { type FC, useState } from 'react';
+import { type FC, useState, useMemo } from 'react';
 import { Card } from '../../../ui-kit/components/card/card.component';
 import { SectionHeader } from '../../../ui-kit/components/section-header/section-header.component';
 import { Badge } from '../../../ui-kit/components/badge/badge.component';
 import { typedMemo } from '../../../ui-kit/utils/typed-memo.utils';
-import type { CollectionData } from '../collection-detail-page.component';
+import { CollectionService } from '../../../services/collection.service';
+import type { CollectionDetailData } from '../collection-detail-page.component';
 
 import css from './yield-config-section.module.css';
 
 interface YieldConfigSectionProps {
-	collectionData: CollectionData;
+	collectionData: CollectionDetailData;
 }
 
 const YieldConfigSectionComponent: FC<YieldConfigSectionProps> = ({ collectionData }) => {
-	const { yieldSharePercentage, weightFunction } = collectionData;
+	const { yieldSharePercentage, weightFunctionParameters } = collectionData;
 	const [nftCount, setNftCount] = useState(1);
 
-	// Calculate weight based on current NFT count
-	const calculateWeight = (count: number) => {
-		if (weightFunction.fnType === 'LINEAR') {
-			return weightFunction.p1 * count + weightFunction.p2;
-		} else {
-			return weightFunction.p1 * Math.pow(count, weightFunction.p2);
-		}
-	};
-
-	const currentWeight = calculateWeight(nftCount);
+	// Calculate weight example using the CollectionService for consistency
+	const weightExample = useMemo(() => {
+		return CollectionService.calculateWeightFunctionExample(
+			weightFunctionParameters.fnType,
+			weightFunctionParameters.p1,
+			weightFunctionParameters.p2,
+			nftCount,
+		);
+	}, [weightFunctionParameters.fnType, weightFunctionParameters.p1, weightFunctionParameters.p2, nftCount]);
 
 	return (
 		<Card>
@@ -48,16 +48,18 @@ const YieldConfigSectionComponent: FC<YieldConfigSectionProps> = ({ collectionDa
 						<h3 className={css.sectionTitle}>Weight Function</h3>
 						<div className={css.weightFunctionContainer}>
 							<Badge variant="info" size="medium">
-								{weightFunction.fnType}
+								{weightFunctionParameters.fnType}
 							</Badge>
 							<div className={css.weightFunctionFormula}>
-								{weightFunction.fnType === 'LINEAR' ? (
+								{weightFunctionParameters.fnType === 'LINEAR' ? (
 									<code>
-										f(x) = {weightFunction.p1} × x + {weightFunction.p2}
+										weight = {weightFunctionParameters.p1} + ({weightFunctionParameters.p2} ×
+										nftBalance) / borrowBalance
 									</code>
 								) : (
 									<code>
-										f(x) = {weightFunction.p1} × x^{weightFunction.p2}
+										weight = ({weightFunctionParameters.p1} × {weightFunctionParameters.p2}
+										^nftBalance × borrowBalance) / EXP_SCALE²
 									</code>
 								)}
 							</div>
@@ -74,20 +76,20 @@ const YieldConfigSectionComponent: FC<YieldConfigSectionProps> = ({ collectionDa
 					<div className={css.parametersGrid}>
 						<div className={css.parameterItem}>
 							<div className={css.parameterLabel}>Parameter 1 (p1)</div>
-							<div className={css.parameterValue}>{weightFunction.p1}</div>
+							<div className={css.parameterValue}>{weightFunctionParameters.p1}</div>
 							<div className={css.parameterDescription}>
-								{weightFunction.fnType === 'LINEAR'
-									? 'Linear slope coefficient'
-									: 'Exponential base multiplier'}
+								{weightFunctionParameters.fnType === 'LINEAR'
+									? 'Base weight constant (intercept)'
+									: 'Weight multiplier coefficient'}
 							</div>
 						</div>
 						<div className={css.parameterItem}>
 							<div className={css.parameterLabel}>Parameter 2 (p2)</div>
-							<div className={css.parameterValue}>{weightFunction.p2}</div>
+							<div className={css.parameterValue}>{weightFunctionParameters.p2}</div>
 							<div className={css.parameterDescription}>
-								{weightFunction.fnType === 'LINEAR'
-									? 'Linear y-intercept value'
-									: 'Exponential power value'}
+								{weightFunctionParameters.fnType === 'LINEAR'
+									? 'NFT balance coefficient'
+									: 'Exponential base for NFT count'}
 							</div>
 						</div>
 					</div>
@@ -103,26 +105,21 @@ const YieldConfigSectionComponent: FC<YieldConfigSectionProps> = ({ collectionDa
 							<input
 								type="range"
 								min="1"
-								max="100"
+								max="50"
 								value={nftCount}
 								onChange={(e) => setNftCount(parseInt(e.target.value))}
 								className={css.slider}
 							/>
 							<div className={css.sliderRange}>
 								<span>1</span>
-								<span>100</span>
+								<span>50</span>
 							</div>
 						</div>
 						<div className={css.exampleInput}>
-							Input value: <code>x = {nftCount}</code>
+							Input value: <code>{weightExample.input}</code>
 						</div>
 						<div className={css.exampleOutput}>
-							Weight Multiplier:{' '}
-							<code>
-								{weightFunction.fnType === 'LINEAR'
-									? `${weightFunction.p1} × ${nftCount} + ${weightFunction.p2} = ${currentWeight.toFixed(2)}`
-									: `${weightFunction.p1} × ${nftCount}^${weightFunction.p2} = ${currentWeight.toFixed(2)}`}
-							</code>
+							Weight Multiplier: <code>{weightExample.multiplier}</code>
 						</div>
 					</div>
 				</div>

@@ -4,12 +4,12 @@ import { SectionHeader } from '../../../ui-kit/components/section-header/section
 import { Button } from '../../../ui-kit/components/button/button.component';
 import { Badge } from '../../../ui-kit/components/badge/badge.component';
 import { typedMemo } from '../../../ui-kit/utils/typed-memo.utils';
-import type { CollectionData } from '../collection-detail-page.component';
+import type { CollectionDetailData } from '../collection-detail-page.component';
 
 import css from './management-section.module.css';
 
 interface ManagementSectionProps {
-	collectionData: CollectionData;
+	collectionData: CollectionDetailData;
 }
 
 const ManagementSectionComponent: FC<ManagementSectionProps> = ({ collectionData }) => {
@@ -74,7 +74,7 @@ const ManagementSectionComponent: FC<ManagementSectionProps> = ({ collectionData
 							onClick={handleEditWeightFunction}>
 							Edit Weight Function
 						</Button>
-						<div className={css.actionDescription}>Current: {weightFunction.fnType}</div>
+						<div className={css.actionDescription}>Current: {weightFunction?.type || 'N/A'}</div>
 					</div>
 
 					<div className={css.actionGroup}>

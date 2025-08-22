@@ -176,24 +176,66 @@ export class CollectionService {
 
 	/**
 	 * Parse weight function parameters into human-readable format
+	 * Based on protocol formulas:
+	 * - Linear: weight = p1 + (p2 × nftBalance) / borrowBalance
+	 * - Exponential: weight = (p1 × p2^nftBalance × borrowBalance) / EXP_SCALE^2
 	 */
 	static parseWeightFunctionParameters(
 		fnType: 'LINEAR' | 'EXPONENTIAL',
 		p1: bigint,
 		p2: bigint,
-	): { description: string; formula: string } {
+	): { description: string; formula: string; displayFormula: string } {
 		const p1Num = Number(p1);
 		const p2Num = Number(p2);
 
 		if (fnType === 'LINEAR') {
 			return {
-				description: `Linear function with slope ${p1Num} and intercept ${p2Num}`,
-				formula: `weight = ${p1Num} * nftCount + ${p2Num}`,
+				description: `Linear weight function where NFT count and borrow balance affect subsidy weight`,
+				formula: `weight = p1 + (p2 × nftBalance) / borrowBalance`,
+				displayFormula: `weight = ${p1Num} + (${p2Num} × nftBalance) / borrowBalance`,
 			};
 		} else {
 			return {
-				description: `Exponential function with base ${p1Num} and exponent factor ${p2Num}`,
-				formula: `weight = ${p1Num} ^ (nftCount * ${p2Num})`,
+				description: `Exponential weight function with compound growth based on NFT holdings`,
+				formula: `weight = (p1 × p2^nftBalance × borrowBalance) / EXP_SCALE^2`,
+				displayFormula: `weight = (${p1Num} × ${p2Num}^nftBalance × borrowBalance) / EXP_SCALE^2`,
+			};
+		}
+	}
+
+	/**
+	 * Calculate weight function example with specific NFT count
+	 * Based on protocol formulas:
+	 * - Linear: weight = p1 + (p2 × nftBalance) / borrowBalance
+	 * - Exponential: weight = (p1 × p2^nftBalance × borrowBalance) / EXP_SCALE^2
+	 */
+	static calculateWeightFunctionExample(
+		fnType: 'LINEAR' | 'EXPONENTIAL',
+		p1: number,
+		p2: number,
+		nftCount: number,
+		borrowBalance: number = 1000, // Example borrow balance for calculation
+	): { input: string; result: number; multiplier: string } {
+		const EXP_SCALE = 1e18; // Standard exponential scaling factor
+
+		if (fnType === 'LINEAR') {
+			// Linear: weight = p1 + (p2 × nftBalance) / borrowBalance
+			const result = p1 + (p2 * nftCount) / borrowBalance;
+			return {
+				input: `NFTs = ${nftCount}, Borrow = ${borrowBalance}`,
+				result,
+				multiplier: `${p1} + (${p2} × ${nftCount}) / ${borrowBalance} = ${result.toFixed(4)}`,
+			};
+		} else {
+			// Exponential: weight = (p1 × p2^nftBalance × borrowBalance) / EXP_SCALE^2
+			// Note: This might result in very large numbers, so we use a simplified version for display
+			const power = Math.pow(p2, nftCount);
+			const numerator = p1 * power * borrowBalance;
+			const result = numerator / (EXP_SCALE * EXP_SCALE);
+			return {
+				input: `NFTs = ${nftCount}, Borrow = ${borrowBalance}`,
+				result,
+				multiplier: `(${p1} × ${p2}^${nftCount} × ${borrowBalance}) / (10^18)^2 = ${result.toExponential(2)}`,
 			};
 		}
 	}

@@ -11,69 +11,40 @@ import { ManagementModal } from './management-modal/management-modal.component';
 import { LoadingState } from '../../ui-kit/components/loading-state/loading-state.component';
 import { EmptyState } from '../../ui-kit/components/empty-state/empty-state.component';
 import { typedMemo } from '../../ui-kit/utils/typed-memo.utils';
+import { useCollectionDetailData } from '../../hooks/use-collection-detail-data.hook';
+import type { CollectionData as BaseCollectionData } from '../../hooks/use-collections-page-data.hook';
 
 import css from './collection-detail-page.module.css';
 
-// Mock data structure based on ICollectionRegistry interface
-interface CollectionData {
-	collectionAddress: Address;
-	collectionName: string;
-	collectionType: 'ERC721' | 'ERC1155';
-	yieldSharePercentage: number;
-	weightFunction: {
-		fnType: 'LINEAR' | 'EXPONENTIAL';
-		p1: number;
-		p2: number;
-	};
-	vaults: Address[];
-	status: 'Active' | 'Inactive';
+// Extended collection data interface for detail page
+export interface CollectionDetailData extends BaseCollectionData {
+	// Existing fields from BaseCollectionData:
+	// collectionAddress, collectionName, collectionType, yieldSharePercentage,
+	// userOwnership, nftMultiplier, weightFunction, vaultCount, totalVaults, status, actions
+
+	// Additional fields for detail view
+	vaults: VaultInfo[];
 	totalValueLocked: string;
 	totalYieldGenerated: string;
 	createdAt: string;
+	weightFunctionParameters: {
+		fnType: 'LINEAR' | 'EXPONENTIAL';
+		p1: number;
+		p2: number;
+		formula: string;
+		description: string;
+	};
 }
 
-// Mock data - replace with actual contract calls
-const mockCollectionData: Record<string, CollectionData> = {
-	'0x1234567890123456789012345678901234567890': {
-		collectionAddress: '0x1234567890123456789012345678901234567890' as Address,
-		collectionName: 'Bored Ape Yacht Club',
-		collectionType: 'ERC721',
-		yieldSharePercentage: 25,
-		weightFunction: {
-			fnType: 'LINEAR',
-			p1: 100,
-			p2: 0,
-		},
-		vaults: [
-			'0xVault1234567890123456789012345678901234567890' as Address,
-			'0xVault2345678901234567890123456789012345678901' as Address,
-			'0xVault3456789012345678901234567890123456789012' as Address,
-		],
-		status: 'Active',
-		totalValueLocked: '1,250,000',
-		totalYieldGenerated: '45,320',
-		createdAt: '2024-01-15',
-	},
-	'0x2345678901234567890123456789012345678901': {
-		collectionAddress: '0x2345678901234567890123456789012345678901' as Address,
-		collectionName: 'Mutant Ape Yacht Club',
-		collectionType: 'ERC721',
-		yieldSharePercentage: 20,
-		weightFunction: {
-			fnType: 'EXPONENTIAL',
-			p1: 50,
-			p2: 2,
-		},
-		vaults: [
-			'0xVault4567890123456789012345678901234567890123' as Address,
-			'0xVault5678901234567890123456789012345678901234' as Address,
-		],
-		status: 'Active',
-		totalValueLocked: '850,000',
-		totalYieldGenerated: '32,150',
-		createdAt: '2024-02-10',
-	},
-};
+// Individual vault information for the detail view
+export interface VaultInfo {
+	address: Address;
+	name: string;
+	totalAssets: string;
+	status: 'Active' | 'Inactive';
+	userBalance?: string;
+	userShares?: string;
+}
 
 const CollectionDetailPageComponent: FC = () => {
 	const { collectionAddress } = useParams<{ collectionAddress: string }>();
@@ -82,19 +53,23 @@ const CollectionDetailPageComponent: FC = () => {
 
 	const selectedVault = searchParams.get('vault') as Address | null;
 
+	// Fetch collection detail data using the new hook
+	const {
+		collectionData,
+		loading: isLoading,
+		error,
+		isEmpty,
+	} = useCollectionDetailData(collectionAddress as Address);
+
 	if (!collectionAddress) {
 		return (
 			<Layout>
 				<div className={css.container}>
-					<EmptyState message="Collection not found" />
+					<EmptyState message="Collection address is required" />
 				</div>
 			</Layout>
 		);
 	}
-
-	// TODO: Replace with actual contract data loading
-	const isLoading = false;
-	const collectionData = mockCollectionData[collectionAddress];
 
 	if (isLoading) {
 		return (
@@ -106,7 +81,18 @@ const CollectionDetailPageComponent: FC = () => {
 		);
 	}
 
-	if (!collectionData) {
+	if (error) {
+		return (
+			<Layout>
+				<div className={css.container}>
+					<EmptyState message="Failed to load collection data. Please check your connection and try again." />
+					{/* TODO: Add retry button */}
+				</div>
+			</Layout>
+		);
+	}
+
+	if (isEmpty || !collectionData) {
 		return (
 			<Layout>
 				<div className={css.container}>
@@ -149,4 +135,3 @@ const CollectionDetailPageComponent: FC = () => {
 };
 
 export const CollectionDetailPage = typedMemo(CollectionDetailPageComponent);
-export type { CollectionData };

@@ -2,12 +2,12 @@ import { type FC, useCallback } from 'react';
 import { Badge } from '../../../ui-kit/components/badge/badge.component';
 import { typedMemo } from '../../../ui-kit/utils/typed-memo.utils';
 import { useClipboard } from '../../../hooks/use-clipboard.hook';
-import type { CollectionData } from '../collection-detail-page.component';
+import type { CollectionDetailData } from '../collection-detail-page.component';
 
 import css from './collection-header.module.css';
 
 interface CollectionHeaderProps {
-	collectionData: CollectionData;
+	collectionData: CollectionDetailData;
 	onManageClick?: () => void;
 }
 
@@ -88,7 +88,7 @@ const CollectionHeaderComponent: FC<CollectionHeaderProps> = ({ collectionData, 
 				</div>
 				<div className={css.metric}>
 					<span className={css.metricLabel}>Active Vaults</span>
-					<span className={css.metricValue}>{collectionData.vaults.length}</span>
+					<span className={css.metricValue}>{collectionData.vaultCount}</span>
 				</div>
 				<div className={css.metric}>
 					<span className={css.metricLabel}>Created</span>

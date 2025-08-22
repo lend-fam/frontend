@@ -4,12 +4,12 @@ import { SectionHeader } from '../../../ui-kit/components/section-header/section
 import { GrayBox } from '../../../ui-kit/components/gray-box/gray-box.component';
 import { InlineCode } from '../../../ui-kit/components/inline-code/inline-code.component';
 import { typedMemo } from '../../../ui-kit/utils/typed-memo.utils';
-import type { CollectionData } from '../collection-detail-page.component';
+import type { CollectionDetailData } from '../collection-detail-page.component';
 
 import css from './collection-metrics-section.module.css';
 
 interface CollectionMetricsSectionProps {
-	collectionData: CollectionData;
+	collectionData: CollectionDetailData;
 }
 
 const CollectionMetricsSectionComponent: FC<CollectionMetricsSectionProps> = ({ collectionData }) => {
@@ -29,7 +29,7 @@ const CollectionMetricsSectionComponent: FC<CollectionMetricsSectionProps> = ({ 
 
 					<div className={css.metricItem}>
 						<div className={css.metricLabel}>Weight Function</div>
-						<GrayBox className={css.metricValue}>{weightFunction.fnType}</GrayBox>
+						<GrayBox className={css.metricValue}>{weightFunction?.type || 'LINEAR'}</GrayBox>
 						<div className={css.metricDescription}>
 							Function determining how NFT count correlates with user subsidies
 						</div>
@@ -38,16 +38,17 @@ const CollectionMetricsSectionComponent: FC<CollectionMetricsSectionProps> = ({ 
 					<div className={css.metricItem}>
 						<div className={css.metricLabel}>Function Parameters</div>
 						<GrayBox className={css.metricValue}>
-							p1: {weightFunction.p1}, p2: {weightFunction.p2}
+							p1: {collectionData.weightFunctionParameters.p1}, p2:{' '}
+							{collectionData.weightFunctionParameters.p2}
 						</GrayBox>
 						<div className={css.metricDescription}>
-							Mathematical parameters controlling function behavior
+							{collectionData.weightFunctionParameters.description}
 						</div>
 					</div>
 
 					<div className={css.metricItem}>
 						<div className={css.metricLabel}>Vault Count</div>
-						<GrayBox className={css.metricValue}>{collectionData.vaults.length}</GrayBox>
+						<GrayBox className={css.metricValue}>{collectionData.vaultCount}</GrayBox>
 						<div className={css.metricDescription}>Total number of active vaults in this collection</div>
 					</div>
 				</div>
@@ -55,15 +56,9 @@ const CollectionMetricsSectionComponent: FC<CollectionMetricsSectionProps> = ({ 
 				<div className={css.formulaSection}>
 					<SectionHeader title="Weight Function Formula" variant="subsection" />
 					<GrayBox className={css.formulaContainer}>
-						{weightFunction.fnType === 'LINEAR' ? (
-							<div className={css.formula}>
-								<code>weight = p1 * x + p2</code>
-							</div>
-						) : (
-							<div className={css.formula}>
-								<code>weight = p1 * x^p2</code>
-							</div>
-						)}
+						<div className={css.formula}>
+							<code>{collectionData.weightFunctionParameters.formula}</code>
+						</div>
 					</GrayBox>
 					<div className={css.formulaDescription}>
 						Where <InlineCode>x</InlineCode> is the user&apos;s NFT count and <InlineCode>p1</InlineCode>,{' '}

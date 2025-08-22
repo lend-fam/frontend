@@ -172,7 +172,7 @@ export const useCollectionsPageData = () => {
 				let vaultCount = 0;
 				for (let vaultIndex = 0; vaultIndex < numVaults; vaultIndex++) {
 					const resultIndex = collectionIndex * numVaults + vaultIndex;
-					const result = vaultResults[resultIndex];
+					const result = vaultResults[resultIndex] as { result?: bigint; status?: string };
 					if (result?.result && result.result > 0n) {
 						vaultCount++;
 					}

@@ -5,13 +5,12 @@
 	min-height: 100vh;
 }
 
-
 .content {
 	display: grid;
 	grid-template-columns: 1fr 320px;
 	gap: 24px;
-	align-items: start;
 	margin-top: 24px;
+	align-items: start;
 }
 
 .mainContent {
@@ -19,7 +18,7 @@
 	flex-direction: column;
 	gap: 24px;
 	padding-left: 42px;
-	min-height: 1200px;
+	min-height: 1200px; /* Ensure enough space for all sections */
 }
 
 .sidebar {
@@ -55,7 +54,6 @@
 	.container {
 		padding: 16px;
 	}
-	
 	
 	.sidebar {
 		position: static;
