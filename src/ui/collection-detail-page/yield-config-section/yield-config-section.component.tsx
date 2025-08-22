@@ -7,6 +7,8 @@ import { CollectionService } from '../../../services/collection.service';
 import type { CollectionDetailData } from '../collection-detail-page.component';
 
 import css from './yield-config-section.module.css';
+import SignLinearIcon from '../../../assets/svg/Sign_linear.svg?url';
+import SignExponentialIcon from '../../../assets/svg/Sign_exponential.svg?url';
 
 interface YieldConfigSectionProps {
 	collectionData: CollectionDetailData;
@@ -47,21 +49,28 @@ const YieldConfigSectionComponent: FC<YieldConfigSectionProps> = ({ collectionDa
 					<div className={css.configSection}>
 						<h3 className={css.sectionTitle}>Weight Function</h3>
 						<div className={css.weightFunctionContainer}>
-							<Badge variant="info" size="medium">
-								{weightFunctionParameters.fnType}
-							</Badge>
+							<div className={css.weightFunctionHeader}>
+								<Badge variant="info" size="medium">
+									{weightFunctionParameters.fnType}
+								</Badge>
+								<img
+									src={
+										weightFunctionParameters.fnType === 'EXPONENTIAL'
+											? SignExponentialIcon
+											: SignLinearIcon
+									}
+									alt={`${weightFunctionParameters.fnType === 'EXPONENTIAL' ? 'Exponential' : 'Linear'} weight function`}
+									className={css.weightFunctionIcon}
+								/>
+							</div>
 							<div className={css.weightFunctionFormula}>
-								{weightFunctionParameters.fnType === 'LINEAR' ? (
-									<code>
-										weight = {weightFunctionParameters.p1} + ({weightFunctionParameters.p2} ×
-										nftBalance) / borrowBalance
-									</code>
-								) : (
-									<code>
-										weight = ({weightFunctionParameters.p1} × {weightFunctionParameters.p2}
-										^nftBalance × borrowBalance) / EXP_SCALE²
-									</code>
-								)}
+								<code>
+									{CollectionService.formatDisplayFormula(
+										weightFunctionParameters.fnType,
+										weightFunctionParameters.p1,
+										weightFunctionParameters.p2,
+									)}
+								</code>
 							</div>
 						</div>
 						<div className={css.weightFunctionDescription}>

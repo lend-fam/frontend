@@ -241,6 +241,21 @@ export class CollectionService {
 	}
 
 	/**
+	 * Format display formula for UI components to match design specifications
+	 * Returns formula in f(x) = p1 × x + p2 format for linear functions
+	 * Returns formula in f(x) = (p1 × p2^x × x) / EXP_SCALE^2 format for exponential functions
+	 */
+	static formatDisplayFormula(fnType: 'LINEAR' | 'EXPONENTIAL', p1: number, p2: number): string {
+		if (fnType === 'LINEAR') {
+			// Format as f(x) = p1 × x + p2 (matching design specification)
+			return `f(x) = ${p1} × x + ${p2}`;
+		} else {
+			// Format as f(x) = (p1 × p2^x × x) / EXP_SCALE^2 (simplified for display)
+			return `f(x) = (${p1} × ${p2}^x × x) / EXP_SCALE²`;
+		}
+	}
+
+	/**
 	 * Validate collection address format
 	 */
 	static validateCollectionAddress(address: string): boolean {

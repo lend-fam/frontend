@@ -231,10 +231,7 @@ export const useCollectionDetailData = (collectionAddress: Address) => {
 	}, [collectionRegistryData]);
 
 	// Get vault names from registry
-	const {
-		data: vaultNamesData,
-		isLoading: vaultNamesLoading,
-	} = useVaultNames(vaultAddresses);
+	const { data: vaultNamesData, isLoading: vaultNamesLoading } = useVaultNames(vaultAddresses);
 
 	// Extract underlying asset addresses from vault registry data for asset name lookup
 	const assetAddresses = useMemo(() => {
@@ -260,22 +257,17 @@ export const useCollectionDetailData = (collectionAddress: Address) => {
 	}, [vaultNamesData]);
 
 	// Get asset names for better vault naming
-	const {
-		data: assetNamesData,
-		isLoading: assetNamesLoading,
-	} = useAssetNames(assetAddresses);
+	const { data: assetNamesData, isLoading: assetNamesLoading } = useAssetNames(assetAddresses);
 
 	// Get vault data for this collection
-	const {
-		data: vaultData,
-		isLoading: vaultDataLoading,
-	} = useCollectionVaults(collectionId, vaultAddresses, userAddress);
+	const { data: vaultData, isLoading: vaultDataLoading } = useCollectionVaults(
+		collectionId,
+		vaultAddresses,
+		userAddress,
+	);
 
 	// Get debt subsidizer data for yield metrics
-	const {
-		data: debtSubsidizerData,
-		isLoading: debtSubsidizerLoading,
-	} = useDebtSubsidizerData(vaultAddresses);
+	const { data: debtSubsidizerData, isLoading: debtSubsidizerLoading } = useDebtSubsidizerData(vaultAddresses);
 
 	// Transform vault data into VaultInfo objects
 	const vaults = useMemo((): VaultInfo[] => {
