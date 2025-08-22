@@ -1,9 +1,16 @@
 import { useMemo } from 'react';
 import type { Address } from 'viem';
 import { useReadContracts, useChainId } from 'wagmi';
-import { useCollectionsTransformed, type CollectionData as GraphQLCollectionData } from './use-collections-graphql.hook';
+import {
+	useCollectionsTransformed,
+	type CollectionData as GraphQLCollectionData,
+} from './use-collections-graphql.hook';
 import { useAllActiveCollectionsWithDetails } from './use-collections-registry.hook';
-import { useUserCollectionsData, calculateNFTMultiplier, getUserOwnershipStatus } from './use-user-collections-data.hook';
+import {
+	useUserCollectionsData,
+	calculateNFTMultiplier,
+	getUserOwnershipStatus,
+} from './use-user-collections-data.hook';
 import { VAULT_REGISTRY_ABI, getVaultRegistryAddress, COLLECTIONS_VAULT_ABI } from '../contracts';
 
 // Type definition matching the existing CollectionsPage component expectations
@@ -37,7 +44,7 @@ const useAllSupportedVaults = () => {
 				address: contractAddress,
 				abi: VAULT_REGISTRY_ABI,
 				functionName: 'getAllSupportedVaults',
-			} as const
+			} as const,
 		],
 		query: {
 			enabled: contractAddress !== '0x0000000000000000000000000000000000000000',
@@ -49,13 +56,16 @@ const useAllSupportedVaults = () => {
 // Hook to get vault counts for collections across all supported vaults
 const useCollectionMultiVaultCounts = (collectionIds: bigint[], vaultAddresses: Address[]) => {
 	return useReadContracts({
-		contracts: collectionIds.flatMap(collectionId =>
-			vaultAddresses.map(vaultAddress => ({
-				address: vaultAddress,
-				abi: COLLECTIONS_VAULT_ABI,
-				functionName: 'totalAssets',
-				args: [collectionId],
-			} as const))
+		contracts: collectionIds.flatMap((collectionId) =>
+			vaultAddresses.map(
+				(vaultAddress) =>
+					({
+						address: vaultAddress,
+						abi: COLLECTIONS_VAULT_ABI,
+						functionName: 'totalAssets',
+						args: [collectionId],
+					}) as const,
+			),
 		),
 		query: {
 			enabled: collectionIds.length > 0 && vaultAddresses.length > 0,
@@ -66,13 +76,12 @@ const useCollectionMultiVaultCounts = (collectionIds: bigint[], vaultAddresses: 
 
 // Master hook that combines all data sources for the collections page
 export const useCollectionsPageData = () => {
-	
 	// Fetch GraphQL data (static collection metadata)
-	const { 
-		collections: graphqlCollections, 
-		loading: graphqlLoading, 
+	const {
+		collections: graphqlCollections,
+		loading: graphqlLoading,
 		error: graphqlError,
-		refetch: graphqlRefetch
+		refetch: graphqlRefetch,
 	} = useCollectionsTransformed();
 
 	// Fetch on-chain registry data (active collections with details)
@@ -80,23 +89,20 @@ export const useCollectionsPageData = () => {
 		collectionsWithDetails: registryCollections,
 		loading: registryLoading,
 		error: registryError,
-		refetch: registryRefetch
+		refetch: registryRefetch,
 	} = useAllActiveCollectionsWithDetails();
 
 	// Prepare data for user-specific queries
 	const collectionIds = useMemo(() => {
-		return registryCollections?.map(c => c.id) || [];
+		return registryCollections?.map((c) => c.id) || [];
 	}, [registryCollections]);
 
 	const collectionAddresses = useMemo(() => {
-		return registryCollections?.map(c => c.details.originalAddress) || [];
+		return registryCollections?.map((c) => c.details.originalAddress) || [];
 	}, [registryCollections]);
 
 	// Fetch all supported vault addresses from Vault Registry
-	const { 
-		data: vaultAddressesData,
-		error: vaultAddressesError
-	} = useAllSupportedVaults();
+	const { data: vaultAddressesData, error: vaultAddressesError } = useAllSupportedVaults();
 
 	// Extract vault addresses from the result
 	const vaultAddresses = useMemo(() => {
@@ -105,17 +111,17 @@ export const useCollectionsPageData = () => {
 	}, [vaultAddressesData]);
 
 	// Fetch vault counts for all collections across all vaults
-	const { 
-		data: multiVaultData,
-		error: multiVaultError
-	} = useCollectionMultiVaultCounts(collectionIds, vaultAddresses);
+	const { data: multiVaultData, error: multiVaultError } = useCollectionMultiVaultCounts(
+		collectionIds,
+		vaultAddresses,
+	);
 
 	// Fetch user-specific data (balances, ownership, etc.)
 	const {
 		userCollectionsData,
 		loading: userDataLoading,
 		error: userDataError,
-		refetch: userDataRefetch
+		refetch: userDataRefetch,
 	} = useUserCollectionsData(collectionIds, collectionAddresses);
 
 	// Combine and transform all data sources
@@ -126,44 +132,43 @@ export const useCollectionsPageData = () => {
 
 		return registryCollections.map((registryCollection, collectionIndex) => {
 			const { id, details } = registryCollection;
-			
+
 			// Find corresponding GraphQL data by contract address
 			const graphqlData = graphqlCollections?.find(
-				(gc: GraphQLCollectionData) => gc.contractAddress.toLowerCase() === details.originalAddress.toLowerCase()
+				(gc: GraphQLCollectionData) =>
+					gc.contractAddress.toLowerCase() === details.originalAddress.toLowerCase(),
 			);
 
 			// Find corresponding user data
-			const userData = userCollectionsData.find(
-				ud => ud.collectionId === id
-			);
+			const userData = userCollectionsData.find((ud) => ud.collectionId === id);
 
 			// Transform collection type
 			const collectionType = details.collectionType === 0 ? 'ERC721' : 'ERC1155';
-			
+
 			// Transform weight function
 			const weightFunctionType = details.weightFunction.fnType === 0 ? 'LINEAR' : 'EXPONENTIAL';
 			const weightFunction = {
 				type: weightFunctionType as 'LINEAR' | 'EXPONENTIAL',
 				key: weightFunctionType.toLowerCase(),
 				label: weightFunctionType === 'LINEAR' ? 'Linear' : 'Exponential',
-				description: weightFunctionType === 'LINEAR' 
-					? 'Linear weight distribution' 
-					: 'Exponential weight distribution',
+				description:
+					weightFunctionType === 'LINEAR' ? 'Linear weight distribution' : 'Exponential weight distribution',
 			};
 
 			// Calculate NFT multiplier
-			const nftMultiplier = userData ? calculateNFTMultiplier(
-				userData.nftOwnership.balance, 
-				collectionType
-			) : null;
+			const nftMultiplier = userData
+				? calculateNFTMultiplier(userData.nftOwnership.balance, collectionType)
+				: null;
 
 			// Determine user ownership status
-			const userOwnership = userData ? getUserOwnershipStatus(
-				userData.nftOwnership.hasNFTs
-			) : 'unknown';
+			const userOwnership = userData ? getUserOwnershipStatus(userData.nftOwnership.hasNFTs) : 'unknown';
 
 			// Count vaults with deposits for this collection
-			const getVaultCountForCollection = (collectionIndex: number, vaultResults: any[], numVaults: number): number => {
+			const getVaultCountForCollection = (
+				collectionIndex: number,
+				vaultResults: unknown[],
+				numVaults: number,
+			): number => {
 				let vaultCount = 0;
 				for (let vaultIndex = 0; vaultIndex < numVaults; vaultIndex++) {
 					const resultIndex = collectionIndex * numVaults + vaultIndex;
@@ -175,9 +180,10 @@ export const useCollectionsPageData = () => {
 				return vaultCount;
 			};
 
-			const vaultCount = multiVaultData && vaultAddresses.length > 0 
-				? getVaultCountForCollection(collectionIndex, multiVaultData, vaultAddresses.length)
-				: 0;
+			const vaultCount =
+				multiVaultData && vaultAddresses.length > 0
+					? getVaultCountForCollection(collectionIndex, multiVaultData, vaultAddresses.length)
+					: 0;
 
 			const collectionData: CollectionData = {
 				collectionAddress: details.originalAddress,
@@ -202,10 +208,10 @@ export const useCollectionsPageData = () => {
 	// NOTE: Both graphqlLoading and userDataLoading are intentionally excluded to prevent blocking
 	const isLoading = registryLoading;
 
-	// Combined error state - only fail if registry fails (GraphQL and vault counts are optional)  
+	// Combined error state - only fail if registry fails (GraphQL and vault counts are optional)
 	// Log vault errors but don't block the UI since vault counts are supplementary
 	const error = registryError || userDataError;
-	
+
 	if (vaultAddressesError) {
 		console.warn('Failed to fetch vault addresses:', vaultAddressesError);
 	}
@@ -222,7 +228,7 @@ export const useCollectionsPageData = () => {
 
 	// Additional computed properties
 	const isEmpty = collectionsData.length === 0;
-	const hasActiveCollections = collectionsData.some(c => c.status === 'Active');
+	const hasActiveCollections = collectionsData.some((c) => c.status === 'Active');
 
 	return {
 		collections: collectionsData,
@@ -231,7 +237,7 @@ export const useCollectionsPageData = () => {
 		isEmpty,
 		hasActiveCollections,
 		refetch,
-		
+
 		// Expose individual loading states for granular control if needed
 		loadingStates: {
 			graphql: graphqlLoading,

@@ -205,8 +205,8 @@ export const MarketsBorrowTable: FC = () => {
 	const navigate = useNavigate();
 	const { address: userAddress } = useAccount();
 	const { data: allMarkets, isLoading: marketsLoading } = useAllMarkets();
-  const { data: optimizedMarketData, isLoading: optimizedDataLoading } = useMarketsDataOptimized();
-  const { data: legacyAPYData, isLoading: legacyAPYLoading } = useMarketsAPY();
+	const { data: optimizedMarketData, isLoading: optimizedDataLoading } = useMarketsDataOptimized();
+	const { data: legacyAPYData, isLoading: legacyAPYLoading } = useMarketsAPY();
 	const { data: userBorrowPositions } = useUserBorrowPositions(userAddress);
 	const { data: accountLiquidity } = useAccountLiquidity(userAddress);
 
@@ -294,8 +294,8 @@ export const MarketsBorrowTable: FC = () => {
 			const marketAddress = uniqueMarkets[i];
 			const metadata = tokenMetadata?.[marketAddress];
 			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
-            const apyData = optimizedMarketData?.apyData?.[marketAddress] || legacyAPYData?.[marketAddress];
-            const borrowAPYStr = apyData?.borrowAPY ?? '0.00';
+			const apyData = optimizedMarketData?.apyData?.[marketAddress] || legacyAPYData?.[marketAddress];
+			const borrowAPYStr = apyData?.borrowAPY ?? '0.00';
 			const userPosition = userBorrowPositions?.[marketAddress];
 			const hasBorrowed = userPosition?.hasBorrowed || false;
 
@@ -327,17 +327,17 @@ export const MarketsBorrowTable: FC = () => {
 				userBorrowCapacity = liquidity && liquidity > 0n ? liquidity : 0n;
 			}
 
-            const marketData: MarketsBorrowTableData = {
+			const marketData: MarketsBorrowTableData = {
 				assets: displayName,
 				available: availableAmount,
-                apy: `${borrowAPYStr}%`,
+				apy: `${borrowAPYStr}%`,
 				actions: '',
 				marketAddress,
 				availableAmount,
 				usdValue,
 				symbol,
 				hasBorrowed,
-                borrowAPY: `${borrowAPYStr}%`,
+				borrowAPY: `${borrowAPYStr}%`,
 				availableLiquidity: availableCash,
 				userBorrowCapacity,
 			};
@@ -371,8 +371,7 @@ export const MarketsBorrowTable: FC = () => {
 	}, [borrowedMarketsData]);
 
 	// Only show skeleton on initial load, not during background refetches
-  const isInitialLoading =
-    !allMarkets || (marketsLoading && !allMarkets) || optimizedDataLoading || legacyAPYLoading;
+	const isInitialLoading = !allMarkets || (marketsLoading && !allMarkets) || optimizedDataLoading || legacyAPYLoading;
 
 	if (isInitialLoading) {
 		return (

@@ -8,15 +8,15 @@ export { COLLECTION_REGISTRY_ABI } from './collection-registry.abi';
 export { COLLECTIONS_VAULT_ABI } from './collections-vault.abi';
 export { DEBT_SUBSIDIZER_ABI } from './debt-subsidizer.abi';
 export { VAULT_REGISTRY_ABI } from './vault-registry.abi';
-export { 
-	CONTRACTS, 
-	BLOCKS_PER_YEAR, 
-	getComptrollerAddress, 
+export {
+	CONTRACTS,
+	BLOCKS_PER_YEAR,
+	getComptrollerAddress,
 	getLensAddress,
 	getCollectionRegistryAddress,
 	getCollectionsVaultAddress,
 	getDebtSubsidizerAddress,
-	getVaultRegistryAddress
+	getVaultRegistryAddress,
 } from './config';
 export {
 	NATIVE_YIELD_ABI,

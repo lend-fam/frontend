@@ -1,11 +1,7 @@
 import { useMemo } from 'react';
 import { useAccount, useChainId, useReadContracts } from 'wagmi';
 import type { Address } from 'viem';
-import { 
-	COLLECTIONS_VAULT_ABI, 
-	ERC20_ABI,
-	getCollectionsVaultAddress 
-} from '../contracts';
+import { COLLECTIONS_VAULT_ABI, ERC20_ABI, getCollectionsVaultAddress } from '../contracts';
 import { MARKET_QUERY_CONFIG } from './market-query.constants';
 
 // Type definitions for user-specific collection data
@@ -43,7 +39,7 @@ export const useUserCollectionVaultBalances = (collectionIds: bigint[]) => {
 		contracts,
 		query: {
 			...MARKET_QUERY_CONFIG.COLLECTION_VAULT_BALANCES,
-			enabled: 
+			enabled:
 				vaultAddress !== '0x0000000000000000000000000000000000000000' &&
 				!!userAddress &&
 				collectionIds.length > 0,
@@ -57,7 +53,7 @@ export const useUserCollectionVaultBalances = (collectionIds: bigint[]) => {
 			const result = data[index];
 			return {
 				collectionId,
-				vaultShares: result.status === 'success' ? result.result as bigint : 0n,
+				vaultShares: result.status === 'success' ? (result.result as bigint) : 0n,
 				vaultAssets: 0n, // We'll need to convert shares to assets separately
 			};
 		});
@@ -88,7 +84,7 @@ export const useConvertSharesToAssets = (sharesToConvert: Array<{ collectionId: 
 		contracts,
 		query: {
 			...MARKET_QUERY_CONFIG.COLLECTION_VAULT_BALANCES,
-			enabled: 
+			enabled:
 				vaultAddress !== '0x0000000000000000000000000000000000000000' &&
 				sharesToConvert.length > 0 &&
 				sharesToConvert.every(({ shares }) => shares > 0n),
@@ -103,7 +99,7 @@ export const useConvertSharesToAssets = (sharesToConvert: Array<{ collectionId: 
 			return {
 				collectionId,
 				shares,
-				assets: result.status === 'success' ? result.result as bigint : 0n,
+				assets: result.status === 'success' ? (result.result as bigint) : 0n,
 			};
 		});
 	}, [data, sharesToConvert]);
@@ -117,11 +113,11 @@ export const useConvertSharesToAssets = (sharesToConvert: Array<{ collectionId: 
 // Hook to get user's complete vault balances with asset conversion
 export const useUserCollectionVaultBalancesWithAssets = (collectionIds: bigint[]) => {
 	const { userBalances, ...balanceQuery } = useUserCollectionVaultBalances(collectionIds);
-	
+
 	const sharesToConvert = useMemo(() => {
 		return userBalances
-			.filter(balance => balance.vaultShares > 0n)
-			.map(balance => ({
+			.filter((balance) => balance.vaultShares > 0n)
+			.map((balance) => ({
 				collectionId: balance.collectionId,
 				shares: balance.vaultShares,
 			}));
@@ -130,10 +126,8 @@ export const useUserCollectionVaultBalancesWithAssets = (collectionIds: bigint[]
 	const { convertedAssets, ...conversionQuery } = useConvertSharesToAssets(sharesToConvert);
 
 	const userBalancesWithAssets = useMemo(() => {
-		return userBalances.map(balance => {
-			const conversion = convertedAssets.find(
-				c => c.collectionId === balance.collectionId
-			);
+		return userBalances.map((balance) => {
+			const conversion = convertedAssets.find((c) => c.collectionId === balance.collectionId);
 			return {
 				...balance,
 				vaultAssets: conversion?.assets || 0n,
@@ -181,7 +175,7 @@ export const useNFTOwnership = (collectionAddresses: Address[]) => {
 
 		return collectionAddresses.map((collectionAddress, index) => {
 			const result = data[index];
-			const balance = result.status === 'success' ? result.result as bigint : 0n;
+			const balance = result.status === 'success' ? (result.result as bigint) : 0n;
 			return {
 				collectionAddress,
 				balance,
@@ -218,7 +212,7 @@ export const useIsCollectionOperator = (collectionIds: bigint[]) => {
 		contracts,
 		query: {
 			...MARKET_QUERY_CONFIG.COLLECTION_REGISTRY,
-			enabled: 
+			enabled:
 				vaultAddress !== '0x0000000000000000000000000000000000000000' &&
 				!!userAddress &&
 				collectionIds.length > 0,
@@ -232,7 +226,7 @@ export const useIsCollectionOperator = (collectionIds: bigint[]) => {
 			const result = data[index];
 			return {
 				collectionId,
-				isOperator: result.status === 'success' ? result.result as boolean : false,
+				isOperator: result.status === 'success' ? (result.result as boolean) : false,
 			};
 		});
 	}, [data, collectionIds]);
@@ -244,24 +238,21 @@ export const useIsCollectionOperator = (collectionIds: bigint[]) => {
 };
 
 // Master hook that combines all user-specific collection data
-export const useUserCollectionsData = (
-	collectionIds: bigint[],
-	collectionAddresses: Address[]
-) => {
+export const useUserCollectionsData = (collectionIds: bigint[], collectionAddresses: Address[]) => {
 	const { userBalances, ...balanceQuery } = useUserCollectionVaultBalancesWithAssets(collectionIds);
 	const { ownershipInfo, ...ownershipQuery } = useNFTOwnership(collectionAddresses);
 	const { operatorStatus, ...operatorQuery } = useIsCollectionOperator(collectionIds);
 
 	const combinedData = useMemo(() => {
-		return collectionIds.map(collectionId => {
-			const balance = userBalances.find(b => b.collectionId === collectionId);
-			const operator = operatorStatus.find(o => o.collectionId === collectionId);
-			
+		return collectionIds.map((collectionId) => {
+			const balance = userBalances.find((b) => b.collectionId === collectionId);
+			const operator = operatorStatus.find((o) => o.collectionId === collectionId);
+
 			// Find corresponding collection address by index (assuming same order)
-			const collectionIndex = collectionIds.findIndex(id => id === collectionId);
-			const ownership = collectionAddresses[collectionIndex] ? 
-				ownershipInfo.find(o => o.collectionAddress === collectionAddresses[collectionIndex]) : 
-				null;
+			const collectionIndex = collectionIds.findIndex((id) => id === collectionId);
+			const ownership = collectionAddresses[collectionIndex]
+				? ownershipInfo.find((o) => o.collectionAddress === collectionAddresses[collectionIndex])
+				: null;
 
 			return {
 				collectionId,
@@ -293,8 +284,8 @@ export const useUserCollectionsData = (
 // Helper functions for data transformation
 export const calculateNFTMultiplier = (nftBalance: bigint, collectionType: 'ERC721' | 'ERC1155'): number | null => {
 	if (nftBalance === 0n) return null;
-	
-	// This is a placeholder calculation - the actual multiplier logic 
+
+	// This is a placeholder calculation - the actual multiplier logic
 	// would depend on the specific collection's weight function
 	if (collectionType === 'ERC721') {
 		// For ERC721, each NFT might have equal weight

@@ -1,9 +1,7 @@
 import { useMemo } from 'react';
 import { gql } from '@apollo/client';
 import { useQuery } from '@apollo/client';
-import type {
-	Collection,
-} from '../graphql/generated';
+import type { Collection } from '../graphql/generated';
 
 // GraphQL query for all active collections
 const GET_ALL_COLLECTIONS_QUERY = gql`

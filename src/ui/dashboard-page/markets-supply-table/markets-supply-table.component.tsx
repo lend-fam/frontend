@@ -276,8 +276,8 @@ export const MarketsSupplyTable: FC = () => {
 	const navigate = useNavigate();
 	const { address: userAddress } = useAccount();
 	const { data: allMarkets, isLoading: marketsLoading } = useAllMarkets();
-  const { data: optimizedMarketData, isLoading: optimizedDataLoading } = useMarketsDataOptimized();
-  const { data: legacyAPYData, isLoading: legacyAPYLoading } = useMarketsAPY();
+	const { data: optimizedMarketData, isLoading: optimizedDataLoading } = useMarketsDataOptimized();
+	const { data: legacyAPYData, isLoading: legacyAPYLoading } = useMarketsAPY();
 	const { data: userSupplyPositions } = useUserSupplyPositions(userAddress);
 	const { data: userMarkets } = useUserMarkets(userAddress);
 	const { data: nativeYieldData } = useNativeYield();
@@ -345,8 +345,8 @@ export const MarketsSupplyTable: FC = () => {
 			const marketAddress = uniqueMarkets[i];
 			const metadata = tokenMetadata?.[marketAddress];
 			const displayName = TokenService.formatMarketName(undefined, undefined, marketAddress, metadata);
-            const apyData = optimizedMarketData?.apyData?.[marketAddress] || legacyAPYData?.[marketAddress];
-            const supplyAPYStr = apyData?.supplyAPY ?? '0.00';
+			const apyData = optimizedMarketData?.apyData?.[marketAddress] || legacyAPYData?.[marketAddress];
+			const supplyAPYStr = apyData?.supplyAPY ?? '0.00';
 			const userPosition = userSupplyPositions?.[marketAddress];
 			const hasSupplied = userPosition?.hasSupplied || false;
 
@@ -368,10 +368,10 @@ export const MarketsSupplyTable: FC = () => {
 			const hasNativeYield = isAPEToken && nativeYieldData?.apy && parseFloat(nativeYieldData.apy) > 0;
 			const nativeYieldAPY = hasNativeYield ? `${nativeYieldData?.apy}%` : undefined;
 
-            const marketData: MarketsSupplyTableData = {
+			const marketData: MarketsSupplyTableData = {
 				assets: displayName,
 				balance: tokenAmount,
-                apy: `${supplyAPYStr}%`,
+				apy: `${supplyAPYStr}%`,
 				collateral: isCollateralEnabled ? 'enabled' : 'disabled',
 				actions: '',
 				marketAddress,
@@ -381,7 +381,7 @@ export const MarketsSupplyTable: FC = () => {
 				isCollateralEnabled,
 				isCollateralEligible,
 				hasSupplied,
-                supplyAPY: `${supplyAPYStr}%`,
+				supplyAPY: `${supplyAPYStr}%`,
 				walletBalance,
 				nativeYieldAPY,
 				hasNativeYield: !!hasNativeYield,
@@ -425,8 +425,7 @@ export const MarketsSupplyTable: FC = () => {
 	}, [suppliedMarketsData]);
 
 	// Only show skeleton on initial load, not during background refetches
-  const isInitialLoading =
-    !allMarkets || (marketsLoading && !allMarkets) || optimizedDataLoading || legacyAPYLoading;
+	const isInitialLoading = !allMarkets || (marketsLoading && !allMarkets) || optimizedDataLoading || legacyAPYLoading;
 
 	if (isInitialLoading) {
 		return (

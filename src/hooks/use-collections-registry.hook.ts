@@ -90,9 +90,7 @@ export const useCollectionDetails = (collectionId: bigint) => {
 		],
 		query: {
 			...MARKET_QUERY_CONFIG.COLLECTION_METADATA,
-			enabled: 
-				contractAddress !== '0x0000000000000000000000000000000000000000' &&
-				collectionId > 0n,
+			enabled: contractAddress !== '0x0000000000000000000000000000000000000000' && collectionId > 0n,
 		},
 	});
 };
@@ -113,10 +111,8 @@ export const useCollectionAuthInfo = (collectionId: bigint, userAddress?: Addres
 		],
 		query: {
 			...MARKET_QUERY_CONFIG.COLLECTION_REGISTRY,
-			enabled: 
-				contractAddress !== '0x0000000000000000000000000000000000000000' &&
-				collectionId > 0n &&
-				!!userAddress,
+			enabled:
+				contractAddress !== '0x0000000000000000000000000000000000000000' && collectionId > 0n && !!userAddress,
 		},
 	});
 };
@@ -137,9 +133,7 @@ export const useCollectionsByIds = (collectionIds: bigint[]) => {
 		],
 		query: {
 			...MARKET_QUERY_CONFIG.COLLECTION_METADATA,
-			enabled: 
-				contractAddress !== '0x0000000000000000000000000000000000000000' &&
-				collectionIds.length > 0,
+			enabled: contractAddress !== '0x0000000000000000000000000000000000000000' && collectionIds.length > 0,
 		},
 	});
 };
@@ -160,7 +154,7 @@ export const useIsAuthorizedBatch = (collectionIds: bigint[], userAddress?: Addr
 		],
 		query: {
 			...MARKET_QUERY_CONFIG.COLLECTION_REGISTRY,
-			enabled: 
+			enabled:
 				contractAddress !== '0x0000000000000000000000000000000000000000' &&
 				collectionIds.length > 0 &&
 				!!userAddress,
@@ -191,28 +185,29 @@ export const useTotalYieldBps = () => {
 // Hook that combines all active collections with their details (optimized)
 export const useAllActiveCollectionsWithDetails = () => {
 	const { data: activeCollectionsData, ...activeCollectionsQuery } = useAllActiveCollections();
-	
+
 	const collectionsData = useMemo(() => {
 		if (!activeCollectionsData?.[0]?.result) return null;
-		
+
 		// Handle the result from getAllActiveCollections
 		const result = activeCollectionsData[0].result;
-		
+
 		// Type guard to check if it's a tuple [collectionIds, summaries]
 		const isTupleResult = (r: unknown): r is [readonly bigint[], readonly CollectionSummary[]] => {
-			return Array.isArray(r) && 
-				   r.length === 2 && 
-				   Array.isArray(r[0]) && 
-				   Array.isArray(r[1]) &&
-				   (r[0].length === 0 || typeof r[0][0] === 'bigint');
+			return (
+				Array.isArray(r) &&
+				r.length === 2 &&
+				Array.isArray(r[0]) &&
+				Array.isArray(r[1]) &&
+				(r[0].length === 0 || typeof r[0][0] === 'bigint')
+			);
 		};
 
 		// Type guard to check if it's just an array of collection IDs
 		const isIdArrayResult = (r: unknown): r is readonly bigint[] => {
-			return Array.isArray(r) && 
-				   (r.length === 0 || typeof r[0] === 'bigint');
+			return Array.isArray(r) && (r.length === 0 || typeof r[0] === 'bigint');
 		};
-		
+
 		if (isTupleResult(result)) {
 			const [collectionIds, summaries] = result;
 			return { collectionIds: [...collectionIds], summaries: [...summaries] };
@@ -225,22 +220,27 @@ export const useAllActiveCollectionsWithDetails = () => {
 	}, [activeCollectionsData]);
 
 	// Get detailed info for all collections if we have the basic data
-	const { data: detailsData, ...detailsQuery } = useCollectionsByIds(
-		collectionsData?.collectionIds || []
-	);
+	const { data: detailsData, ...detailsQuery } = useCollectionsByIds(collectionsData?.collectionIds || []);
 
 	const collectionsWithDetails = useMemo(() => {
 		if (!collectionsData || !detailsData?.[0]?.result) {
 			return [];
 		}
 
-		const [originalAddresses, sourceChainIds, collectionTypes, weightFunctions, yieldSharePercentages, registeredAts] = detailsData[0].result as [
+		const [
+			originalAddresses,
+			sourceChainIds,
+			collectionTypes,
+			weightFunctions,
+			yieldSharePercentages,
+			registeredAts,
+		] = detailsData[0].result as [
 			Address[],
 			bigint[],
 			number[],
 			Array<{ fnType: number; p1: bigint; p2: bigint }>,
 			number[],
-			bigint[]
+			bigint[],
 		];
 
 		return collectionsData.collectionIds.map((id, index) => {
@@ -251,7 +251,7 @@ export const useAllActiveCollectionsWithDetails = () => {
 				yieldSharePercentage: yieldSharePercentages[index] / 100,
 				isActive: true, // Since these are from getAllActiveCollections, they must be active
 			};
-			
+
 			return {
 				id,
 				summary,
@@ -265,7 +265,7 @@ export const useAllActiveCollectionsWithDetails = () => {
 					registeredAt: registeredAts[index],
 					isActive: true, // Active collections are not removed
 					isRemoved: false,
-				}
+				},
 			};
 		});
 	}, [collectionsData, detailsData]);
