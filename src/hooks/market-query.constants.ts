@@ -82,6 +82,51 @@ export const MARKET_QUERY_CONFIG = {
 		retryDelay: (attemptIndex: number) => Math.min(500 * 2 ** attemptIndex, 2000),
 		gcTime: 30 * 1000, // 30 seconds garbage collection
 	},
+
+	// Collection registry data - relatively static but can change
+	COLLECTION_REGISTRY: {
+		staleTime: 300_000, // 5 minutes - Collections are added occasionally
+		refetchInterval: 600_000, // 10 minutes background refresh
+		refetchOnWindowFocus: false, // Not critical for immediate refresh
+		refetchOnMount: false, // Don't refetch on component remount
+		gcTime: 30 * 60 * 1000, // 30 minutes garbage collection
+	},
+
+	// Collection metadata - static information about collections
+	COLLECTION_METADATA: {
+		staleTime: 24 * 60 * 60 * 1000, // 24 hours - Collection metadata rarely changes
+		refetchInterval: false, // Never auto-refetch metadata
+		refetchOnWindowFocus: false, // Never refetch on focus
+		refetchOnMount: false, // Don't refetch on mount
+		gcTime: 60 * 60 * 1000, // 1 hour garbage collection
+	},
+
+	// Collection vault balances - user-specific and moderately dynamic
+	COLLECTION_VAULT_BALANCES: {
+		staleTime: 30_000, // 30 seconds - User balances in vaults
+		refetchInterval: false, // No background refresh (user-controlled)
+		refetchOnWindowFocus: true, // Refresh on focus to catch changes
+		refetchOnMount: true, // Fresh balances on mount
+		gcTime: 5 * 60 * 1000, // 5 minutes garbage collection
+	},
+
+	// Collection performance metrics - updates moderately
+	COLLECTION_METRICS: {
+		staleTime: 120_000, // 2 minutes - Performance metrics update periodically
+		refetchInterval: 300_000, // 5 minutes background refresh
+		refetchOnWindowFocus: false, // Not critical for immediate refresh
+		refetchOnMount: true, // Fresh metrics on mount
+		gcTime: 15 * 60 * 1000, // 15 minutes garbage collection
+	},
+
+	// NFT ownership data - user-specific, changes when user buys/sells NFTs
+	NFT_OWNERSHIP: {
+		staleTime: 60_000, // 1 minute - NFT ownership changes from user actions
+		refetchInterval: false, // No background refresh (user-controlled)
+		refetchOnWindowFocus: true, // Refresh on focus for external changes
+		refetchOnMount: true, // Fresh ownership data on mount
+		gcTime: 10 * 60 * 1000, // 10 minutes garbage collection
+	},
 } as const;
 
 export const CRITICAL_QUERY_RETRY = {

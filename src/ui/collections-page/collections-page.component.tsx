@@ -8,9 +8,19 @@ import { LoadingState } from '../../ui-kit/components/loading-state/loading-stat
 import { EmptyState } from '../../ui-kit/components/empty-state/empty-state.component';
 import { Badge } from '../../ui-kit/components/badge/badge.component';
 import { typedMemo } from '../../ui-kit/utils/typed-memo.utils';
+import { useCollectionsPageDataWithFallback } from '../../hooks/use-collections-page-data.hook';
 
 import css from './collections-page.module.css';
 import tableCss from './theme/table.module.css';
+import SignLinearIcon from '../../assets/svg/Sign_linear.svg?url';
+import SignExponentialIcon from '../../assets/svg/Sign_exponential.svg?url';
+import UnionIcon from '../../assets/svg/Union.svg?url';
+
+// Utility function to compact address display
+const formatCompactAddress = (address: string): string => {
+	if (address.length < 10) return address;
+	return `${address.slice(0, 6)}...${address.slice(-4)}`;
+};
 
 // Collection data structure based on ICollectionRegistry interface
 type CollectionData = {
@@ -18,8 +28,14 @@ type CollectionData = {
 	collectionName: string;
 	collectionType: 'ERC721' | 'ERC1155';
 	yieldSharePercentage: number;
-	weightFunctionType: 'LINEAR' | 'EXPONENTIAL';
-	parameters: string;
+	userOwnership?: 'owned' | 'not_owned' | 'unknown';
+	nftMultiplier?: number | null;
+	weightFunction?: {
+		type: 'LINEAR' | 'EXPONENTIAL';
+		key: string;
+		label: string;
+		description?: string;
+	};
 	vaultCount: number;
 	totalVaults: string;
 	status: 'Active' | 'Inactive';
@@ -28,10 +44,11 @@ type CollectionData = {
 
 type CollectionsTableColumn =
 	| 'collectionName'
+	| 'userOwnership'
 	| 'collectionType'
 	| 'yieldSharePercentage'
-	| 'weightFunctionType'
-	| 'parameters'
+	| 'nftMultiplier'
+	| 'weightFunction'
 	| 'vaultCount'
 	| 'status'
 	| 'actions';
@@ -51,12 +68,73 @@ const CollectionTypeBadge: FC<{ type: string }> = ({ type }) => {
 	);
 };
 
-// Weight function parameters component
-const WeightFunctionParams: FC<{ type: string; parameters: string }> = ({ type, parameters }) => {
+// Heart ownership indicator component
+const HeartOwnershipIndicator: FC<{ ownership?: 'owned' | 'not_owned' | 'unknown' }> = ({ ownership }) => {
+	const heartIcon = ownership === 'owned' ? '♥' : '♡';
+	const color = ownership === 'owned' ? '#FF6B6B' : '#D1D5DB';
+
 	return (
-		<div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-			<div style={{ fontFamily: 'Inter', fontSize: '12px', fontWeight: '500', color: '#18171E' }}>{type}</div>
-			<div style={{ fontFamily: 'Inter', fontSize: '11px', color: '#6B7280' }}>{parameters}</div>
+		<div
+			className={ownership !== 'unknown' ? tableCss.heartIcon : ''}
+			style={{
+				fontSize: '18px',
+				color,
+				display: 'flex',
+				justifyContent: 'center',
+				alignItems: 'center',
+				cursor: ownership !== 'unknown' ? 'pointer' : 'default',
+			}}>
+			{ownership === 'unknown' ? '—' : heartIcon}
+		</div>
+	);
+};
+
+// NFT Multiplier display component
+const NFTMultiplierDisplay: FC<{ multiplier?: number | null }> = ({ multiplier }) => {
+	return (
+		<div className={tableCss.multiplierCell} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+			<span
+				style={{
+					fontFamily: 'Inter',
+					fontSize: '14px',
+					fontWeight: '600',
+					color: '#18171E',
+				}}>
+				{multiplier ? `${multiplier}x` : '—'}
+			</span>
+			<span
+				className={tableCss.infoIcon}
+				style={{ fontSize: '12px', color: '#9CA3AF' }}
+				title="Your current NFT multiplier based on owned tokens in this collection">
+				ℹ
+			</span>
+		</div>
+	);
+};
+
+// Weight function display component with chart icon
+const WeightFunctionDisplay: FC<{ weightFunction?: CollectionData['weightFunction'] }> = ({ weightFunction }) => {
+	const type = weightFunction?.type || 'LINEAR';
+	const iconSrc = type === 'EXPONENTIAL' ? SignExponentialIcon : SignLinearIcon;
+
+	return (
+		<div style={{ display: 'flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
+			<img
+				src={iconSrc}
+				alt={`${type === 'EXPONENTIAL' ? 'Exponential' : 'Linear'} weight function`}
+				className={tableCss.chartIcon}
+				style={{ width: '18px', height: '18px' }}
+			/>
+			<img
+				src={UnionIcon}
+				alt="More information"
+				className={tableCss.infoIcon}
+				style={{ width: '16px', height: '16px', cursor: 'help' }}
+				title={
+					weightFunction?.description ||
+					`${type === 'EXPONENTIAL' ? 'Exponential' : 'Linear'} weight function: determines how NFT count affects user subsidies`
+				}
+			/>
 		</div>
 	);
 };
@@ -67,7 +145,7 @@ const createCollectionsColumns = (
 	{
 		key: 'collectionName',
 		label: 'Collection',
-		width: '20%',
+		width: '18%',
 		cellRenderer: ({ data, style }) => (
 			<div
 				style={{
@@ -83,15 +161,33 @@ const createCollectionsColumns = (
 					{data.collectionName}
 				</div>
 				<div style={{ fontFamily: 'Inter', fontSize: '12px', color: '#6B7280' }}>
-					{data.collectionAddress.slice(0, 8)}...{data.collectionAddress.slice(-6)}
+					{formatCompactAddress(data.collectionAddress)}
 				</div>
+			</div>
+		),
+	},
+	{
+		key: 'userOwnership',
+		label: 'My',
+		width: '6%',
+		align: 'center',
+		cellRenderer: ({ data, style }) => (
+			<div
+				style={{
+					...style,
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'center',
+					padding: '0 12px',
+				}}>
+				<HeartOwnershipIndicator ownership={data.userOwnership} />
 			</div>
 		),
 	},
 	{
 		key: 'collectionType',
 		label: 'Type',
-		width: '10%',
+		width: '8%',
 		align: 'center',
 		cellRenderer: ({ data, style }) => (
 			<div
@@ -118,34 +214,25 @@ const createCollectionsColumns = (
 					display: 'flex',
 					alignItems: 'center',
 					justifyContent: 'flex-end',
-					padding: '0 12px',
+					padding: '0 16px',
 				}}>
-				<div style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: '600', color: '#18171E' }}>
+				<div
+					style={{
+						fontFamily: 'Inter',
+						fontSize: '14px',
+						fontWeight: '600',
+						color: '#18171E',
+						textAlign: 'right',
+					}}>
 					{data.yieldSharePercentage}%
 				</div>
 			</div>
 		),
 	},
 	{
-		key: 'weightFunctionType',
-		label: 'Weight Function',
-		width: '15%',
-		cellRenderer: ({ data, style }) => (
-			<div
-				style={{
-					...style,
-					display: 'flex',
-					alignItems: 'center',
-					padding: '0 12px',
-				}}>
-				<WeightFunctionParams type={data.weightFunctionType} parameters={data.parameters} />
-			</div>
-		),
-	},
-	{
-		key: 'vaultCount',
-		label: 'Vaults',
-		width: '10%',
+		key: 'nftMultiplier',
+		label: 'My Multiplier',
+		width: '12%',
 		align: 'center',
 		cellRenderer: ({ data, style }) => (
 			<div
@@ -156,7 +243,50 @@ const createCollectionsColumns = (
 					justifyContent: 'center',
 					padding: '0 12px',
 				}}>
-				<div style={{ fontFamily: 'Inter', fontSize: '14px', fontWeight: '600', color: '#18171E' }}>
+				<NFTMultiplierDisplay multiplier={data.nftMultiplier} />
+			</div>
+		),
+	},
+	{
+		key: 'weightFunction',
+		label: 'Weight Function',
+		width: '14%',
+		align: 'center',
+		cellRenderer: ({ data, style }) => (
+			<div
+				style={{
+					...style,
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'center',
+					padding: '0 12px',
+				}}>
+				<WeightFunctionDisplay weightFunction={data.weightFunction} />
+			</div>
+		),
+	},
+	{
+		key: 'vaultCount',
+		label: 'Vaults',
+		width: '8%',
+		align: 'center',
+		cellRenderer: ({ data, style }) => (
+			<div
+				style={{
+					...style,
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'center',
+					padding: '0 12px',
+				}}>
+				<div
+					style={{
+						fontFamily: 'Inter',
+						fontSize: '14px',
+						fontWeight: '600',
+						color: '#18171E',
+						textAlign: 'center',
+					}}>
 					{data.vaultCount}
 				</div>
 			</div>
@@ -165,7 +295,7 @@ const createCollectionsColumns = (
 	{
 		key: 'status',
 		label: 'Status',
-		width: '10%',
+		width: '8%',
 		align: 'center',
 		cellRenderer: ({ data, style }) => (
 			<div
@@ -183,7 +313,7 @@ const createCollectionsColumns = (
 	{
 		key: 'actions',
 		label: '',
-		width: '23%',
+		width: '16%',
 		align: 'right',
 		cellRenderer: ({ data, style }) => (
 			<div
@@ -192,14 +322,14 @@ const createCollectionsColumns = (
 					display: 'flex',
 					alignItems: 'center',
 					justifyContent: 'flex-end',
-					padding: '0 12px',
+					padding: '0 16px',
 					gap: '8px',
 				}}>
 				<Button
 					variant="ghost"
 					size="medium"
 					onClick={() => navigate(`/collections/${data.collectionAddress}`)}>
-					View Details
+					Details
 				</Button>
 				<Button
 					variant="ghost"
@@ -215,71 +345,45 @@ const createCollectionsColumns = (
 const CollectionsPageComponent: FC = () => {
 	const navigate = useNavigate();
 
-	// TODO: Replace with actual data from collection registry contract
-	const collectionsData: TableData<CollectionData>[] = useMemo(
-		() => [
-			{
-				collectionAddress: '0x1234567890123456789012345678901234567890' as Address,
-				collectionName: 'Bored Ape Yacht Club',
-				collectionType: 'ERC721',
-				yieldSharePercentage: 25,
-				weightFunctionType: 'LINEAR',
-				parameters: 'p1: 100, p2: 0',
-				vaultCount: 3,
-				totalVaults: '3 vaults',
-				status: 'Active',
-				actions: 'actions',
-			},
-			{
-				collectionAddress: '0x2345678901234567890123456789012345678901' as Address,
-				collectionName: 'Mutant Ape Yacht Club',
-				collectionType: 'ERC721',
-				yieldSharePercentage: 20,
-				weightFunctionType: 'EXPONENTIAL',
-				parameters: 'p1: 50, p2: 2',
-				vaultCount: 2,
-				totalVaults: '2 vaults',
-				status: 'Active',
-				actions: 'actions',
-			},
-			{
-				collectionAddress: '0x3456789012345678901234567890123456789012' as Address,
-				collectionName: 'Otherdeeds for Otherside',
-				collectionType: 'ERC721',
-				yieldSharePercentage: 15,
-				weightFunctionType: 'LINEAR',
-				parameters: 'p1: 75, p2: 0',
-				vaultCount: 1,
-				totalVaults: '1 vault',
-				status: 'Inactive',
-				actions: 'actions',
-			},
-			{
-				collectionAddress: '0x4567890123456789012345678901234567890123' as Address,
-				collectionName: 'ApeCoin DAO NFT',
-				collectionType: 'ERC1155',
-				yieldSharePercentage: 30,
-				weightFunctionType: 'EXPONENTIAL',
-				parameters: 'p1: 25, p2: 3',
-				vaultCount: 4,
-				totalVaults: '4 vaults',
-				status: 'Active',
-				actions: 'actions',
-			},
-		],
-		[],
-	);
+	// Fetch real collections data from smart contracts and GraphQL
+	const {
+		collections: collectionsData,
+		loading: isLoading,
+		error,
+		isEmpty,
+		hasFallback,
+		refetch,
+	} = useCollectionsPageDataWithFallback();
 
 	const collectionsColumns = useMemo(() => createCollectionsColumns(navigate), [navigate]);
 
-	const isLoading = false; // TODO: Replace with actual loading state
-	const isEmpty = collectionsData.length === 0;
+	// Transform collections data to table format
+	const tableData: TableData<CollectionData>[] = useMemo(() => {
+		return collectionsData.map((collection) => ({
+			...collection,
+		}));
+	}, [collectionsData]);
 
 	if (isLoading) {
 		return (
 			<div className={css.container}>
 				<Layout>
 					<LoadingState title="Loading Collections" message="Fetching collection data from blockchain..." />
+				</Layout>
+			</div>
+		);
+	}
+
+	if (error && !hasFallback) {
+		return (
+			<div className={css.container}>
+				<Layout>
+					<div style={{ textAlign: 'center' }}>
+						<EmptyState message="Failed to load collection data. Please check your connection and try again." />
+						<Button variant="primary" onClick={() => refetch()} style={{ marginTop: '16px' }}>
+							Retry
+						</Button>
+					</div>
 				</Layout>
 			</div>
 		);
@@ -300,17 +404,46 @@ const CollectionsPageComponent: FC = () => {
 			<Layout>
 				<div className={css.header}>
 					<h1 className={css.title}>Collections</h1>
-					<p className={css.subtitle}>Registered NFT collections and their yield distribution parameters</p>
+					<p className={css.subtitle}>
+						Registered NFT collections and their yield distribution parameters
+						{hasFallback && (
+							<span style={{ color: '#f59e0b', marginLeft: '8px' }}>⚠️ Using fallback data</span>
+						)}
+					</p>
 				</div>
 				<div className={css.tableContainer}>
 					<p className={css.label}>All Collections</p>
 					<Table
-						data={collectionsData}
+						data={tableData}
 						columns={collectionsColumns}
 						columnHeight="72px"
 						columnWidth="120px"
 						theme={tableCss}
 					/>
+					{error && hasFallback && (
+						<div
+							style={{
+								marginTop: '16px',
+								padding: '12px',
+								backgroundColor: '#fef3c7',
+								borderRadius: '6px',
+							}}>
+							<p style={{ margin: 0, color: '#92400e', fontSize: '14px' }}>
+								⚠️ Some data may be outdated.{' '}
+								<button
+									onClick={() => refetch()}
+									style={{
+										color: '#92400e',
+										textDecoration: 'underline',
+										background: 'none',
+										border: 'none',
+										cursor: 'pointer',
+									}}>
+									Try refreshing
+								</button>
+							</p>
+						</div>
+					)}
 				</div>
 			</Layout>
 		</div>

@@ -18,8 +18,48 @@ export function getLensAddress(chainId?: number): Address {
 		'0x974726560D89E934CE0CDefac01eD6210da33fd0') as Address;
 }
 
+export function getCollectionRegistryAddress(chainId?: number): Address {
+	if (chainId === 33111) {
+		return (import.meta.env.VITE_COLLECTION_REGISTRY_ADDRESS_TESTNET ||
+			'0x0000000000000000000000000000000000000000') as Address;
+	}
+	return (import.meta.env.VITE_COLLECTION_REGISTRY_ADDRESS_MAINNET ||
+		'0x0000000000000000000000000000000000000000') as Address;
+}
+
+export function getCollectionsVaultAddress(chainId?: number): Address {
+	if (chainId === 33111) {
+		return (import.meta.env.VITE_COLLECTIONS_VAULT_ADDRESS_TESTNET ||
+			'0x0000000000000000000000000000000000000000') as Address;
+	}
+	return (import.meta.env.VITE_COLLECTIONS_VAULT_ADDRESS_MAINNET ||
+		'0x0000000000000000000000000000000000000000') as Address;
+}
+
+export function getDebtSubsidizerAddress(chainId?: number): Address {
+	if (chainId === 33111) {
+		return (import.meta.env.VITE_DEBT_SUBSIDIZER_ADDRESS_TESTNET ||
+			'0x0000000000000000000000000000000000000000') as Address;
+	}
+	return (import.meta.env.VITE_DEBT_SUBSIDIZER_ADDRESS_MAINNET ||
+		'0x0000000000000000000000000000000000000000') as Address;
+}
+
+export function getVaultRegistryAddress(chainId?: number): Address {
+	if (chainId === 33111) {
+		return (import.meta.env.VITE_VAULT_REGISTRY_ADDRESS_TESTNET ||
+			'0x0000000000000000000000000000000000000000') as Address;
+	}
+	return (import.meta.env.VITE_VAULT_REGISTRY_ADDRESS_MAINNET ||
+		'0x0000000000000000000000000000000000000000') as Address;
+}
+
 export const CONTRACTS = {
 	COMPTROLLER: getComptrollerAddress(),
+	COLLECTION_REGISTRY: getCollectionRegistryAddress(),
+	COLLECTIONS_VAULT: getCollectionsVaultAddress(),
+	DEBT_SUBSIDIZER: getDebtSubsidizerAddress(),
+	VAULT_REGISTRY: getVaultRegistryAddress(),
 	ARB_INFO: '0x0000000000000000000000000000000000000065' as const,
 	ARB_OWNER_PUBLIC: '0x000000000000000000000000000000000000006b' as const,
 } as const;

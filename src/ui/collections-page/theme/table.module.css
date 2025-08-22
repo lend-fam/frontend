@@ -18,3 +18,37 @@
 	background-color: rgba(0, 0, 0, 0.05);
 	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
 }
+
+.heartIcon {
+	cursor: pointer;
+	transition: color 0.2s ease, transform 0.1s ease;
+}
+
+.heartIcon:hover {
+	transform: scale(1.1);
+}
+
+.infoIcon {
+	cursor: help;
+	opacity: 0.6;
+	transition: opacity 0.2s ease;
+}
+
+.infoIcon:hover {
+	opacity: 1;
+}
+
+.multiplierCell {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.chartIcon {
+	opacity: 0.8;
+	transition: opacity 0.2s ease;
+}
+
+.chartIcon:hover {
+	opacity: 1;
+}
