@@ -42,6 +42,7 @@ export interface VaultInfo {
 	name: string;
 	totalAssets: string;
 	status: 'Active' | 'Inactive';
+	actions: string;
 	userBalance?: string;
 	userShares?: string;
 }

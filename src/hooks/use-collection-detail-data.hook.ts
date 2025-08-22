@@ -361,6 +361,7 @@ export const useCollectionDetailData = (collectionAddress: Address) => {
 				name: vaultName,
 				totalAssets: FormattingService.formatTokenBalance(totalAssets, 18, ''), // Remove token symbol for cleaner display
 				status: totalAssets > 0n ? 'Active' : 'Inactive',
+				actions: '', // Placeholder for action column
 				userBalance: FormattingService.formatTokenBalance(userBalance, 18, ''),
 				userShares: FormattingService.formatTokenBalance(userBalance, 18, ''), // For ERC1155 vaults, balance equals shares
 			};
@@ -538,6 +539,7 @@ export const useVaultDetails = (vaultAddress: Address, collectionId: bigint) => 
 			name: `${vaultAddress.slice(0, 8)}...${vaultAddress.slice(-6)}`,
 			totalAssets: totalAssets.toLocaleString(),
 			status: totalAssets > 0 ? 'Active' : 'Inactive',
+			actions: '', // Placeholder for action column
 			userBalance: '0', // TODO: Get user balance
 			userShares: '0', // TODO: Get user shares
 		};

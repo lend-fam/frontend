@@ -13,7 +13,7 @@ interface VaultInfoSectionProps {
 	collectionData: CollectionDetailData;
 }
 
-const createVaultColumns = (): TableColumnProps<VaultInfo, string>[] => [
+const createVaultColumns = (): TableColumnProps<VaultInfo, keyof VaultInfo>[] => [
 	{
 		key: 'name',
 		label: 'Vault',
