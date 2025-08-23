@@ -19,10 +19,6 @@
 	transition: all 0.2s ease-in-out;
 }
 
-.metricItem:hover {
-	border-color: var(--color-accent-miracle-1);
-	box-shadow: 0 2px 8px rgba(88, 119, 254, 0.1);
-}
 
 .metricLabel {
 	font-family: 'Inter', sans-serif;
