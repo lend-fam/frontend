@@ -8,6 +8,7 @@ import { Dropdown, type DropdownOption } from '../../../ui-kit/components/dropdo
 import { SupplyModalEnhanced } from '../../../ui-kit/components/supply-modal-enhanced/supply-modal-enhanced.component';
 import { WithdrawModal } from '../../../ui-kit/components/withdraw-modal/withdraw-modal.component';
 import { typedMemo } from '../../../ui-kit/utils/typed-memo.utils';
+import { useVaultTokenData } from '../../../hooks';
 import type { CollectionDetailData } from '../collection-detail-page.component';
 
 import css from './vault-forms-section.module.css';
@@ -28,6 +29,9 @@ const VaultFormsSectionComponent: FC<VaultFormsSectionProps> = ({ collectionData
 		: collectionData.vaults[0];
 
 	const vaultAddress = selectedVaultData?.address;
+
+	// Fetch vault token data for the selected vault
+	const { data: vaultTokenData, isLoading: isVaultTokenDataLoading } = useVaultTokenData(vaultAddress);
 
 	const handleSupply = () => {
 		setIsSupplyModalOpen(true);
@@ -77,6 +81,16 @@ const VaultFormsSectionComponent: FC<VaultFormsSectionProps> = ({ collectionData
 										<div className={css.statLabel}>Total Assets</div>
 										<div className={css.statValue}>${selectedVaultData.totalAssets}</div>
 									</div>
+									{vaultTokenData && (
+										<div className={css.stat}>
+											<div className={css.statLabel}>Supply APY</div>
+											<div className={css.statValue}>
+												{isVaultTokenDataLoading
+													? 'Loading...'
+													: `${vaultTokenData.supplyAPY}%`}
+											</div>
+										</div>
+									)}
 								</div>
 							</div>
 
@@ -91,17 +105,35 @@ const VaultFormsSectionComponent: FC<VaultFormsSectionProps> = ({ collectionData
 										<div className={css.positionLabel}>Shares</div>
 										<div className={css.positionValue}>{selectedVaultData.userShares || '0'}</div>
 									</div>
+									{vaultTokenData && (
+										<div className={css.positionStat}>
+											<div className={css.positionLabel}>Asset</div>
+											<div className={css.positionValue}>
+												{isVaultTokenDataLoading ? 'Loading...' : vaultTokenData.tokenSymbol}
+											</div>
+										</div>
+									)}
 								</div>
 							</div>
 						</>
 					)}
 
 					<div className={css.actions}>
-						<Button variant="secondary" size="large" fullWidth onClick={handleSupply}>
-							Deposit
+						<Button
+							variant="secondary"
+							size="large"
+							fullWidth
+							onClick={handleSupply}
+							disabled={isVaultTokenDataLoading}>
+							{isVaultTokenDataLoading ? 'Loading...' : 'Deposit'}
 						</Button>
-						<Button variant="outline" size="large" fullWidth onClick={handleWithdraw}>
-							Withdraw
+						<Button
+							variant="outline"
+							size="large"
+							fullWidth
+							onClick={handleWithdraw}
+							disabled={isVaultTokenDataLoading}>
+							{isVaultTokenDataLoading ? 'Loading...' : 'Withdraw'}
 						</Button>
 					</div>
 				</div>
@@ -113,15 +145,17 @@ const VaultFormsSectionComponent: FC<VaultFormsSectionProps> = ({ collectionData
 						isOpen={isSupplyModalOpen}
 						onClose={() => setIsSupplyModalOpen(false)}
 						marketAddress={vaultAddress!}
-						supplyAPY="0%"
-						isCollateralEnabled={true}
+						supplyAPY={vaultTokenData?.supplyAPY ? `${vaultTokenData.supplyAPY}%` : '0%'}
+						isCollateralEnabled={vaultTokenData?.isCollateralEnabled ?? true}
 					/>
 					<WithdrawModal
 						isOpen={isWithdrawModalOpen}
 						onClose={() => setIsWithdrawModalOpen(false)}
 						marketAddress={vaultAddress!}
-						tokenSymbol={collectionData.collectionName}
-						supplyAPY="0%"
+						tokenSymbol={
+							vaultTokenData?.tokenSymbol || vaultTokenData?.vaultSymbol || collectionData.collectionName
+						}
+						supplyAPY={vaultTokenData?.supplyAPY ? `${vaultTokenData.supplyAPY}%` : '0%'}
 					/>
 				</>
 			)}

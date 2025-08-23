@@ -14,16 +14,17 @@ interface YieldConfigSectionProps {
 const YieldConfigSectionComponent: FC<YieldConfigSectionProps> = ({ collectionData }) => {
 	const { weightFunctionParameters, nftMultiplier } = collectionData;
 
-	// Get user's NFT count, default to 1 if not available
+	// Get user's actual NFT count for display (can be 0)
 	const userNftCount = useMemo(() => {
-		return nftMultiplier && nftMultiplier > 0 ? nftMultiplier : 1;
+		return nftMultiplier !== null && nftMultiplier !== undefined ? nftMultiplier : 0;
 	}, [nftMultiplier]);
 
-	const [nftCount, setNftCount] = useState(userNftCount);
+	// NFT count for calculation (minimum 1 for the slider)
+	const [nftCount, setNftCount] = useState(Math.max(userNftCount, 1));
 
 	// Update nftCount when userNftCount changes (e.g., when data loads)
 	useEffect(() => {
-		setNftCount(userNftCount);
+		setNftCount(Math.max(userNftCount, 1));
 	}, [userNftCount]);
 
 	// Calculate weight example using the CollectionService for consistency
@@ -50,7 +51,7 @@ const YieldConfigSectionComponent: FC<YieldConfigSectionProps> = ({ collectionDa
 							</div>
 							<button
 								type="button"
-								onClick={() => setNftCount(userNftCount)}
+								onClick={() => setNftCount(Math.max(userNftCount, 1))}
 								className={css.resetButton}
 								title={`Reset to your NFT count (${userNftCount})`}>
 								Reset
