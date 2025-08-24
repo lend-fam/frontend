@@ -1,22 +1,22 @@
 /* Collection Deposit Modal Styles - Matching existing modal design */
 .container {
-	gap: 24px;
+	gap: 16px;
 	padding: 0;
 	max-width: none;
 	width: 100%;
 }
 
 .section {
-	gap: 12px;
+	gap: 8px;
 	padding: 0 24px;
 }
 
 .section:first-child {
-	padding-top: 24px;
+	padding-top: 16px;
 }
 
 .section:last-child {
-	padding-bottom: 24px;
+	padding-bottom: 16px;
 }
 
 .sectionHeader {
@@ -236,7 +236,7 @@
 	position: relative;
 	background: #374151;
 	border-radius: 12px;
-	padding: 16px;
+	padding: 12px;
 }
 
 .approvalOption {
@@ -305,10 +305,10 @@
 .overviewContainer {
 	background: #374151;
 	border-radius: 12px;
-	padding: 16px;
+	padding: 12px;
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: 8px;
 }
 
 .overviewRow {
@@ -337,7 +337,7 @@
 	justify-content: center;
 	gap: 8px;
 	padding: 0 24px;
-	margin: -12px 0;
+	margin: -12px 0 4px 0;
 }
 
 .gasIcon {
