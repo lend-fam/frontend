@@ -43,13 +43,6 @@ const CollectionWithdrawModalComponent: FC<CollectionWithdrawModalProps> = ({
 	// Get collection ID from collection address
 	const collectionId = useCollectionId(collectionData.collectionAddress);
 
-	// Debug: Log collection data
-	console.log('Collection Withdraw Modal Debug:', {
-		collectionAddress: collectionData.collectionAddress,
-		collectionId: collectionId?.toString(),
-		vaultAddress,
-	});
-
 	// Transaction flow hook (only when we have collection ID)
 	const { amount, setAmount, transactionState, tokenData, balanceData, isValidAmount, handleMaxClick, handleSubmit } =
 		useCollectionTransactionFlow({

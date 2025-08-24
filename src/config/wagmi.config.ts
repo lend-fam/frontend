@@ -102,17 +102,6 @@ export const wagmiConfig = createConfig({
 				// Optimized retry strategy
 				retryCount: 3,
 				retryDelay: 1_000,
-				// Optional: Add monitoring callbacks for RPC optimization
-				onFetchRequest: (request) => {
-					if (import.meta.env.DEV) {
-						console.debug('RPC Request:', request.url, request.body);
-					}
-				},
-				onFetchResponse: (response) => {
-					if (import.meta.env.DEV) {
-						console.debug('RPC Response:', response.status, response.url);
-					}
-				},
 			});
 			return acc;
 		},

@@ -21,17 +21,6 @@ export const useCollectionId = (collectionAddress: Address | undefined): bigint 
 		},
 	});
 
-	// Debug: Log collection ID resolution
-	if (collectionAddress) {
-		console.log('Collection ID Resolution Debug:', {
-			collectionAddress,
-			chainId,
-			registryAddress,
-			collectionId: collectionId?.toString(),
-			enabled: !!collectionAddress && registryAddress !== '0x0000000000000000000000000000000000000000',
-		});
-	}
-
 	return useMemo(() => {
 		if (!collectionId || collectionId === 0n) {
 			return undefined;

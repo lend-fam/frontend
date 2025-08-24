@@ -167,17 +167,6 @@ export const useCollectionTransactionFlow = ({
 		query: { enabled: !!address && config.type === 'withdraw' },
 	});
 
-	// Debug: Log balance queries
-	if (config.type === 'withdraw') {
-		console.log('Collection Transaction Flow Debug:', {
-			address,
-			vaultAddress,
-			collectionId: config.collectionId.toString(),
-			vaultSharesBalance: vaultSharesBalance?.toString(),
-			queryEnabled: !!address && config.type === 'withdraw',
-		});
-	}
-
 	// Get vault totals for this collection
 	const { data: totalAssets } = useReadContract({
 		address: vaultAddress,
@@ -203,15 +192,6 @@ export const useCollectionTransactionFlow = ({
 		args: vaultSharesBalance ? [config.collectionId, vaultSharesBalance] : undefined,
 		query: { enabled: !!vaultSharesBalance && vaultSharesBalance > 0n },
 	});
-
-	// Debug: Log conversion
-	if (config.type === 'withdraw' && vaultSharesBalance) {
-		console.log('Convert to Assets Debug:', {
-			vaultSharesBalance: vaultSharesBalance.toString(),
-			vaultAssetsBalance: vaultAssetsBalance?.toString(),
-			conversionEnabled: !!vaultSharesBalance && vaultSharesBalance > 0n,
-		});
-	}
 
 	// Get current allowance for deposits
 	const { data: currentAllowance } = useReadContract({
@@ -569,17 +549,6 @@ export const useCollectionTransactionFlow = ({
 		totalAssets,
 		totalShares,
 	};
-
-	// Debug: Log final balance data
-	if (config.type === 'withdraw') {
-		console.log('Final Balance Data Debug:', {
-			walletBalance: walletBalance?.toString(),
-			vaultSharesBalance: vaultSharesBalance?.toString(),
-			vaultAssetsBalance: vaultAssetsBalance?.toString(),
-			maxWithdrawable: balanceData.maxWithdrawable?.toString(),
-			maxAvailable: maxAvailable?.toString(),
-		});
-	}
 
 	const approvalSettings: CollectionApprovalSettings = {
 		useMaxApproval,
