@@ -1,0 +1,166 @@
+.container {
+	padding: 20px 24px;
+	border-bottom: 1px solid #404040;
+	background: #2a2d3a;
+}
+
+.leftSection {
+	flex: 1;
+}
+
+.titleSection {
+	gap: 12px;
+}
+
+.collectionIcon {
+	width: 48px;
+	height: 48px;
+	border-radius: 12px;
+	background: var(--color-accent-apechain);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+}
+
+.collectionSymbol {
+	font-family: 'Montserrat', sans-serif;
+	font-size: 20px;
+	font-weight: 600;
+	color: white;
+	text-transform: uppercase;
+}
+
+.titleInfo {
+	flex: 1;
+}
+
+.modalTitle {
+	font-family: 'Montserrat', sans-serif;
+	font-size: 24px;
+	font-weight: 600;
+	color: var(--color-text-inversion);
+	margin: 0 0 4px 0;
+	line-height: 1.2;
+}
+
+.vaultSubtitle {
+	font-family: 'Inter', sans-serif;
+	font-size: 14px;
+	font-weight: 500;
+	color: #9ca3af;
+	margin: 0;
+}
+
+.rightSection {
+	flex-shrink: 0;
+}
+
+.metaInfo {
+	gap: 8px;
+	align-items: flex-end;
+}
+
+.metaItem {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.metaLabel {
+	font-family: 'Inter', sans-serif;
+	font-size: 12px;
+	font-weight: 500;
+	color: #6b7280;
+}
+
+.metaValue {
+	font-family: 'Inter', sans-serif;
+	font-size: 12px;
+	font-weight: 600;
+	color: #9ca3af;
+}
+
+.vaultStatsRow {
+	padding-top: 16px;
+	border-top: 1px solid #404040;
+	gap: 24px;
+}
+
+.statItem {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	flex: 1;
+}
+
+.statLabel {
+	font-family: 'Inter', sans-serif;
+	font-size: 12px;
+	font-weight: 500;
+	color: #6b7280;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.statValue {
+	font-family: 'Inter', sans-serif;
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--color-text-inversion);
+}
+
+.statValue.active {
+	color: var(--color-accent-green);
+}
+
+.statValue.inactive {
+	color: #6b7280;
+}
+
+/* Responsive design for mobile */
+@media (max-width: 768px) {
+	.container {
+		padding: 16px 20px;
+	}
+
+	.headerRow {
+		flex-direction: column;
+		gap: 16px;
+		margin-bottom: 12px;
+	}
+
+	.titleSection {
+		gap: 8px;
+	}
+
+	.collectionIcon {
+		width: 40px;
+		height: 40px;
+		border-radius: 10px;
+	}
+
+	.collectionSymbol {
+		font-size: 16px;
+	}
+
+	.modalTitle {
+		font-size: 20px;
+	}
+
+	.vaultSubtitle {
+		font-size: 13px;
+	}
+
+	.vaultStatsRow {
+		flex-direction: column;
+		gap: 12px;
+		padding-top: 12px;
+	}
+
+	.statItem {
+		flex-direction: row;
+		justify-content: space-between;
+		align-items: center;
+	}
+}

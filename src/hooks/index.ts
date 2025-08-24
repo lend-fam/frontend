@@ -20,6 +20,8 @@ export * from './use-apy-chart-data.hook';
 export * from './use-clipboard.hook';
 export * from './use-toast.hook';
 export * from './use-vault-token-data.hook';
+export * from './use-collection-transaction-flow.hook';
+export * from './use-collection-id.hook';
 
 // Optimized hooks
 export * from './use-dashboard-optimized.hook';

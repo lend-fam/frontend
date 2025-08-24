@@ -66,6 +66,11 @@ export { SupplyModal } from './supply-modal';
 export { SupplyModalEnhanced } from './supply-modal-enhanced';
 export { WithdrawModal } from './withdraw-modal';
 
+// Collection modal components
+export { CollectionModalHeader } from './collection-modal-header';
+export { CollectionDepositModal } from './collection-deposit-modal';
+export { CollectionWithdrawModal } from './collection-withdraw-modal';
+
 // Design token components
 export { Text, Heading, Box } from './design-tokens';
 export type { TextProps, HeadingProps, BoxProps } from './design-tokens';

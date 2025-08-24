@@ -18,20 +18,24 @@ export interface AnalyticsContextType {
 	trackWalletConnection: (walletType: string, walletAddress: string) => void;
 	trackWalletDisconnection: () => void;
 	trackTransaction: (
-		type: 'supply' | 'withdraw' | 'borrow' | 'repay',
+		type: 'supply' | 'withdraw' | 'borrow' | 'repay' | 'deposit',
 		token: string,
 		amount: string,
 		success: boolean,
 	) => void;
-	trackTransactionStart: (type: 'supply' | 'withdraw' | 'borrow' | 'repay', token: string, amount: string) => void;
+	trackTransactionStart: (
+		type: 'supply' | 'withdraw' | 'borrow' | 'repay' | 'deposit',
+		token: string,
+		amount: string,
+	) => void;
 	trackTransactionComplete: (
-		type: 'supply' | 'withdraw' | 'borrow' | 'repay',
+		type: 'supply' | 'withdraw' | 'borrow' | 'repay' | 'deposit',
 		token: string,
 		amount: string,
 		transactionHash: string,
 	) => void;
 	trackTransactionError: (
-		type: 'supply' | 'withdraw' | 'borrow' | 'repay',
+		type: 'supply' | 'withdraw' | 'borrow' | 'repay' | 'deposit',
 		token: string,
 		amount: string,
 		error: string,

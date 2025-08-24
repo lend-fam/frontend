@@ -5,8 +5,7 @@ import { Card } from '../../../ui-kit/components/card/card.component';
 import { SectionHeader } from '../../../ui-kit/components/section-header/section-header.component';
 import { Button } from '../../../ui-kit/components/button/button.component';
 import { Dropdown, type DropdownOption } from '../../../ui-kit/components/dropdown/dropdown.component';
-import { SupplyModalEnhanced } from '../../../ui-kit/components/supply-modal-enhanced/supply-modal-enhanced.component';
-import { WithdrawModal } from '../../../ui-kit/components/withdraw-modal/withdraw-modal.component';
+import { CollectionDepositModal, CollectionWithdrawModal } from '../../../ui-kit/components';
 import { typedMemo } from '../../../ui-kit/utils/typed-memo.utils';
 import { useVaultTokenData } from '../../../hooks';
 import type { CollectionDetailData } from '../collection-detail-page.component';
@@ -141,21 +140,17 @@ const VaultFormsSectionComponent: FC<VaultFormsSectionProps> = ({ collectionData
 
 			{vaultAddress && (
 				<>
-					<SupplyModalEnhanced
+					<CollectionDepositModal
 						isOpen={isSupplyModalOpen}
 						onClose={() => setIsSupplyModalOpen(false)}
-						marketAddress={vaultAddress!}
-						supplyAPY={vaultTokenData?.supplyAPY ? `${vaultTokenData.supplyAPY}%` : '0%'}
-						isCollateralEnabled={vaultTokenData?.isCollateralEnabled ?? true}
+						vaultAddress={vaultAddress}
+						collectionData={collectionData}
 					/>
-					<WithdrawModal
+					<CollectionWithdrawModal
 						isOpen={isWithdrawModalOpen}
 						onClose={() => setIsWithdrawModalOpen(false)}
-						marketAddress={vaultAddress!}
-						tokenSymbol={
-							vaultTokenData?.tokenSymbol || vaultTokenData?.vaultSymbol || collectionData.collectionName
-						}
-						supplyAPY={vaultTokenData?.supplyAPY ? `${vaultTokenData.supplyAPY}%` : '0%'}
+						vaultAddress={vaultAddress}
+						collectionData={collectionData}
 					/>
 				</>
 			)}

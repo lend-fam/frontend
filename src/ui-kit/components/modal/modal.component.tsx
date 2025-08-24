@@ -9,9 +9,10 @@ export interface ModalProps {
 	onClose: () => void;
 	children: ReactNode;
 	title?: string;
+	customHeader?: ReactNode;
 }
 
-export const Modal: FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
+export const Modal: FC<ModalProps> = ({ isOpen, onClose, children, title, customHeader }) => {
 	useEffect(() => {
 		if (isOpen) {
 			document.body.style.overflow = 'hidden';
@@ -45,20 +46,37 @@ export const Modal: FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
 	return createPortal(
 		<FlexContainer variant="center" className={css.overlay} onClick={onClose}>
 			<div className={css.modal} onClick={(e) => e.stopPropagation()}>
-				<FlexContainer variant="spaceBetween" className={css.header}>
-					{title && <h2 className={css.title}>{title}</h2>}
-					<button className={css.closeButton} onClick={onClose} aria-label="Close modal">
-						<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-							<path
-								d="M18 6L6 18M6 6L18 18"
-								stroke="currentColor"
-								strokeWidth="2"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-							/>
-						</svg>
-					</button>
-				</FlexContainer>
+				{customHeader ? (
+					<div className={css.customHeaderContainer}>
+						{customHeader}
+						<button className={css.closeButton} onClick={onClose} aria-label="Close modal">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+								<path
+									d="M18 6L6 18M6 6L18 18"
+									stroke="currentColor"
+									strokeWidth="2"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+								/>
+							</svg>
+						</button>
+					</div>
+				) : (
+					<FlexContainer variant="spaceBetween" className={css.header}>
+						{title && <h2 className={css.title}>{title}</h2>}
+						<button className={css.closeButton} onClick={onClose} aria-label="Close modal">
+							<svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+								<path
+									d="M18 6L6 18M6 6L18 18"
+									stroke="currentColor"
+									strokeWidth="2"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+								/>
+							</svg>
+						</button>
+					</FlexContainer>
+				)}
 				<div className={css.content}>{children}</div>
 			</div>
 		</FlexContainer>,

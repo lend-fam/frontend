@@ -60,3 +60,14 @@
 .content {
 	padding: 0 24px 24px 24px;
 }
+
+.customHeaderContainer {
+	position: relative;
+}
+
+.customHeaderContainer .closeButton {
+	position: absolute;
+	top: 20px;
+	right: 24px;
+	z-index: 10;
+}
