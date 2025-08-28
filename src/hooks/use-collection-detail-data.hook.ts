@@ -428,6 +428,7 @@ export const useCollectionDetailData = (collectionAddress: Address) => {
 
 		return {
 			...baseCollectionData,
+			collectionId,
 			vaults,
 			totalValueLocked,
 			totalYieldGenerated,
@@ -440,7 +441,7 @@ export const useCollectionDetailData = (collectionAddress: Address) => {
 				description: weightFunction.description,
 			},
 		};
-	}, [baseCollectionData, vaults, totalValueLocked, totalYieldGenerated, collectionRegistryData]);
+	}, [baseCollectionData, collectionId, vaults, totalValueLocked, totalYieldGenerated, collectionRegistryData]);
 
 	// Combined loading state - prioritize critical data
 	const isLoading = useMemo(() => {

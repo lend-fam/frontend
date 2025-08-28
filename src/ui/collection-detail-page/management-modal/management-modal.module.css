@@ -1,17 +1,31 @@
+/* Collection Management Modal Styles - Matching project modal design patterns */
 .container {
-	display: flex;
-	flex-direction: column;
 	gap: 24px;
 	padding: 0;
+	max-width: none;
+	width: 100%;
 }
 
-.statusSection {
-	display: flex;
-	flex-direction: column;
+.section {
 	gap: 12px;
+	padding: 0 24px;
 }
 
-.statusLabel {
+.section:first-child {
+	padding-top: 16px;
+}
+
+.section:last-child {
+	padding-bottom: 16px;
+}
+
+/* Section Headers - Matching base-transaction-modal pattern */
+.sectionHeader {
+	gap: 8px;
+	margin-bottom: 4px;
+}
+
+.label {
 	font-size: var(--font-text-small-size);
 	font-family: var(--font-text-small-family);
 	font-weight: var(--font-text-small-weight);
@@ -19,26 +33,51 @@
 	color: #d1d5db;
 }
 
+.info {
+	color: #9ca3af;
+	cursor: help;
+}
+
+.info:hover {
+	color: #d1d5db;
+}
+
+/* Section Titles */
 .sectionTitle {
 	font-size: 18px;
 	font-family: var(--font-text-default-family);
 	font-weight: var(--font-text-default-weight);
 	color: var(--color-text-inversion);
-	margin: 0;
+	margin: 0 0 8px 0;
 }
 
-.actionsSection {
-	display: flex;
-	flex-direction: column;
-	gap: 12px;
+/* Status Section */
+.statusContainer {
+	background: #374151;
+	border: 1px solid #4b5563;
+	border-radius: 12px;
+	padding: 16px;
+	transition: border-color 0.2s;
+}
+
+.statusLabel {
+	font-size: 14px;
+	font-family: var(--font-text-small-family);
+	font-weight: var(--font-text-small-weight);
+	color: #d1d5db;
+}
+
+/* Actions Container - Matching project standards */
+.actionsContainer {
 	background: #374151;
 	border-radius: 12px;
 	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
 }
 
 .actionGroup {
-	display: flex;
-	flex-direction: column;
 	gap: 8px;
 }
 
@@ -50,22 +89,23 @@
 	line-height: 1.4;
 }
 
-.dangerSection {
-	display: flex;
-	flex-direction: column;
-	gap: 12px;
-	padding: 16px;
-	background: #7f1d1d;
-	border-radius: 12px;
-	border: 1px solid #991b1b;
-}
-
+/* Danger Section - Enhanced styling */
 .dangerTitle {
-	font-size: 16px;
+	font-size: 18px;
 	font-family: var(--font-text-default-family);
 	font-weight: var(--font-text-default-weight);
 	color: #fecaca;
-	margin: 0;
+	margin: 0 0 8px 0;
+}
+
+.dangerContainer {
+	background: #7f1d1d;
+	border-radius: 12px;
+	border: 1px solid #991b1b;
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
 }
 
 .dangerDescription {
@@ -76,14 +116,15 @@
 	line-height: 1.4;
 }
 
+/* Unauthorized Notice - Improved styling */
 .unauthorizedNotice {
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	padding: 16px;
 	background: #78350f;
 	border-radius: 12px;
 	border: 1px solid #92400e;
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
 }
 
 .unauthorizedTitle {
@@ -99,4 +140,248 @@
 	font-weight: var(--font-text-small-weight);
 	color: #fbbf24;
 	line-height: 1.4;
+}
+
+/* Edit Form Styles */
+.inputContainer {
+	background: #4b5563;
+	border: 1px solid #6b7280;
+	border-radius: 8px;
+	padding: 12px;
+	gap: 8px;
+	transition: border-color 0.2s;
+}
+
+.inputContainer:focus-within {
+	border-color: var(--color-accent-apechain);
+}
+
+.editInput {
+	background: none;
+	border: none;
+	color: var(--color-text-inversion);
+	font-size: 16px;
+	font-family: var(--font-text-default-family);
+	font-weight: var(--font-text-default-weight);
+	outline: none;
+	flex: 1;
+	min-width: 0;
+}
+
+.editInput::placeholder {
+	color: #9ca3af;
+}
+
+.editInput:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.inputSuffix {
+	color: #d1d5db;
+	font-size: 16px;
+	font-family: var(--font-text-default-family);
+	font-weight: var(--font-text-default-weight);
+	flex-shrink: 0;
+}
+
+.editSelect {
+	background: #4b5563;
+	border: 1px solid #6b7280;
+	border-radius: 8px;
+	padding: 12px;
+	color: var(--color-text-inversion);
+	font-size: 16px;
+	font-family: var(--font-text-default-family);
+	font-weight: var(--font-text-default-weight);
+	outline: none;
+	width: 100%;
+	transition: border-color 0.2s;
+}
+
+.editSelect:focus {
+	border-color: var(--color-accent-apechain);
+}
+
+.editSelect:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+.editActions {
+	gap: 8px;
+	justify-content: flex-end;
+	margin-top: 4px;
+}
+
+/* Custom button styles for modal */
+.cancelButton {
+	background: #4b5563 !important;
+	border-color: #6b7280 !important;
+	color: #d1d5db !important;
+}
+
+.cancelButton:hover:not(:disabled) {
+	background: #374151 !important;
+	border-color: #9ca3af !important;
+	color: #f3f4f6 !important;
+}
+
+.submitButton {
+	background: var(--color-accent-apechain) !important;
+	border-color: var(--color-accent-apechain) !important;
+	color: #ffffff !important;
+}
+
+.submitButton:hover:not(:disabled) {
+	background: color-mix(in srgb, var(--color-accent-apechain) 90%, black) !important;
+	border-color: color-mix(in srgb, var(--color-accent-apechain) 90%, black) !important;
+}
+
+/* Status Notices */
+.processingNotice {
+	background: #1e3a8a;
+	border-radius: 12px;
+	border: 1px solid #1d4ed8;
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.processingTitle {
+	font-size: 14px;
+	font-family: var(--font-text-small-family);
+	font-weight: var(--font-text-small-bold-weight);
+	color: #93c5fd;
+}
+
+.processingText {
+	font-size: 12px;
+	font-family: var(--font-text-small-family);
+	font-weight: var(--font-text-small-weight);
+	color: #bfdbfe;
+	line-height: 1.4;
+}
+
+.errorNotice {
+	background: #7f1d1d;
+	border-radius: 12px;
+	border: 1px solid #991b1b;
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.errorTitle {
+	font-size: 14px;
+	font-family: var(--font-text-small-family);
+	font-weight: var(--font-text-small-bold-weight);
+	color: #fecaca;
+}
+
+.errorText {
+	font-size: 12px;
+	font-family: var(--font-text-small-family);
+	font-weight: var(--font-text-small-weight);
+	color: #fca5a5;
+	line-height: 1.4;
+}
+
+/* Responsive Design - Matching project patterns */
+@media (max-width: 768px) {
+	.section {
+		padding: 0 20px;
+	}
+
+	.section:first-child {
+		padding-top: 20px;
+	}
+
+	.section:last-child {
+		padding-bottom: 20px;
+	}
+
+	.statusContainer,
+	.actionsContainer,
+	.dangerContainer,
+	.unauthorizedNotice,
+	.processingNotice,
+	.errorNotice {
+		padding: 14px;
+	}
+
+	.sectionTitle,
+	.dangerTitle {
+		font-size: 16px;
+	}
+
+	.actionGroup {
+		gap: 6px;
+	}
+
+	.editInput,
+	.editSelect {
+		font-size: 14px;
+	}
+
+	.inputContainer {
+		padding: 10px;
+	}
+
+	.editActions {
+		gap: 6px;
+	}
+}
+
+/* Weight Function Parameter Styles */
+.parameterContainer {
+	gap: 16px;
+}
+
+.functionTypeLabel {
+	padding-bottom: 8px;
+}
+
+.parameterInputs {
+	gap: 16px;
+}
+
+.parameterInput {
+	gap: 6px;
+	flex: 1;
+	min-width: 0; /* Allow shrinking */
+}
+
+.parameterInput .label {
+	font-size: 12px;
+	font-weight: 600;
+	margin-bottom: 4px;
+	color: #d1d5db;
+}
+
+.parameterInput .inputContainer {
+	background: #374151;
+	border: 1px solid #4b5563;
+	border-radius: 8px;
+	padding: 0;
+	transition: border-color 0.2s;
+}
+
+.parameterInput .inputContainer:focus-within {
+	border-color: var(--color-accent-apechain);
+}
+
+.parameterInput .editInput {
+	background: transparent;
+	border: none;
+	padding: 12px;
+	font-size: 14px;
+	width: 100%;
+	min-width: 0;
+}
+
+.parameterInput .editInput:focus {
+	outline: none;
 }

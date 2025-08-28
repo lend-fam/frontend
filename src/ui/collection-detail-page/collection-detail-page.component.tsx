@@ -1,6 +1,7 @@
 import { type FC, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import type { Address } from 'viem';
+import { useAccount } from 'wagmi';
 import { Layout } from '../layout/layout.component';
 import { CollectionHeader } from './collection-header/collection-header.component';
 import { CollectionMetricsSection } from './collection-metrics-section/collection-metrics-section.component';
@@ -12,6 +13,7 @@ import { LoadingState } from '../../ui-kit/components/loading-state/loading-stat
 import { EmptyState } from '../../ui-kit/components/empty-state/empty-state.component';
 import { typedMemo } from '../../ui-kit/utils/typed-memo.utils';
 import { useCollectionDetailData } from '../../hooks/use-collection-detail-data.hook';
+import { useCollectionAuthInfo } from '../../hooks/use-collections-registry.hook';
 import type { CollectionData as BaseCollectionData } from '../../hooks/use-collections-page-data.hook';
 
 import css from './collection-detail-page.module.css';
@@ -23,6 +25,7 @@ export interface CollectionDetailData extends BaseCollectionData {
 	// userOwnership, nftMultiplier, weightFunction, vaultCount, totalVaults, status, actions
 
 	// Additional fields for detail view
+	collectionId: bigint | null;
 	vaults: VaultInfo[];
 	totalValueLocked: string;
 	totalYieldGenerated: string;
@@ -51,6 +54,7 @@ const CollectionDetailPageComponent: FC = () => {
 	const { collectionAddress } = useParams<{ collectionAddress: string }>();
 	const [searchParams] = useSearchParams();
 	const [isManagementModalOpen, setIsManagementModalOpen] = useState(false);
+	const { address: userAddress } = useAccount();
 
 	const selectedVault = searchParams.get('vault') as Address | null;
 
@@ -61,6 +65,10 @@ const CollectionDetailPageComponent: FC = () => {
 		error,
 		isEmpty,
 	} = useCollectionDetailData(collectionAddress as Address);
+
+	// Check if the current user is authorized to manage this collection
+	const { data: authData } = useCollectionAuthInfo(collectionData?.collectionId || 0n, userAddress);
+	const isUserAuthorized = authData?.[0]?.result?.isUserAuthorized || false;
 
 	if (!collectionAddress) {
 		return (
@@ -108,7 +116,7 @@ const CollectionDetailPageComponent: FC = () => {
 			<div className={css.container}>
 				<CollectionHeader
 					collectionData={collectionData}
-					onManageClick={() => setIsManagementModalOpen(true)}
+					onManageClick={isUserAuthorized ? () => setIsManagementModalOpen(true) : undefined}
 				/>
 
 				<div className={css.content}>
