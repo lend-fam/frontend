@@ -24,8 +24,14 @@ dist-ssr
 *.sw?
 
 *.module.css.d.ts
+
+# Environment files
 .env
+.env.develop
+.env.production
+.env.*.local
 
 # Deployment files with secrets
+deploy/.env
 deploy/env.yml
 deploy/inventory.yml
