@@ -46,5 +46,6 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 # Copy custom nginx configuration for SPA
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 80 (reproxy will handle SSL)
 EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

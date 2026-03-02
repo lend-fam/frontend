@@ -1,70 +1,18 @@
-services:
-  # Standalone reproxy for routing and SSL
-  reproxy:
-    image: umputun/reproxy
-    container_name: reproxy
-    hostname: reproxy
-    ports:
-      - "80:8080"
-      - "443:8443"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ssl_certs:/srv/var/ssl
-    environment:
-      - DOCKER_ENABLED=true
-      - DOCKER_AUTO=false
-      - SSL_TYPE=auto
-      - SSL_ACME_EMAIL=admin@lend.family
-      - SSL_ACME_LOCATION=/srv/var/ssl
-      # Debug settings for SSL troubleshooting
-      - DEBUG=true
-      - LOGGER_ENABLED=true
-      - LOGGER_STDOUT=true
-      - SSL_ACME_FQDN=lend.family
-    restart: unless-stopped
-    networks:
-      - reproxy
-
-  # Production frontend service
-  frontend-production:
-    image: ${DOCKER_USERNAME}/lend-family-app:latest
-    container_name: lend-family-app-production
-    labels:
-      - "reproxy.server=lend.family"
-      - "reproxy.route=^/(.*)"
-      - "reproxy.dest=/$1"
-    restart: unless-stopped
-    networks:
-      - reproxy
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-
-  # Development frontend service  
-  frontend-development:
-    image: ${DOCKER_USERNAME}/lend-family-app:develop
-    container_name: lend-family-app-development
-    labels:
-      - "reproxy.server=lend.family"
-      - "reproxy.route=^/development(?:/(.*))?$"
-      - "reproxy.dest=/development/$1"
-    restart: unless-stopped
-    networks:
-      - reproxy
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-
 networks:
-  reproxy:
-    driver: bridge
+  proxy-net:
+    external: true
 
-volumes:
-  ssl_certs:
-    driver: local
+services:
+  lend-fam:
+    image: ${IMAGE_NAME:-ghcr.io/lend-fam/frontend:latest}
+    container_name: lend-fam
+    networks:
+      - proxy-net
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /var/cache/nginx
+      - /var/run
+      - /tmp

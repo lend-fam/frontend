@@ -68,3 +68,15 @@ LICENSE
 # Package manager files (already copied specifically)
 package-lock.json
 yarn.lock
+
+# Secrets (never include in image)
+.sops/
+secrets/
+
+# Docker
+docker-compose*.yml
+Dockerfile
+.dockerignore
+
+# Deploy
+deploy/

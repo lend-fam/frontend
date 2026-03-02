@@ -1,0 +1,7 @@
+services:
+  lend-fam:
+    build: .
+    container_name: lend-fam-local
+    ports:
+      - "8080:80"
+    restart: unless-stopped
