@@ -41,6 +41,13 @@ jobs:
           tags: |
             type=raw,value=latest
 
+      - name: Create env files for Docker build
+        env:
+          ENV_PRODUCTION: ${{ secrets.ENV_PRODUCTION }}
+        run: |
+          echo "$ENV_PRODUCTION" > .env.production
+          touch .env.develop
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
@@ -51,8 +58,6 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             BUILD_MODE=prod
-            VITE_POSTHOG_API_KEY=${{ secrets.VITE_POSTHOG_API_KEY }}
-            VITE_POSTHOG_API_HOST=${{ secrets.VITE_POSTHOG_API_HOST }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
